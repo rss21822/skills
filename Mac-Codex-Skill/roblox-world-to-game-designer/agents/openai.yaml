@@ -1,0 +1,4 @@
+interface:
+  display_name: "Roblox World-to-Game Designer"
+  short_description: "Turn Roblox world ideas into testable game concepts"
+  default_prompt: "Use $roblox-world-to-game-designer to turn this Roblox world premise into one minimum viable game concept."

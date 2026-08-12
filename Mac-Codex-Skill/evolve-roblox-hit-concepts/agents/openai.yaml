@@ -1,0 +1,4 @@
+interface:
+  display_name: "Robloxヒット企画進化"
+  short_description: "15法則でRoblox原案を進化し、有望案を比較・横断統合する"
+  default_prompt: "Use $evolve-roblox-hit-concepts to evolve this Roblox game idea through all 15 laws and integrate the strongest candidates."

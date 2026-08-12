@@ -1,0 +1,4 @@
+interface:
+  display_name: "Robloxゲームフォーマット合成"
+  short_description: "既存案へ複数のRobloxフォーマットを組み合わせて新規企画を立案"
+  default_prompt: "$combine-roblox-game-formats を使って、提示したゲーム案に相性のよいフォーマットを組み合わせ、新しいRobloxゲーム企画を立案してください。"
