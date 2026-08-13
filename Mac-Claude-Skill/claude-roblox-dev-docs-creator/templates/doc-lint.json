@@ -1,11 +1,12 @@
 {
-  "_comment": "lint_docs.py の設定雛形。プロジェクト直下の .claude/doc-lint.json へ置き、PREFIX とパスを実プロジェクトに合わせる。_ で始まるキーは読み飛ばされる。実プロジェクトでの記入例は references/config-example.md。",
+  "_comment": "lint_docs.py の設定雛形。値は記入例なので実プロジェクトへ合わせて置き換える。プロジェクト直下の .claude/doc-lint.json へ置き、PREFIX とパスを実プロジェクトに合わせる。_ で始まるキーは読み飛ばされる。実プロジェクトでの記入例は references/config-example.md。",
 
   "_required_edits": [
     "doc_globs / exclude_globs をこのリポジトリの配置に合わせる",
     "value_owner_docs に数値の所有文書を列挙する（空だと unreferenced-value が無効）",
     "decision_id_home_docs に決定 ID を定義している文書を列挙する",
-    "contracts に通知・イベント契約を登録する（空だと contract-consumer が実質無効）"
+    "contracts に通知・イベント契約を登録する（空だと contract-consumer が実質無効）",
+    "status_consistency に索引表と詳細節を持つ文書を登録する（空だと status-index-drift が無効）"
   ],
 
   "doc_globs": ["docs/*.md", "docs/specs/*.md", "*.md"],
@@ -35,5 +36,16 @@
 
   "contracts": [],
   "forward_refs": [],
+
+  "_status_consistency_note": "索引表の状態列と詳細節の `- <field>:` を突合する。id_pattern は詳細節見出しと索引行の両方に現れる ID の正規表現。blanket_phrases は「全〜は X である」型の一律断定を拾う語で、詳細節の値が2種類以上あるときだけ発火する。",
+  "status_consistency": [
+    {
+      "file": "docs/PREFIX_work_packages.md",
+      "id_pattern": "WP-[A-Z0-9]+-\\d+[A-Z]?",
+      "field": "Status",
+      "blanket_phrases": ["全 Work Package の Status は"]
+    }
+  ],
+
   "rules": {}
 }

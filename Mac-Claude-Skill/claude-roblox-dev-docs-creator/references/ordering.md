@@ -15,8 +15,12 @@
 ## 標準順序
 
 ```
+D0      intake                   人間が答える。AI は質問提示と [PROPOSAL] 提案のみ
+D1      gdd                      製品判断の所有者。**人間承認ゲート**
+D1.5    feasibility_report       高リスク機能の実証。trigger は D1 で洗い出す
+
 Tier 0  判断・数値の所有者
-        data_definition          gameplay/経済の全数値
+        data_definition          gameplay/経済の可変数値（全数値ではない。所有は下表）
         rights_provenance_ledger 権利・史実・文化の判断（判断自体は人間専権）
 
 Tier 1  構造
@@ -53,12 +57,18 @@ D3      phase_plan
 
 `roblox-development-architect` の trigger-matrix が発動を決めた仕様書のうち、上に無いもの（external_services_secrets 等）は依存関係を見て挿入する。判断基準は「他文書の判断・数値を消費するか、他文書へ供給するか」。供給側が先。
 
+### D0〜D1.5 の順序の理由
+
+- **GDD より上に文書を置かない**: GDD は製品判断の所有者であり、他文書から導出できない唯一の文書。GDD の人間承認前に下流を書くと、承認で方針が変わったとき全下流が是正対象になる
+- **Feasibility trigger は GDD 時点で洗い出す**: 後から気づくと、既に書いた Tier 2-3 が検証されていない前提の上に立つ。実プロジェクトでは3つの FR のうち1つしか PASS しておらず、残り2つが実装開始ゲート（D5）を止めている。結果に依存する判断は `[OPEN blocking: yes]` として登録し、推測で書かない
+- **決定 ID の参照規約は GDD 冒頭で確定する**: ID 本体の形式は architect が正本なので変えない。決めるのは「独自採番を持つ文書の列挙」と「参照の完全修飾」。後から変えると参照している全文書の是正になる。詳細は [gdd-and-intake.md](gdd-and-intake.md) §2
+
 ### D3 内の順序の理由
 
 - **phase_plan が先**: gate 構造（どの承認で何が始まるか）が決まらないと、WP の `Authorized by` が書けない。ここを飛ばすと循環 gate が生まれる
 - **work_packages → test_spec**: テストは WP の Automatic/Studio/Performance 欄を解決する存在。逆順だとテストが宙に浮く
 - **traceability は最後**: 要件→設計→WP→テストの4段が揃ってから一度に書く。骨格を先に作っても、結局 wp/test 参照で全行を触り直すことになる
-- **記録類は最後**: PROGRESS も CHANGELOG も、記録すべき実績が確定してから書く
+- **記録類は最後**: PROGRESS も CHANGELOG も、記録すべき実績が確定してから書く。**ただし `HUMAN_ACTIONS.md` と `DECISIONS.md` は例外で、初版を D1 で作る**。GDD 時点で `[HUMAN]` 専権作業と承認記録が既に発生しているため。D3 でやるのは最終整備（全 Spec 由来の gate を全文走査で収集し、体裁を揃える）
 
 ## 所有境界（配達先 ≠ 所有先）
 

@@ -49,6 +49,7 @@ DEFAULT_CONFIG = {
     ],
     "contracts": [],
     "forward_refs": [],
+    "status_consistency": [],
     "rules": {},
 }
 
@@ -489,6 +490,140 @@ def rule_forward_ref_resolved(root, docs, cfg, out):
                 f"解決したら forward_refs から削除する"))
 
 
+def _detail_states(doc, id_re, field):
+    """見出しごとの `- <field>: <値>` を集める。ID → (行番号, 値)。
+
+    同じ ID の見出しが複数あれば最初のものを採る。索引と詳細が食い違うとき
+    どちらが正本かは文書側の規約が決めるので、ここでは詳細節を基準に置く。
+    """
+    field_re = re.compile(rf"^\s*[-*]\s*{re.escape(field)}\s*[:：]\s*(.+)$")
+    states, cur, cur_line = {}, None, 0
+    for i, line in enumerate(doc.lines, 1):
+        if line.lstrip().startswith("#"):
+            m = id_re.search(line)
+            cur, cur_line = (m.group(0), i) if m else (None, 0)
+            continue
+        if cur is None or cur in states or i in doc.in_code:
+            continue
+        m = field_re.match(line)
+        if m:
+            states[cur] = (cur_line, _first_token(m.group(1)))
+    return states
+
+
+def _first_token(raw: str) -> str:
+    """`In progress（理由…）` から `In progress` を取る。注記は状態値ではない。"""
+    for sep in ("（", "(", "。", "、", ",", "<!--"):
+        raw = raw.split(sep)[0]
+    return raw.replace("`", "").replace("*", "").strip()
+
+
+def _table_cells(line: str):
+    if not line.lstrip().startswith("|"):
+        return None
+    row = line.strip().strip("|")
+    return [c.strip() for c in re.split(r"(?<!\\)\|", row)]
+
+
+def rule_status_index_drift(root, docs, cfg, out):
+    """索引表の状態値が詳細節と食い違う（片側更新で失効した状態値）。
+
+    実運用で3回再発した型。詳細節だけ直して索引や総則を直し忘れると、
+    索引しか読まない人が着手済みの項目を未着手と誤認する。
+    人手の全文走査では毎回取り零したので機械検査へ移す。
+    """
+    by_rel = {d.rel: d for d in docs}
+    for spec in cfg["status_consistency"]:
+        target = spec.get("file", "")
+        field = spec.get("field", "Status")
+        doc = by_rel.get(target)
+        if doc is None:
+            out.append(Finding("status-index-drift", "error", target or "<config>", 1,
+                               "status_consistency の file が対象文書に含まれていない"))
+            continue
+        try:
+            id_re = re.compile(spec["id_pattern"])
+        except (KeyError, re.error) as exc:
+            out.append(Finding("status-index-drift", "error", target, 1,
+                               f"status_consistency の id_pattern が不正: {exc}"))
+            continue
+
+        states = _detail_states(doc, id_re, field)
+        if not states:
+            out.append(Finding("status-index-drift", "error", target, 1,
+                               f"詳細節に `- {field}:` が1件も見つからない。"
+                               f"id_pattern または field の指定が実際の書式と合っていない"))
+            continue
+
+        col, header_found, compared, indexed = None, False, 0, set()
+        for i, line in doc.enumerate("status-index-drift"):
+            if i in doc.in_code:
+                continue
+            cells = _table_cells(line)
+            if not cells:
+                col = None
+                continue
+            if col is None:
+                if field in cells:
+                    col, header_found = cells.index(field), True
+                continue
+            if col >= len(cells) or set(cells[col]) <= set("-: "):
+                continue
+            m = next((id_re.search(c) for c in cells if id_re.search(c)), None)
+            if m is None:
+                continue
+            wid = m.group(0)
+            indexed.add(wid)
+            if wid not in states:
+                continue
+            compared += 1
+            detail_line, detail_val = states[wid]
+            if _first_token(cells[col]) != detail_val:
+                out.append(Finding(
+                    "status-index-drift", "error", target, i,
+                    f"{wid} の {field} が索引 `{_first_token(cells[col])}`、"
+                    f"詳細節（:{detail_line}）`{detail_val}` で食い違う。"
+                    f"詳細節が正本なら索引を同期する", line))
+
+        # 突合が0件で PASS すると「検査した」と誤解される。検査対象が無いことと
+        # 検査して問題が無いことは違うので、前者は設定不備として落とす。
+        if not header_found:
+            out.append(Finding("status-index-drift", "error", target, 1,
+                               f"`{field}` を列に持つ索引表が見つからない。"
+                               f"field の指定が実際の表見出しと合っていない"))
+        elif compared == 0:
+            out.append(Finding("status-index-drift", "error", target, 1,
+                               f"索引表と詳細節で突合できた {field} が0件。"
+                               f"id_pattern が索引行の ID 表記と合っていない可能性がある"))
+
+        # 片方にしか無い ID は、綴り違いや登録漏れで黙って検査から外れた候補。
+        # 意図的な索引専用行は index_only_ids で宣言させる。宣言を求めるのは、
+        # 「詳細節が無いのは仕様」と「綴り違いで取れなかった」が外形上は同じだから。
+        declared = set(spec.get("index_only_ids", []))
+        for wid in sorted(declared - indexed):
+            out.append(Finding("status-index-drift", "warn", target, 1,
+                               f"index_only_ids の {wid} が索引に存在しない。"
+                               f"宣言が古い可能性がある"))
+        for wid in sorted(indexed - set(states) - declared):
+            out.append(Finding("status-index-drift", "warn", target, 1,
+                               f"{wid} は索引にあるが詳細節の `- {field}:` が取れない。"
+                               f"意図的な索引専用行でないなら、綴り違いか記載漏れ"))
+        for wid in sorted(set(states) - indexed):
+            out.append(Finding("status-index-drift", "warn", target, 1,
+                               f"{wid} は詳細節にあるが索引に現れない。索引の登録漏れ"))
+
+        distinct = {v for _, v in states.values()}
+        for phrase in spec.get("blanket_phrases", []):
+            if len(distinct) <= 1:
+                break
+            for i, line in doc.enumerate("status-index-drift"):
+                if i not in doc.in_code and phrase in line:
+                    out.append(Finding(
+                        "status-index-drift", "error", target, i,
+                        f"『{phrase}』と一律に述べているが、詳細節の {field} は"
+                        f"{len(distinct)}種類（{'、'.join(sorted(distinct))}）ある", line))
+
+
 def rule_self_verification_claim(root, reports, cfg, out):
     """執筆モデルの報告に、発注していない検証の主張がある。"""
     for d in reports:
@@ -505,7 +640,7 @@ def rule_self_verification_claim(root, reports, cfg, out):
 DOC_RULES = [
     rule_bare_open, rule_blocking_polarity, rule_stale_premise, rule_bare_decision_id,
     rule_unreferenced_value, rule_line_ref_out_of_range, rule_template_placeholder,
-    rule_contract_consumer, rule_forward_ref_resolved,
+    rule_contract_consumer, rule_forward_ref_resolved, rule_status_index_drift,
 ]
 REPORT_RULES = [rule_self_verification_claim]
 
@@ -590,6 +725,8 @@ def main() -> int:
         notes.append("value_owner_docs が未設定のため unreferenced-value は無効")
     if not cfg["contracts"]:
         notes.append("contracts が未設定のため contract-consumer は実質無効")
+    if not cfg["status_consistency"]:
+        notes.append("status_consistency が未設定のため status-index-drift は無効")
 
     findings: list = []
     executed = []
