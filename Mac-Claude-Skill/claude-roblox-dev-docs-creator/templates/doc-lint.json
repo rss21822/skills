@@ -1,0 +1,39 @@
+{
+  "_comment": "lint_docs.py の設定雛形。プロジェクト直下の .claude/doc-lint.json へ置き、PREFIX とパスを実プロジェクトに合わせる。_ で始まるキーは読み飛ばされる。実プロジェクトでの記入例は references/config-example.md。",
+
+  "_required_edits": [
+    "doc_globs / exclude_globs をこのリポジトリの配置に合わせる",
+    "value_owner_docs に数値の所有文書を列挙する（空だと unreferenced-value が無効）",
+    "decision_id_home_docs に決定 ID を定義している文書を列挙する",
+    "contracts に通知・イベント契約を登録する（空だと contract-consumer が実質無効）"
+  ],
+
+  "doc_globs": ["docs/*.md", "docs/specs/*.md", "*.md"],
+  "exclude_globs": ["docs/handoffs/**", "docs/evidence/**", "**/node_modules/**"],
+  "report_globs": ["docs/handoffs/out/*_last-message.md"],
+  "index_globs": ["docs/*.md", "docs/specs/*.md"],
+
+  "decision_qualifiers": ["GDD", "Feasibility", "gate-threshold", "D0-B"],
+  "decision_id_pattern": "\\b[DF]-\\d+\\b",
+  "decision_id_home_docs": [],
+  "gate_id_pattern": "\\b[A-Z][A-Z0-9]*-(?:GATE|OQ|DEP)-[A-Z0-9-]+\\b",
+
+  "stale_premise_phrases": ["未作成", "作成予定", "将来の", "未整備のため"],
+  "stale_premise_window": 60,
+
+  "value_units": ["frames/s", "studs", "stud", "fps", "ms", "MB", "GB", "KB", "s"],
+  "value_id_patterns": ["\\bDATA-[A-Z]+-\\d+\\b"],
+  "value_owner_docs": [],
+  "value_exempt_markers": ["正本は", "転記", "出所", "canonical"],
+
+  "bare_open_exempt_docs": [],
+
+  "self_verification_terms": [
+    "独立照合", "別セッション", "サブエージェントレビュー", "受入照合",
+    "読み取り専用レビュー", "別エージェント"
+  ],
+
+  "contracts": [],
+  "forward_refs": [],
+  "rules": {}
+}
