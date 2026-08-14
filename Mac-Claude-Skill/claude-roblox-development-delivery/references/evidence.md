@@ -16,7 +16,7 @@ hash・ID・バージョン・URL・errno・件数は、実際に取得したも
 
 ## 値の取得と受け渡し
 
-Fableが実測し、FACTとしてhandoffへ渡す。Codexは渡された値だけを使う。
+Claudeが実測し、FACTとしてhandoffへ渡す。Codexは渡された値だけを使う。
 
 ```bash
 shasum -a 256 <file>                    # ファイルhash

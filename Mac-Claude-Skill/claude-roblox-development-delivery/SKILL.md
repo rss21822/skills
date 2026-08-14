@@ -1,32 +1,32 @@
 ---
 name: claude-roblox-development-delivery
-description: Roblox開発をFable（指示）とCodex CLI（実装）の分業で進めるワークフロー。Fableがbounded handoffを書き、Codex（gpt-5.6-sol / reasoning high）が実装し、別Codex sessionが独立照合し、Roblox Studio MCPで実機検証してからcommitする。Robloxのコード実装・Luau・Rojo・.rbxlx・Studio確認・Codexへの実装依頼・handoff発行・独立レビュー・Evidence記録・Studio Playでの動作確認のいずれかが話に出たら必ずこのskillを使う。ユーザーが「Codexで実装して」「Studioで確認して」「rbxlxを作って」と言った場合はもちろん、Robloxプロジェクトで単に「実装して」「直して」と言われた場合も対象。
+description: Roblox開発をClaude（指示）とCodex CLI（実装）の分業で進めるワークフロー。Claudeがbounded handoffを書き、Codex（gpt-5.6-sol / reasoning high）が実装し、別Codex sessionが独立照合し、Roblox Studio MCPで実機検証してからcommitする。Robloxのコード実装・Luau・Rojo・.rbxlx・Studio確認・Codexへの実装依頼・handoff発行・独立レビュー・Evidence記録・Studio Playでの動作確認のいずれかが話に出たら必ずこのskillを使う。ユーザーが「Codexで実装して」「Studioで確認して」「rbxlxを作って」と言った場合はもちろん、Robloxプロジェクトで単に「実装して」「直して」と言われた場合も対象。
 ---
 
 # Roblox Codex Delivery
 
-FableとCodexの分業でRobloxを開発する。Fableは指示と検証、Codexは実装。**このskillの価値の中心は「AIに自分の仕事を検証させる構造」**であり、Codexに投げること自体ではない。実運用で、この構造は偽clean経路・見せかけPASSのテスト・実効性のないバージョンpin・存在しないCLIオプションへの依存といった、実装だけでは絶対に見つからない欠陥を捕まえた。
+ClaudeとCodexの分業でRobloxを開発する。Claude（このsession）は指示と検証、Codexは実装。**このskillの価値の中心は「AIに自分の仕事を検証させる構造」**であり、Codexに投げること自体ではない。実運用で、この構造は偽clean経路・見せかけPASSのテスト・実効性のないバージョンpin・存在しないCLIオプションへの依存といった、実装だけでは絶対に見つからない欠陥を捕まえた。
 
 ## 0. 開始ゲート
 
-作業前に2つ宣言する。ここを飛ばすと、後から「どのモデルが何をしたか」を再構成できなくなる。
+作業前に2つ済ませる。ここを飛ばすと、後から「どのモデルが何をしたか」を再構成できなくなる。
 
-**モデル宣言**: このsessionのモデルをユーザーへ伝える。自己モデルを確実に検証する手段はない（`/model`で切り替えてもsystem promptは旧情報のまま残る）。だから「宣言」であって「検証」ではない。宣言と実態の乖離に後から気づいたら、進捗ファイルへ訂正行を追加する（既存行は上書きしない）。
+**モデル宣言**: この指示側sessionのモデル（Opus 5 / Fable 5 等）をユーザーへ伝える。自己モデルを確実に検証する手段はない（`/model`で切り替えてもsystem promptは旧情報のまま残る）。だから「宣言」であって「検証」ではない。宣言と実態の乖離に後から気づいたら、進捗ファイルへ訂正行を追加する（既存行は上書きしない）。
 
-**Codex pin確認**: グローバル既定は本skillのpinと異なることが多い。起動ごとの明示が必須。
+**Codex CLIの導入確認**:
 
 ```bash
 codex --version   # 未導入なら npm install -g @openai/codex@latest
 ```
 
-Codexは `gpt-5.6-sol` / reasoning `high` で起動する。既定値への暗黙依存はhandoff違反として扱う。
+これはCLIのバージョン確認であって、モデルpinの確認ではない。**モデルpinは起動ごとにコマンドラインで明示する。** グローバル既定（`~/.codex/config.toml`）は本skillのpinと異なることが多く、既定値への暗黙依存はhandoff違反として扱う。Codexは `gpt-5.6-sol` / reasoning `high` で起動する（§2）。
 
 **プロジェクト側に既存の規約があるなら、それが優先。** 設計文書に handoff 契約や役割境界が既に定義されているなら、このskillはそれを置き換えない。skillは手順の骨格であって正本ではない。規約が無いプロジェクト（新規、引き継ぎ、小規模）では、skillがそのまま規約として機能する。
 
 ## 1. ワークフロー
 
 ```
-正本を読む → handoff発行 → Codex実装 → Fableが検証
+正本を読む → handoff発行 → Codex実装 → Claudeが検証
   → 別session独立照合 → 差し戻しなら是正 → 承認可 → commit
                                     ↓
                          Studio確認が要るなら実機検証を挟む
@@ -50,17 +50,21 @@ cat handoff.md | codex exec \
   - 2>&1 | tail -10
 ```
 
+このコマンドラインは handoff の `execution` 節と対応させる。model / reasoningEffort / sandbox はフラグで明示し、既定値に頼らない。
+
+**approvalPolicyだけは扱いが違う。** `-a / --ask-for-approval` は対話版 `codex` のフラグで、`codex exec` には存在しない（`codex exec --help` で確認できる）。`codex exec` は非対話実行なので承認要求そのものが発生しない。handoffの `approvalPolicy: never` は「承認要求が起きない実行形態を選んだ」という記録であり、それをコマンド側で担保しているのは `exec` を使っていることそれ自体。**存在しないフラグを書き足して明示したつもりにならない。**
+
 数分〜十数分かかるので `run_in_background: true` で起動し、完了通知を待つ。最終メッセージは `-o` のファイルに入る。
 
 読取レビューは `-s read-only`。ネットワークが要る作業（`rokit install` 等）だけ `-c sandbox_workspace_write.network_access=true` を足す。既定ではネットワークは遮断されている。
 
 **Codexサンドボックスの制約**: 内側で `sandbox-exec` は使えない（`sandbox_apply: Operation not permitted`、exit 71）。入れ子サンドボックスを前提にした検証設計は成立しないので、そういう要求が正本にあれば実行主体を外に出す。
 
-## 3. Fableがやること・やらないこと
+## 3. Claudeがやること・やらないこと
 
-Fableは**コードを書かない**。書くのはhandoffと、検証・記録・判断。これは能力の問題ではなく、実装者と検証者を分けるための構造上の役割分担。
+Claudeは**コードを書かない**。書くのはhandoffと、検証・記録・判断。これは能力の問題ではなく、実装者と検証者を分けるための構造上の役割分担。
 
-Fableの仕事:
+Claudeの仕事:
 - 正本（設計文書）を読み、実装可能な単位へ分解する
 - handoffを書く（必須項目を満たす。`references/handoff-contract.md`）
 - Codexの報告を鵜呑みにせず、自分でも検証コマンドを走らせる
@@ -68,7 +72,7 @@ Fableの仕事:
 - Studio検証を実施する（MCP経由）
 - 承認可になったらcommitする
 
-Fableがやらないこと:
+Claudeがやらないこと:
 - 数値・hash・ID・バージョンの創作（実測しないなら `[OPEN]` として残す）
 - 設計文書の直接編集（文書追従もCodexの仕事。ユーザーの明示指示がある場合は例外だが、その差分も照合対象として記録する）
 - 自分の実装を自分でレビューして「照合済み」と記録すること
@@ -107,7 +111,7 @@ feat: <実装内容>
 
 ユーザーが同じリポジトリを同時に編集していることがある。Codexがそれを「スコープ外の変更」として検出し、作業を止めることがある。
 
-これは正しい振る舞いだが、放置すると無限ループになる。Fable側で個別commitへ整理し、handoffには「scope判定はCodex起因の変更のみで行う。ユーザーの並行編集は報告のみでBLOCKEDにしない」と明記する。
+これは正しい振る舞いだが、放置すると無限ループになる。Claude側で個別commitへ整理し、handoffには「scope判定はCodex起因の変更のみで行う。ユーザーの並行編集は報告のみでBLOCKEDにしない」と明記する。
 
 ## 7. 詰まったときの判断
 

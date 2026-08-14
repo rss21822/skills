@@ -1,6 +1,8 @@
 # .rbxlx作成とStudio検証
 
-ローカルのソースからplaceファイルを作り、Roblox Studioで開き、Play状態で実測する。Fableが自分で実行する（Codexサンドボックスからはできない）。
+ローカルのソースからplaceファイルを作り、Roblox Studioで開き、Play状態で実測する。Claudeが自分で実行する（Codexサンドボックスからはできない）。
+
+以下のコマンド例で `<Place>` はプロジェクトのplace名、`<place>.project.json` はそのRojo project fileを指す。実プロジェクトの名前へ読み替える。
 
 ## 1. buildして.rbxlxを作る
 
@@ -8,8 +10,8 @@ Rojoで生成する。project JSONを手編集しない。placeの構成はマ�
 
 ```bash
 export PATH="$HOME/.rokit/bin:$PATH"
-rojo build studio-test.project.json --output artifacts/build/Overload-StudioTest.rbxlx
-shasum -a 256 artifacts/build/Overload-StudioTest.rbxlx
+rojo build <place>.project.json --output artifacts/build/<Place>.rbxlx
+shasum -a 256 artifacts/build/<Place>.rbxlx
 ```
 
 hashは必ず取る。実行したartifactを後から特定するために要る。
@@ -19,14 +21,10 @@ hashは必ず取る。実行したartifactを後から特定するために要�
 ## 2. Studioで開く
 
 ```bash
-open artifacts/build/Overload-StudioTest.rbxlx
+open artifacts/build/<Place>.rbxlx
 ```
 
-起動には時間がかかる。ポーリングで待つ。
-
-```bash
-i=0; until [ $i -ge 7 ]; do sleep 5; i=$((i+1)); done
-```
+起動には時間がかかる。固定時間待つのではなく、次節の `list_roblox_studios` が対象インスタンスを返すまで確認を繰り返す。目安は5秒間隔で最大7回（約35秒）。それを超えても現れないなら、Studio側の起動失敗を疑う（固定待機のまま次へ進むと、まだ開いていないインスタンスを操作しようとして原因の分かりにくい失敗になる）。
 
 ## 3. MCPで接続
 
@@ -71,11 +69,15 @@ return "errors=" .. errors .. " warns=" .. warns .. " total=" .. #h
 
 一緒に取っておくと後で困らないもの: `version()`（Studioバージョン）、`game.PlaceId` / `game.GameId` / `game.JobId`（未publishのローカルファイルは0や空文字）、`RunService:IsStudio()`、`game.MatchmakingType.Name`（server processでは非nullが期待される）。
 
-**PII**: `Player.UserId` を生のまま記録しない。ドメイン分離したハッシュにする。saltは実行時に生成し、保存しない。
+**PII**: `Player.UserId` を生のまま記録しない。ドメイン分離したハッシュにする。saltは実行時に生成し、保存しない。原則は `evidence.md` の「PII」節。
 
 ```lua
-local salt = HttpService:GenerateGUID(false)  -- 保存しない
-local hash = -- SHA-256("<domain>" .. "\0" .. salt .. "\0" .. tostring(userId))
+-- SHA-256はRobloxの標準ライブラリに無い。Luau実装のモジュールを用意して require する。
+local HttpService = game:GetService("HttpService")
+local sha256 = require(<SHA-256モジュール>)
+
+local salt = HttpService:GenerateGUID(false)  -- 実行時生成。保存しない
+local hash = sha256("<domain>" .. "\0" .. salt .. "\0" .. tostring(userId))
 ```
 
 ## 6. 停止して記録
