@@ -117,7 +117,7 @@ clean-room は特に有効で、**gate の循環や承認記録の欠落**とい
 
 執筆モデルは、実施していない検証を報告に書くことがある。1セッションで7件発生し、禁止語を追加するたび表現が変形した。
 
-**方針: 争わず、記録して不採用にする。**
+**方針: 争わず、記録して不採用にする。** 記録は `docs/handoffs/out/<id>_note.md` へ置く（執筆モデルの最終報告そのものは `docs/handoffs/out/<id>_last-message.md`。lint の `report_globs` 既定がこの名前を見る）。
 
 ```markdown
 # <handoff> note

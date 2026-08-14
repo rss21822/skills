@@ -31,19 +31,20 @@
 
   "self_verification_terms": [
     "独立照合", "別セッション", "サブエージェントレビュー", "受入照合",
-    "読み取り専用レビュー", "別エージェント"
+    "読み取り専用レビュー", "別エージェント", "構造検査"
   ],
 
   "contracts": [],
   "forward_refs": [],
 
-  "_status_consistency_note": "索引表の状態列と詳細節の `- <field>:` を突合する。id_pattern は詳細節見出しと索引行の両方に現れる ID の正規表現。blanket_phrases は「全〜は X である」型の一律断定を拾う語で、詳細節の値が2種類以上あるときだけ発火する。",
+  "_status_consistency_note": "索引表の状態列と詳細節の `- <field>:` を突合する。id_pattern は詳細節見出しと索引行の両方に現れる ID の正規表現。blanket_phrases は「全〜は X である」型の一律断定を拾う語で、詳細節の値が2種類以上あるときだけ発火する。index_only_ids は「ID 予約だけで詳細節を持たない索引行」の宣言で、宣言しないと warn が出る（意図的な沈黙を宣言させるための仕掛け）。",
   "status_consistency": [
     {
       "file": "docs/PREFIX_work_packages.md",
       "id_pattern": "WP-[A-Z0-9]+-\\d+[A-Z]?",
       "field": "Status",
-      "blanket_phrases": ["全 Work Package の Status は"]
+      "blanket_phrases": ["全 Work Package の Status は"],
+      "index_only_ids": []
     }
   ],
 

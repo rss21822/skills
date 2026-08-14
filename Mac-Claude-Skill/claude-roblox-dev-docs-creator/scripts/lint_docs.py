@@ -45,7 +45,7 @@ DEFAULT_CONFIG = {
     "bare_open_exempt_docs": [],
     "self_verification_terms": [
         "独立照合", "別セッション", "サブエージェントレビュー", "受入照合",
-        "読み取り専用レビュー", "別エージェント",
+        "読み取り専用レビュー", "別エージェント", "構造検査",
     ],
     "contracts": [],
     "forward_refs": [],

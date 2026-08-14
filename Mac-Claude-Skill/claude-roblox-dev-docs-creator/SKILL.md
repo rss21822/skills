@@ -2,8 +2,8 @@
 name: claude-roblox-dev-docs-creator
 description: >
   Roblox ゲームの LLM 開発用ドキュメント体系を、コンセプトの聞き取り（D0）から GDD、詳細設計・データ定義・各種 Spec、Work Package・テスト仕様・運用文書まで、手戻りを最小化して作成するための運行規約。別モデル（Codex 等）へ執筆させ、機械検査と独立照合で品質を担保する分業ワークフローを提供する。
-  「ゲームを作りたい」「企画から開発ドキュメントを作って」「GDD を書いて」「開発ドキュメント群を作成」「設計書・仕様書を書いて」「D2 を進めて」「Codex に書かせて」といった依頼のほか、Roblox プロジェクトで企画書・GDD・下流仕様を新規作成・改訂・監査するとき、既存ドキュメントの二重正本・陳腐化参照・タグ不整合・決定 ID 衝突を点検するとき、handoff ベースで文書を量産するときは必ずこの Skill を使うこと。ユーザーが「ドキュメント」「企画書」「仕様書」「Spec」「Work Package」とだけ言った場合も、対象が Roblox 開発文書体系なら適用する。
-  一方、既存文書の誤字修正・文言の微修正・単発の質問回答・README 程度の更新には適用しない（外部モデルへの委譲と独立照合を伴う運行規約であり、単純な編集には重すぎる）。
+  「ゲームを作りたい」「企画から開発ドキュメントを作って」「GDD を書いて」「開発ドキュメント群を作成」「設計書・仕様書を書いて」「D2 を進めて」「Codex に書かせて」といった依頼のほか、Roblox プロジェクトで企画書・GDD・下流仕様を新規作成・改訂するとき、自分が執筆・改訂している文書の二重正本・陳腐化参照・タグ不整合・決定 ID 衝突を点検するとき、handoff ベースで文書を量産するときは必ずこの Skill を使うこと。ユーザーが「ドキュメント」「企画書」「仕様書」「Spec」「Work Package」とだけ言った場合も、対象が Roblox 開発文書体系なら適用する。
+  一方、既存文書の誤字修正・文言の微修正・単発の質問回答・README 程度の更新には適用しない（外部モデルへの委譲と独立照合を伴う運行規約であり、単純な編集には重すぎる）。自分が書いていない既存文書群を実装前に監査し受け入れ判定する作業には `claude-roblox-initial-document-check` を、判定後の契約確定（P0）には `claude-Roblox-P0-development` を使う。
 ---
 
 # Roblox 開発ドキュメント制作
@@ -15,6 +15,8 @@ description: >
 両者が競合したら architect 側が正本。本 Skill は運行規約であり、成果物の内容を規定しない。**質問リスト・テンプレート・必須構成を本 Skill へ複製しない**（それ自体が二重正本になる）。
 
 **射程**: D0 intake → D1 GDD → D1.5 Feasibility → D2 設計・仕様 → D3 実装計画・運用文書。
+
+**前後の Skill**: 書き終えた文書群を実装前に受け入れ判定するのは `claude-roblox-initial-document-check`、その後の契約確定（P0）は `claude-Roblox-P0-development`、製品コードの実装は `claude-roblox-development-delivery`。本 Skill が照合・監査を回す対象は**自分が今書いている文書**であり、自分が書いていない文書群の判定はここでは扱わない（clean-room 観点が要るため別 Skill の仕事）。
 
 入口は3つあり、**最初にどれかを確認する**。(a) 何も無い（scaffold → D0 → D1）、(b) GDD だけある（D0 を intake の差分として当てる）、(c) 動いているゲーム／リポジトリがある（architect の Repository Audit を D1 の前に済ませる）。(b) と (c) でも intake 自体は飛ばさない。詳細は `references/gdd-and-intake.md` §1。
 
@@ -110,9 +112,11 @@ GDD だけは最後に**人間承認ゲート**が加わる。照合の承認可
 
 ## 5. handoff の書き方
 
-必須項目（欠けると執筆モデルが埋め合わせに創作を始める）:
+新規作成・全面改訂の handoff で必須の項目（欠けると執筆モデルが埋め合わせに創作を始める）:
 
 `handoffId` / `phase` / `baseline`（sha256 pin つき）/ `objective`（観測可能な形で）/ `inScope` / `outOfScope` / `requirements`（読む順序つき）/ `dataIds` / `acceptance` / `commands` / `execution`（model・effort・sandbox・approvalPolicy・network）/ `rollback`
+
+**是正便はこの集合に従わない。** 照合記録という参照点が既にあるので、`templates/correction_handoff.md` の項目集合（handoffId・baseline・照合記録・方針・是正指示・inScope・制約・execution・rollback）で足りる。巡が進むほど小さくしていく。
 
 これに加えて、実運用で失敗のたびに足していった**常設条項**を最初から入れる。個別に書かず `templates/handoff.md`（GDD は `templates/gdd_handoff.md`）をそのまま使う。中身の要点:
 
@@ -129,11 +133,13 @@ GDD だけは最後に**人間承認ゲート**が加わる。照合の承認可
 
 ## 6. 機械検査を照合より先に
 
-**`scripts/lint_docs.py` を必ず先に走らせる。** LLM 照合が見つけた指摘の相当割合は正規表現で検出できる。裸 `[OPEN]`、blocking の極性矛盾、陳腐化前提句、裸の決定 ID、行番号参照の範囲外、値の二重正本（単位つき数値が非所有文書に DATA ID 参照なしで存在）、索引表と詳細節の状態値の食い違い、検証語彙の自己使用。
+**`scripts/lint_docs.py` を必ず先に走らせる。** LLM 照合が見つけた指摘の相当割合は正規表現で検出できる。裸 `[OPEN]`、blocking の極性矛盾、陳腐化前提句、裸の決定 ID、行番号参照の範囲外、未解決のテンプレート placeholder、値の二重正本（単位つき数値が非所有文書に DATA ID 参照なしで存在）、索引表と詳細節の状態値の食い違い、検証語彙の自己使用。設定に `contracts` / `forward_refs` を登録していれば、受け口なき契約と解決済み前方参照もここで出る。全 rule 名は `--list-rules` で確認する。
+
+**スクリプトは本 Skill のディレクトリ側にある。** `--project-root` が指すのは検査対象のプロジェクトなので、両者を取り違えない。以下の `<skill>` は本 Skill の展開先パスに置き換える。
 
 ```bash
-python3 scripts/lint_docs.py --project-root . --config .claude/doc-lint.json
-python3 scripts/lint_docs.py --project-root . --config .claude/doc-lint.json --files docs/specs/CAV_new_spec.md   # 単一文書
+python3 <skill>/scripts/lint_docs.py --project-root . --config .claude/doc-lint.json
+python3 <skill>/scripts/lint_docs.py --project-root . --config .claude/doc-lint.json --files docs/specs/CAV_new_spec.md   # 単一文書
 ```
 
 自分でも必ず走らせる検査（執筆モデルの報告は証拠にならない）:
@@ -146,7 +152,7 @@ shasum -a 256 <対象>        # 報告された hash と一致するか
 
 lint と validator が通ってから照合へ出す。通らないものを照合に出すのは、人間の目を機械で足りることに使わせる浪費。
 
-**index と manifest は手で書かない。** `scripts/gen_index.py` がヘッダから生成する。手書きすると転記漏れが発生し（実際に Status の部分転記が Major になった）、文書が増えるたびに再同期が要る。
+**index と manifest は手で書かない。** `<skill>/scripts/gen_index.py` がヘッダから生成する。手書きすると転記漏れが発生し（実際に Status の部分転記が Major になった）、文書が増えるたびに再同期が要る。
 
 ## 7. 独立照合のプロトコル
 
@@ -174,7 +180,8 @@ lint と validator が通ってから照合へ出す。通らないものを照�
 **対処は構造的に行う。争わない。**
 
 - 執筆モデルの報告は要約であって証拠ではない。検証は必ず自分のツール実行で行う
-- 未発注の検証を騙る行を見つけたら、`<handoff>_fable_note.md`（または相当の記録）へ「不採用」として残すだけにする。執筆モデルへ訂正を求めるやり取りは費用に見合わない
+- **執筆モデルの最終報告は `docs/handoffs/out/<id>_last-message.md` として保存する**（`codex exec -o <path>`）。lint 設定の `report_globs` 既定がこの名前を見ており、`self-verification-claim` はここへしか当たらない。別名で保存すると検査対象から外れる
+- 未発注の検証を騙る行を見つけたら、`docs/handoffs/out/<id>_note.md` へ「不採用」として残すだけにする（記録の型は `references/review-protocol.md`）。執筆モデルへ訂正を求めるやり取りは費用に見合わない
 - 禁止語の列挙は抑止として書くが、効果は限定的と理解しておく
 
 この方針で運用した結果、捏造報告が成果物へ影響した例は無かった。コストは記録の手間だけ。
