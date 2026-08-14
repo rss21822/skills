@@ -1,0 +1,4 @@
+interface:
+  display_name: "RemoteDesktop-init"
+  short_description: "Install Claude, GitHub, Roblox, Cursor, and Git on Windows"
+  default_prompt: "Use $remotedesktop-init to install the requested desktop development tools on this Windows computer."
