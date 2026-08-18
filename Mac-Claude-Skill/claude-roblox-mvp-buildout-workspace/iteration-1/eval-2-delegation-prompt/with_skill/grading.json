@@ -1,0 +1,53 @@
+{
+  "run_id": "eval-2-delegation-prompt-with_skill",
+  "passed_count": 7,
+  "total_count": 7,
+  "expectations": [
+    {
+      "text": "標準入力を閉じて起動すること（< /dev/null 相当）をハング対策として明示している",
+      "passed": true,
+      "evidence": "§0 の原因表で「標準入力を閉じずに対話型 CLI を起動したため、入力待ちで永久停止」と根本原因を特定し、対処として「起動コマンドに `< /dev/null`（PowerShell なら空ファイルを `-RedirectStandardInput`）を必ず付ける」。§4-1 の見出しが「起動（標準入力を必ず閉じる）」で、Git Bash 例は `\"$(cat ...)\" < /dev/null`、PowerShell 例は `-RedirectStandardInput \"$env:TEMP\\empty.txt\"`。さらに「**標準入力を閉じる**（`< /dev/null` / 空ファイル）。これが無いと入力待ちで永久停止します」と明示。ワークアラウンド（バックグラウンド実行禁止）ではなく根本原因の是正として書かれている。"
+    },
+    {
+      "text": "行頭が開き括弧になる型キャストへの代入を禁止する条項を入れている（(x :: T).Prop = ... の形）",
+      "passed": true,
+      "evidence": "§3 常設禁止条項 2「**行頭が開き括弧になる型キャストへの代入を禁止。**」に禁止例 `(someValue :: SomeType).Property = x` と必須の書き方 `local casted = someValue :: SomeType` / `casted.Property = x` を併記し、「これに限らず、**行頭が `(` で始まる文を作らない。**」。受け入れ条件 `H0XX-SYNTAX-001` で `git grep -n -E \"^[[:space:]]*\\(\"` が 0 件であることまで要求している。"
+    },
+    {
+      "text": "ゲームプレイ数値の新規創作を禁止し、既存の数値所有先の参照に限る条項を入れている",
+      "passed": true,
+      "evidence": "§3 常設禁止条項 1「**数値の新規創作を禁止。** gameplay 数値は上記 dataIds の参照のみ。既存値の変更も禁止。マジックナンバーを一時的にも書かない。」に加え、dataIds 節で「`DATA-MOVE-001` 〜 `DATA-MOVE-010`（`src/mvp/shared/Config.luau` の転記表から**実行時に読む**。値を `MovementService` へ複製しない）」と所有先の参照に限定。受け入れ条件 `H0XX-DATA-001`「差分に新規の数値リテラルが 0 個」で検査もされる。"
+    },
+    {
+      "text": "決定論ビルドを2回実行してsha256一致を確認させる受け入れ条件を入れている",
+      "passed": true,
+      "evidence": "commands 節に `rojo build mvp.project.json --output \"$env:TEMP\\MVP_h0XX_1.rbxlx\"` と `..._2.rbxlx` の 2 回ビルド＋`Get-FileHash -Algorithm SHA256` を 2 回。objective に「`rojo build mvp.project.json` を 2 回実行した sha256 が一致する。」、acceptance に「`H0XX-DET-001`: 2 回ビルドの sha256 が一致（両方の実値を報告）」。「sha256 は実測値のみ報告する。推定値・過去値を書かない。」も併記。"
+    },
+    {
+      "text": "実施していない検証を実施したと書かせない条項、または委譲側の報告を証拠として扱わない方針を含む",
+      "passed": true,
+      "evidence": "両方を含む。常設禁止条項 5「**実施していない検証を実施したと書かない。**『実機で確認』『Studio で動作確認』『照合済み』といった検証語彙を、自分が実行していない検証に使わない。」。加えて §5 冒頭「**大原則: 実装は委譲してよいが、検証は委譲しません。** 実装側の報告は要約であって証拠ではありません。」、§6 では「Studio で動作確認しました」等を『不採用』と記録する具体的表現リストまで挙げている。"
+    },
+    {
+      "text": "投げた後に依頼者自身が行う検証（ビルドの再実行によるsha確認、git status と差分の目視など）を具体的に示している",
+      "passed": true,
+      "evidence": "§5.1「`git status --short` # 報告と突き合わせる。inScope 外があれば即差し戻し」「`git diff` # 中身を自分の目で読む（要約を信じない）」＋4項目のチェックリスト。§5.3「決定論ビルド（3回目は自分で回す）」で `rojo build` → `Get-FileHash -Algorithm SHA256` を自分で実行し「Codex 報告の 2 つの sha と、自分で回した 3 回目が一致するか」。§5.2 の grep 全数検出と Studio での全モジュール require、§5.4 の実機検証、§5.6 の記録・commit まで自分側の手順として具体化されている。"
+    },
+    {
+      "text": "変更してよいパスの列挙や凍結領域の指定など、変更範囲を境界づける条項を入れている",
+      "passed": true,
+      "evidence": "「## inScope（これ以外のファイルを変更しない）」に `src/mvp/server/MovementService.luau` 等を列挙し、「## outOfScope（変更禁止。読むのは可）」で `src/pa/**`（P-A は計測装置として凍結）、docs の各正本、`mvp.project.json`、`rokit.toml`、`.gitattributes`、`artifacts/build/PA.rbxlx`、テストの合否判定ロジックを凍結。acceptance `H0XX-SCOPE-001` と停止条件「outOfScope を変更しないと objective を満たせないなら **BLOCKED として停止**する。こっそり広げない。」で担保されている。"
+    }
+  ],
+  "summary": {
+    "pass_rate": 1.0,
+    "passed": 7,
+    "failed": 0,
+    "total": 7
+  },
+  "timing": {
+    "total_tokens": 95118,
+    "duration_ms": 341821,
+    "total_duration_seconds": 341.8
+  }
+}

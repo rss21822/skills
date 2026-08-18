@@ -1,0 +1,48 @@
+{
+  "run_id": "eval-0-multiplayer-live-session-without_skill",
+  "passed_count": 4,
+  "total_count": 6,
+  "expectations": [
+    {
+      "text": "MCPの合成キー入力ではプレイヤー操作を再現できず、OSレベルの入力注入が必要だと明示している",
+      "passed": true,
+      "evidence": "§0-2「MCP からクライアントへ入力は届かない（実測済み制約）ので、操作は「対象ウィンドウをフォアグラウンドにして自分でキーを叩く」が正道」、§4.2「MCP でクライアントを動かそうとしない … user_keyboard_input も Client 指定では通らない前提で組む」、§1.6「OS レベル入力は複数 Studio ウィンドウで SetForegroundWindow が競合する。対象以外を最小化してから送る」。両半分が明示。ただし機序は「合成入力がRobloxの入力パイプラインを駆動しない」ではなく「MCP が Client datamodel へ到達できない」で説明されており、結論は同じだが根拠経路は異なる。実務上の失敗（合成入力を試して無反応）は防げるため Pass。"
+    },
+    {
+      "text": "OS入力には対象ウィンドウの前面化が必要である点、および複数ウィンドウでの前面の奪い合いへの対処（他ウィンドウの最小化など）に触れている",
+      "passed": true,
+      "evidence": "§1.6「OS レベル入力は複数 Studio ウィンドウで SetForegroundWindow が競合する。**対象以外を最小化してから送る**。入力デスクトップ喪失（GetForegroundWindow()=0）時は tscon <id> /dest:console」。加えて §2.4「操作対象のクライアントを最大化、他は最小化」、§4.1「キーボード入力はフォアグラウンドのウィンドウにしか届かない」、§7「フォーカスが移らない → 対象以外を最小化」。前面化必須と奪い合い対処の双方を具体的に記述。"
+    },
+    {
+      "text": "起動やクライアント追加の待機を固定sleepではなく成立条件（プロセス数・ウィンドウ・MCPの列挙など）のループで行うよう指示している",
+      "passed": false,
+      "evidence": "条件ゲートはあるが待機ループの指示がない。§3-3「以下3行が出ていること。出ていなければクライアントを足しても無駄なので、ここで止める」は一回きりの確認＋中断で、ポーリング再試行ではない。§3-4「1枚ずつ、前のクライアントのキャラクターがロードされてから次を足す」も人手の目視待ち。プロセス数・ウィンドウ・list_roblox_studios 列挙を条件にした待機ループも、固定sleep回避の明示もない。むしろ §9 は「−15分／−5分／−3分／−1分」の固定壁時計見積り、録画も -DurationSec 420 の固定尺。"
+    },
+    {
+      "text": "検証の主軸をサーバー側の構造化ログ／権威側の状態読み取りに置いている（画面目視のみで判定していない）",
+      "passed": true,
+      "evidence": "§8.1 の必須11項目は取得元がほぼ全て「サーバーコンソール」で、合格条件が構造化ログ文字列そのもの（例「MVP_SCORE data=DATA-MATCH-004 または 005 player=<操作した uid> score=N」「MVP_FSM phase=match from=Active event=RegulationExpiredWithLeader … to=Finished」）。§3-6 は execute_luau で Server 側から HumanoidRootPart 位置を直接ダンプ。§6.3 でログを MVP_FSM|MVP_SCORE|MVP_COMBAT|… で grep 回収し「取りこぼしの正本はログファイル」と明記。HUD 目視は補強扱い。"
+    },
+    {
+      "text": "完了条件として、単発動作ではなく試合の全サイクル（開始→操作→決着→次試合へ戻る循環）が通ることを求めている",
+      "passed": false,
+      "evidence": "必須は決着で打ち止め。§8.1 の必須項目は #10「決着」#11「結果表示」で終わり、循環は §8.3「**望ましい（必須ではないが、あると説得力が段違い）**」の中に「決着後のリマッチ循環（ResetCommitted → WaitingForPlayers → Starting）を人が操作した状態から確認」として任意扱い。本文 §5-6 も「リマッチ循環（余力があれば）」。開始→操作→決着までは必須化されているが、次試合へ戻る循環は完了条件から外れている。"
+    },
+    {
+      "text": "実行可能な具体手段（スクリプトやコマンド、MCPツール名、座標確認の方法など）を含み、抽象的な方針だけで終わっていない",
+      "passed": true,
+      "evidence": "PowerShell 実コマンド（rojo build mvp.project.json --output artifacts\\build\\MVP.rbxlx、(Get-FileHash … -Algorithm SHA256).Hash、Get-ChildItem \"$env:LOCALAPPDATA\\Roblox\\logs\\*.log\" | … Select-String -Encoding UTF8 -Pattern 'MVP_FSM|MVP_SCORE|…'）、MCP ツール名（mcp__Roblox_Studio__list_roblox_studios / get_studio_state / get_console_output / execute_luau { studio_id, datamodel_type: \"Server\", code }）、位置確認用の実 Luau スニペット（Players 走査で hrp.Position 出力）、クライアント HUD ダンプ用 Luau、録画コマンド（scripts\\record_session.ps1 -OutFile … -DurationSec 420）、GUI 起動手順まで具体化されている。"
+    }
+  ],
+  "summary": {
+    "pass_rate": 0.6667,
+    "passed": 4,
+    "failed": 2,
+    "total": 6
+  },
+  "timing": {
+    "total_tokens": 135957,
+    "duration_ms": 530494,
+    "total_duration_seconds": 530.5
+  }
+}

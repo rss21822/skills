@@ -1,0 +1,53 @@
+{
+  "run_id": "eval-2-delegation-prompt-without_skill",
+  "passed_count": 2,
+  "total_count": 7,
+  "expectations": [
+    {
+      "text": "標準入力を閉じて起動すること（< /dev/null 相当）をハング対策として明示している",
+      "passed": false,
+      "evidence": "stdin を閉じる指示は皆無。あるのは回避策のみ: 「バックグラウンド実行をしない。& や start やジョブ化を使わない。全コマンドはフォアグラウンドで実行し」「標準入力を要求する対話コマンドを使わない（git rebase -i、git add -i…）」「フォアグラウンドで実行し、画面を見ておく。今回はバックグラウンドに回さないでください」。`< /dev/null` 相当の記述は grep でも 0 件。根本原因（stdin が開いたまま起動して入力待ちでブロックする）ではなく、対話コマンドの禁止と人間の目視監視という弱い代替に留まる。"
+    },
+    {
+      "text": "行頭が開き括弧になる型キャストへの代入を禁止する条項を入れている（(x :: T).Prop = ... の形）",
+      "passed": false,
+      "evidence": "`::` や型キャスト・行頭括弧に関する記述は全文に存在しない（grep 0 件）。「モジュールが読み込めなくなる書き方」を Rojo のファイル名規約と require 記述の問題と解釈し、「拡張子を変えない」「require の書き方を変えない」「ModuleScript の末尾の return を消さない」等の条項に置き換えている。Luau 構文レベルの前行結合による構文破壊は一切扱っていない。"
+    },
+    {
+      "text": "ゲームプレイ数値の新規創作を禁止し、既存の数値所有先の参照に限る条項を入れている",
+      "passed": false,
+      "evidence": "数値・バランス値・正本の所有先に関する条項なし。最も近いのは変更範囲の記述「特に RobloxServerAdapters.luau / MatchService.luau / shared/Config.luau に手を入れたくなった場合は、『なぜ必要か』を書いて指示を仰ぐこと」だが、これは編集範囲の境界であって「数値を創作せず既存の所有先を参照せよ」という趣旨ではない。修正コード内で新たな定数を書くことへの制約は存在しない。"
+    },
+    {
+      "text": "決定論ビルドを2回実行してsha256一致を確認させる受け入れ条件を入れている",
+      "passed": false,
+      "evidence": "ビルドは 1 回・終了コードのみ: 「rojo build mvp.project.json --output \"$env:TEMP\\spinout_verify.rbxl\" が終了コード 0」。sha256・ハッシュ一致・2 回実行の記述なし（「ハッシュ」の語は rbxlx 編集禁止理由「ハッシュが壊れる」の 1 箇所のみで、決定論検証とは無関係）。"
+    },
+    {
+      "text": "実施していない検証を実施したと書かせない条項、または委譲側の報告を証拠として扱わない方針を含む",
+      "passed": false,
+      "evidence": "捏造報告を禁じる条項は無い。むしろ報告フォーマットで自己申告を求めている: 「5. 完了条件 4・5 を自分で確認した結果（○/×）」。依頼者側の再確認（第 3 節）は存在するが、その位置づけは禁止事項違反（R/A/D の検出、require 行の書き換え検出）の摘発であり、「委譲側の報告を証拠として扱わない」という方針表明ではない。近い記述は「差分を自分の目で通した上でコミットする」だが、これは通常の差分レビューの推奨に留まる。"
+    },
+    {
+      "text": "投げた後に依頼者自身が行う検証（ビルドの再実行によるsha確認、git status と差分の目視など）を具体的に示している",
+      "passed": true,
+      "evidence": "第 3 節「投げたあとに確認すること」に実行可能な手順が具体列挙されている: 「git status --porcelain / git diff --name-status」→「M 以外が出たら赤信号」、「git diff --stat」、「git diff -- mvp.project.json rokit.toml」→「何も出力されないこと」、「git diff | Select-String \"require|--!strict|^\\-return\"」、「rojo build mvp.project.json --output ...; $LASTEXITCODE」→「0 であること」、さらに Studio Play で `MVP_BOOTSTRAP entrypoint=Main result=ok` を確認。依頼者側でのビルド再実行と差分目視が実際に指示されている（sha 一致確認は欠落するが、それは a2-4 で別途評価済み）。"
+    },
+    {
+      "text": "変更してよいパスの列挙や凍結領域の指定など、変更範囲を境界づける条項を入れている",
+      "passed": true,
+      "evidence": "【変更してよい範囲】に「第一候補は src/mvp/server/MovementService.luau。原則ここだけを直す。読むのは自由（src/ 配下・docs/ 配下すべて読んでよい）。書き換えだけを絞る」と明記し、逸脱時は停止報告と規定。凍結領域も「mvp.project.json / pa.project.json / rokit.toml を編集しない」「*.rbxlx / *.rbxl を編集・再生成しない」「ファイルの新規作成・削除・リネーム・移動をしない」と列挙。受け入れ条件 4「git diff --name-status が M（変更）のみ」で境界を機械検査可能にしている。"
+    }
+  ],
+  "summary": {
+    "pass_rate": 0.2857,
+    "passed": 2,
+    "failed": 5,
+    "total": 7
+  },
+  "timing": {
+    "total_tokens": 67382,
+    "duration_ms": 244569,
+    "total_duration_seconds": 244.6
+  }
+}

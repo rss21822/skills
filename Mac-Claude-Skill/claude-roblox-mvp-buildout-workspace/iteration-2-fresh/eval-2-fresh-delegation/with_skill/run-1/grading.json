@@ -1,0 +1,48 @@
+{
+  "run_id": "eval-2-fresh-delegation-with_skill",
+  "passed_count": 7,
+  "total_count": 7,
+  "expectations": [
+    {
+      "text": "標準入力を閉じて起動すること（< /dev/null 相当）をハング対策として明示している",
+      "passed": true,
+      "evidence": "起動コマンドに `--skip-git-repo-check \"$(cat 《prompt.md への絶対パス》)\" < /dev/null` を置き、直後に「**`< /dev/null` は必須。** これが無いと標準入力待ちで永久に停止します。前回の「何時間も止まっていた」はほぼ確実にこれです」と根本原因として明示。Windows 向けにも「PowerShell から出すなら `cmd /c \"codex exec ... < NUL\"`、あるいは `Start-Process ... -RedirectStandardInput \"NUL\"`」と代替手段を提示している。"
+    },
+    {
+      "text": "行頭が開き括弧になる型キャストへの代入を禁止する条項を入れている",
+      "passed": true,
+      "evidence": "禁止条項2に「**行頭が開き括弧になる型キャストへの代入を禁止する。** NG: (someValue :: SomeType).Property = x / OK: local casted = someValue :: SomeType」とあり、「これは Luau の曖昧構文で、モジュールが丸ごと読み込めなくなる。ビルドは通ってしまう。」と理由も併記。検収側でも「行頭 `(` のキャスト代入（`^\\s*\\(` で検索するとまとめて出ます）」と検出手順あり。"
+    },
+    {
+      "text": "ファイルの改名・拡張子変更の禁止など Rojo の構造不変条件を守らせる条項を入れている",
+      "passed": true,
+      "evidence": "禁止条項3に「**ファイルの新規作成・削除・改名・移動を禁止する。拡張子を変更してはならない。** Rojo は拡張子でインスタンス種別を決める（.lua = ModuleScript / .server.lua = Script / .client.lua = LocalScript）」とあり、「.lua を .server.lua に付け替えると、ModuleScript が Script に変わり、require している側が全滅する」と帰結まで記述。outOfScope に default.project.json / rojo 設定も凍結指定。"
+    },
+    {
+      "text": "決定論ビルドを2回実行してsha256一致を確認させる受け入れ条件を入れている",
+      "passed": true,
+      "evidence": "受け入れ条件3に「決定論ビルドを2回実行し、生成物の sha256 が一致することを実測して報告すること。（コマンドと2回分の sha256 実値を貼ること）」。報告フォーマット5にも「ビルド2回分の sha256 実値」があり、禁止条項8で「**sha256 は実際に計測した値のみ報告する。**」と補強。"
+    },
+    {
+      "text": "ビルド成功がモジュール読み込み可能の証明にならない点に触れている",
+      "passed": true,
+      "evidence": "§4.2-4 に「**ビルドが通ったことを、コードが読み込めることと読み違えない。** Rojo は Luau をパースしません。ファイルをインスタンスへ変換するだけなので、**モジュールを壊す構文が入っていてもビルドは成功し、sha も決定論的に一致します。** この関門が保証するのは梱包の再現性だけです。」"
+    },
+    {
+      "text": "実施していない検証を実施したと書かせない条項または報告を証拠扱いしない方針を含む",
+      "passed": true,
+      "evidence": "禁止条項7「**実施していない検証を「実施した」と書かない。** 「実機で確認」「Studio で動作確認」等の検証語彙を、自己レビューや静的確認の名称として流用しないこと。」に加え、§4 冒頭で「**実装は委譲してよいが、検証は委譲しないでください。** 実装側の報告は要約であって証拠ではありません（実施していない検証を「実施した」と報告された例が複数あります）」と方針も明示。"
+    },
+    {
+      "text": "投げた後に依頼者自身が行う検証を具体的に示している",
+      "passed": true,
+      "evidence": "§4「投げたあと、こちらで確認すること」に具体手順を列挙。§4.1 ハング判定（`(Get-Item 《logfile》).Length` と `(Get-Process -Id 《pid》).TotalProcessorTime` を数分あけて2回）、§4.2 の5点（自分で `git status --short`、差分を `^\\s*\\(` で検索、「決定論ビルドの 3 回目を自分で回し、sha256 が報告値と一致することを確認する」、ModuleScript を pcall(require) で舐める実行可能な Luau スクリプト）、§4.3 実機検証で「受理と棄却の**両方**が出ていること」等の確認項目を提示。"
+    }
+  ],
+  "summary": {
+    "pass_rate": 1.0,
+    "passed": 7,
+    "failed": 0,
+    "total": 7
+  }
+}
