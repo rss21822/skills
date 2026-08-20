@@ -1,0 +1,4 @@
+interface:
+  display_name: "Book GACHA Box App Framework"
+  short_description: "Rebuild apps with the same Next.js Cloudflare architecture."
+  default_prompt: "Use $book-gacha-box-app-framework to scaffold a new app with the same architecture as Book GACHA Box."

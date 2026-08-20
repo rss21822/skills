@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "{{APPROVAL_ID}}",
+  "type": "{{p0-start|p0-contract|d5}}",
+  "approvalKind": "{{human-direct|delegated-process}}",
+  "approver": "{{APPROVER}}",
+  "approvedAt": "{{ISO_8601_WITH_TIMEZONE}}",
+  "scope": "{{EXACT_APPROVAL_SCOPE}}",
+  "baseline": {
+    "id": "{{BASELINE_ID}}",
+    "path": "{{BASELINE_MANIFEST_PATH}}",
+    "sha256": "{{BASELINE_MANIFEST_SHA256}}",
+    "fileSetSha256": "{{BASELINE_FILE_SET_SHA256}}",
+    "revision": "{{EXACT_REVISION}}"
+  },
+  "firstAuthorizedWpId": null,
+  "sourceEvidence": {
+    "path": "{{SOURCE_EVIDENCE_PATH}}",
+    "sha256": "{{SOURCE_EVIDENCE_SHA256}}"
+  }
+}

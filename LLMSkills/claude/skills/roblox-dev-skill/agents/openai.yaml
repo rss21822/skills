@@ -1,0 +1,4 @@
+interface:
+  display_name: "Roblox Dev Skill"
+  short_description: "Autonomous Roblox development and Studio verification"
+  default_prompt: "Use $roblox-dev-skill to implement and verify this Roblox game change autonomously."

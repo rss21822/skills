@@ -1,0 +1,20 @@
+{
+  "schemaVersion": "1.0.0",
+  "baselineId": "D4-CAND-{{PREFIX}}-001",
+  "stage": "D4-CANDIDATE",
+  "project": "{{PROJECT}}",
+  "prefix": "{{PREFIX}}",
+  "createdAt": "{{TIMESTAMP}}",
+  "revision": {
+    "kind": "snapshot",
+    "value": "{{IMMUTABLE_SNAPSHOT_ID}}",
+    "snapshotRoot": "{{PROJECT_RELATIVE_IMMUTABLE_SNAPSHOT_ROOT}}",
+    "gitStatusEvidence": "{{RAW_GIT_STATUS_EVIDENCE_PATH}}"
+  },
+  "parentBaselineId": null,
+  "promotedFrom": null,
+  "approvalId": null,
+  "fileSetSha256": "{{CANONICAL_FILE_SET_SHA256}}",
+  "files": [],
+  "auditRecords": []
+}

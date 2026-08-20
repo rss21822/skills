@@ -1,0 +1,241 @@
+{
+  "schemaVersion": "1.0.0",
+  "project": {
+    "name": "Mounted Arena",
+    "prefix": "MTA",
+    "mode": "greenfield",
+    "owner": "Project Owner"
+  },
+  "answers": {
+    "D0-A01": {
+      "prompt": "一言コンセプトと一動詞",
+      "value": { "concept": "Mobile-first short-round mounted combat PvP.", "verb": "Charge" },
+      "status": "approved", "source": "U", "evidence": ["conversation:2026-08-05#D0-A01"],
+      "approvedBy": "Project Owner", "approvedAt": "2026-08-05T10:00:00+09:00"
+    },
+    "D0-A02": {
+      "prompt": "参照ゲーム2〜3本、取る点／捨てる点",
+      "value": ["RIVALS: short readable rounds", "Mount & Blade: charge timing; omit simulation complexity"],
+      "status": "approved", "source": "U", "evidence": ["conversation:2026-08-05#D0-A02"],
+      "approvedBy": "Project Owner", "approvedAt": "2026-08-05T10:00:00+09:00"
+    },
+    "D0-A03": {
+      "prompt": "独自軸3点以内",
+      "value": ["mounted charge timing", "horse ownership", "2v2 short rounds"],
+      "status": "approved", "source": "U", "evidence": ["conversation:2026-08-05#D0-A03"],
+      "approvedBy": "Project Owner", "approvedAt": "2026-08-05T10:00:00+09:00"
+    },
+    "D0-A04": {
+      "prompt": "1ラウンド／1セッション時間",
+      "value": { "roundMinutes": 1.5, "sessionMinutes": 20 },
+      "status": "approved", "source": "U", "evidence": ["conversation:2026-08-05#D0-A04"],
+      "approvedBy": "Project Owner", "approvedAt": "2026-08-05T10:00:00+09:00"
+    },
+    "D0-A05": {
+      "prompt": "キャラ・機体・クラス等の枠とカスタムスロット",
+      "value": "One rider, one horse, cosmetic equipment slots; no launch classes.",
+      "status": "approved", "source": "U", "evidence": ["conversation:2026-08-05#D0-A05"],
+      "approvedBy": "Project Owner", "approvedAt": "2026-08-05T10:00:00+09:00"
+    },
+    "D0-A06": {
+      "prompt": "ラン内ループ、メタループ、収集対象",
+      "value": "Queue, charge, resolve, rematch; horse mastery and cosmetic collection.",
+      "status": "approved", "source": "U", "evidence": ["conversation:2026-08-05#D0-A06"],
+      "approvedBy": "Project Owner", "approvedAt": "2026-08-05T10:00:00+09:00"
+    },
+    "D0-A07": {
+      "prompt": "収益方針、P2W、RNG、Trading",
+      "value": { "enabled": true, "p2w": false, "paidRng": false, "trading": false },
+      "status": "approved", "source": "U", "evidence": ["conversation:2026-08-05#D0-A07"],
+      "approvedBy": "Project Owner", "approvedAt": "2026-08-05T10:00:00+09:00"
+    },
+    "D0-A08": {
+      "prompt": "IP・実在物・政治・史実リスク",
+      "value": ["historical equipment references", "no real factions"],
+      "status": "approved", "source": "U", "evidence": ["conversation:2026-08-05#D0-A08"],
+      "approvedBy": "Project Owner", "approvedAt": "2026-08-05T10:00:00+09:00"
+    },
+    "D0-A09": {
+      "prompt": "最大の操作・物理・ネットワーク・供給リスク",
+      "value": ["mobile mounted control", "high-speed PvP hit validation"],
+      "status": "approved", "source": "U", "evidence": ["conversation:2026-08-05#D0-A09"],
+      "approvedBy": "Project Owner", "approvedAt": "2026-08-05T10:00:00+09:00"
+    },
+    "D0-A10": {
+      "prompt": "MVPで検証する問い3つ",
+      "value": ["Is charging fun?", "Can mobile players understand hits?", "Do parties rematch?"],
+      "status": "approved", "source": "U", "evidence": ["conversation:2026-08-05#D0-A10"],
+      "approvedBy": "Project Owner", "approvedAt": "2026-08-05T10:00:00+09:00"
+    },
+    "D0-A11": {
+      "prompt": "端末優先度、モバイル操作予算、最低性能",
+      "value": { "priority": ["mobile", "pc", "controller"], "minimumFps": 30 },
+      "status": "approved", "source": "U", "evidence": ["conversation:2026-08-05#D0-A11"],
+      "approvedBy": "Project Owner", "approvedAt": "2026-08-05T10:00:00+09:00"
+    },
+    "D0-A12": {
+      "prompt": "Non-Goals候補",
+      "value": ["no open world", "no breeding at launch", "no paid power", "no 20v20", "no gore", "no real factions"],
+      "status": "approved", "source": "U", "evidence": ["conversation:2026-08-05#D0-A12"],
+      "approvedBy": "Project Owner", "approvedAt": "2026-08-05T10:00:00+09:00"
+    },
+    "D0-B01": {
+      "prompt": "Greenfieldか既存リポジトリか", "value": "greenfield",
+      "status": "approved", "source": "U", "evidence": ["conversation:2026-08-05#D0-B01"],
+      "approvedBy": "Project Owner", "approvedAt": "2026-08-05T10:00:00+09:00"
+    },
+    "D0-B02": {
+      "prompt": "Studio中心、Rojo、その他のToolchain", "value": "Rojo",
+      "status": "approved", "source": "U", "evidence": ["conversation:2026-08-05#D0-B02"],
+      "approvedBy": "Project Owner", "approvedAt": "2026-08-05T10:00:00+09:00"
+    },
+    "D0-B03": {
+      "prompt": "Universe／Place構成", "value": "Lobby and match Places.",
+      "status": "approved", "source": "U", "evidence": ["conversation:2026-08-05#D0-B03"],
+      "approvedBy": "Project Owner", "approvedAt": "2026-08-05T10:00:00+09:00"
+    },
+    "D0-B04": {
+      "prompt": "Group所有、dev／staging／productionの分離", "value": "Group-owned; separate dev, staging, and production Universes.",
+      "status": "approved", "source": "U", "evidence": ["conversation:2026-08-05#D0-B04"],
+      "approvedBy": "Project Owner", "approvedAt": "2026-08-05T10:00:00+09:00"
+    },
+    "D0-B05": {
+      "prompt": "対応端末、最低FPS・Memory目標", "value": { "devices": ["mobile", "pc", "controller"], "minimumFps": 30, "memoryTargetMb": 1200 },
+      "status": "approved", "source": "U", "evidence": ["conversation:2026-08-05#D0-B05"],
+      "approvedBy": "Project Owner", "approvedAt": "2026-08-05T10:00:00+09:00"
+    },
+    "D0-B06": {
+      "prompt": "永続化するデータ", "value": ["horse mastery", "cosmetics", "settings"],
+      "status": "approved", "source": "U", "evidence": ["conversation:2026-08-05#D0-B06"],
+      "approvedBy": "Project Owner", "approvedAt": "2026-08-05T10:00:00+09:00"
+    },
+    "D0-B07": {
+      "prompt": "PvP、通貨、取引、課金、ランダム報酬", "value": { "pvp": true, "currency": true, "trading": false, "commerce": true, "randomRewards": false },
+      "status": "approved", "source": "U", "evidence": ["conversation:2026-08-05#D0-B07"],
+      "approvedBy": "Project Owner", "approvedAt": "2026-08-05T10:00:00+09:00"
+    },
+    "D0-B08": {
+      "prompt": "Teleport、Reserved Server、Matchmaking", "value": { "teleport": true, "reservedServers": true, "matchmaking": "2v2" },
+      "status": "approved", "source": "U", "evidence": ["conversation:2026-08-05#D0-B08"],
+      "approvedBy": "Project Owner", "approvedAt": "2026-08-05T10:00:00+09:00"
+    },
+    "D0-B09": {
+      "prompt": "外部API、Open Cloud、Secrets", "value": "None for MVP.",
+      "status": "approved", "source": "U", "evidence": ["conversation:2026-08-05#D0-B09"],
+      "approvedBy": "Project Owner", "approvedAt": "2026-08-05T10:00:00+09:00"
+    },
+    "D0-B10": {
+      "prompt": "UI、入力、Localization、Accessibility", "value": { "locales": ["en", "ja"], "mobile": true, "controller": true, "accessibility": "remappable actions and readable hit feedback" },
+      "status": "approved", "source": "U", "evidence": ["conversation:2026-08-05#D0-B10"],
+      "approvedBy": "Project Owner", "approvedAt": "2026-08-05T10:00:00+09:00"
+    },
+    "D0-B11": {
+      "prompt": "既存アセットと権利状態", "value": "No inherited assets; all sources enter the rights ledger.",
+      "status": "approved", "source": "U", "evidence": ["conversation:2026-08-05#D0-B11"],
+      "approvedBy": "Project Owner", "approvedAt": "2026-08-05T10:00:00+09:00"
+    },
+    "D0-B12": {
+      "prompt": "人間しか行えないDashboard／Studio作業", "value": ["Universe creation", "Group permissions", "production product IDs", "publish approval"],
+      "status": "approved", "source": "U", "evidence": ["conversation:2026-08-05#D0-B12"],
+      "approvedBy": "Project Owner", "approvedAt": "2026-08-05T10:00:00+09:00"
+    },
+    "D0-B13": {
+      "prompt": "Release頻度、LiveOps", "value": "Biweekly staging; human-approved production release; seasonal LiveOps.",
+      "status": "approved", "source": "U", "evidence": ["conversation:2026-08-05#D0-B13"],
+      "approvedBy": "Project Owner", "approvedAt": "2026-08-05T10:00:00+09:00"
+    },
+    "D0-B14": {
+      "prompt": "障害時の停止・Rollback要件", "value": "Disable matchmaking, preserve saves, restore last known good release.",
+      "status": "approved", "source": "U", "evidence": ["conversation:2026-08-05#D0-B14"],
+      "approvedBy": "Project Owner", "approvedAt": "2026-08-05T10:00:00+09:00"
+    },
+    "D0-B15": {
+      "prompt": "既存コード・文書・テストの信頼度", "value": "Not applicable: greenfield.",
+      "status": "approved", "source": "U", "evidence": ["conversation:2026-08-05#D0-B15"],
+      "approvedBy": "Project Owner", "approvedAt": "2026-08-05T10:00:00+09:00"
+    }
+  },
+  "fieldSources": {
+    "product.one_sentence": ["D0-A01"],
+    "product.primary_action": ["D0-A01"],
+    "product.reference_games": ["D0-A02"],
+    "product.unique_axes": ["D0-A03"],
+    "product.round_minutes": ["D0-A04"],
+    "product.session_minutes": ["D0-A04"],
+    "product.meta_loop": ["D0-A06"],
+    "product.monetization.enabled": ["D0-A07", "D0-B07"],
+    "product.monetization.paid_random_items": ["D0-A07", "D0-B07"],
+    "product.monetization.trading": ["D0-A07", "D0-B07"],
+    "product.monetization.p2w_allowed": ["D0-A07"],
+    "product.ip_risks": ["D0-A08"],
+    "product.top_risks": ["D0-A09"],
+    "product.mvp_questions": ["D0-A10"],
+    "product.non_goals": ["D0-A12"],
+    "technical.existing_repository": ["D0-B01"],
+    "technical.toolchain": ["D0-B02"],
+    "technical.multi_place": ["D0-B03"],
+    "technical.reserved_servers": ["D0-B08"],
+    "technical.teleport": ["D0-B08"],
+    "technical.multiplayer": ["D0-B03", "D0-B07", "D0-B08"],
+    "technical.pvp": ["D0-B07"],
+    "technical.persistent_data": ["D0-B06"],
+    "technical.commerce": ["D0-A07", "D0-B07"],
+    "technical.analytics": ["D0-A10", "D0-B13"],
+    "technical.mobile": ["D0-B05", "D0-B10"],
+    "technical.controller": ["D0-B05", "D0-B10"],
+    "technical.localization": ["D0-B10"],
+    "technical.liveops": ["D0-B13"],
+    "technical.external_services": ["D0-B09"],
+    "technical.free_text_or_ugc": ["D0-A05", "D0-A12", "D0-B10"],
+    "technical.vehicle_or_custom_physics": ["D0-A09"],
+    "technical.high_npc_or_fx_load": ["D0-A09"],
+    "technical.real_world_ip_or_history": ["D0-A08"],
+    "technical.priority_devices": ["D0-A11", "D0-B05", "D0-B10"],
+    "technical.priority_locales": ["D0-B10"],
+    "technical.minimum_fps": ["D0-A11", "D0-B05"]
+  },
+  "product": {
+    "one_sentence": "Mobile-first short-round mounted combat PvP.",
+    "primary_action": "Charge",
+    "reference_games": ["RIVALS", "Mount & Blade"],
+    "unique_axes": ["mounted charge timing", "horse ownership", "2v2 short rounds"],
+    "round_minutes": 1.5,
+    "session_minutes": 20,
+    "meta_loop": "horse mastery and cosmetic collection",
+    "monetization": { "enabled": true, "paid_random_items": false, "trading": false, "p2w_allowed": false },
+    "ip_risks": ["historical equipment references"],
+    "top_risks": ["mobile mounted control", "high-speed PvP hit validation"],
+    "mvp_questions": ["Is charging fun?", "Can mobile players understand hits?", "Do parties rematch?"],
+    "non_goals": ["no open world", "no breeding at launch", "no paid power", "no 20v20", "no gore", "no real factions"]
+  },
+  "technical": {
+    "existing_repository": false,
+    "toolchain": "Rojo",
+    "multi_place": true,
+    "reserved_servers": true,
+    "teleport": true,
+    "multiplayer": true,
+    "pvp": true,
+    "persistent_data": true,
+    "commerce": true,
+    "analytics": true,
+    "mobile": true,
+    "controller": true,
+    "localization": true,
+    "liveops": true,
+    "external_services": false,
+    "free_text_or_ugc": false,
+    "vehicle_or_custom_physics": true,
+    "high_npc_or_fx_load": false,
+    "real_world_ip_or_history": true,
+    "priority_devices": ["mobile", "pc", "controller"],
+    "priority_locales": ["en", "ja"],
+    "minimum_fps": 30
+  },
+  "state": {
+    "approved": true,
+    "approved_by": "Project Owner",
+    "approved_at": "2026-08-05T10:00:00+09:00",
+    "approval_evidence": "conversation:2026-08-05#D0-approval"
+  }
+}

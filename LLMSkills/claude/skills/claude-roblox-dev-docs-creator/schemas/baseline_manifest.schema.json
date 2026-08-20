@@ -1,0 +1,196 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/roblox-ai-development-os/baseline-manifest.schema.json",
+  "title": "Documentation Baseline Manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion", "baselineId", "stage", "project", "prefix", "createdAt",
+    "revision", "parentBaselineId", "promotedFrom", "approvalId",
+    "fileSetSha256", "files", "auditRecords"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "1.0.0" },
+    "baselineId": { "type": "string", "minLength": 1 },
+    "stage": { "enum": ["D4-CANDIDATE", "P0-CANDIDATE", "B0", "B1", "B2"] },
+    "project": { "type": "string", "minLength": 1 },
+    "prefix": { "type": "string", "pattern": "^[A-Z0-9]{2,6}$" },
+    "createdAt": { "type": "string", "format": "date-time" },
+    "revision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "value", "snapshotRoot", "gitStatusEvidence"],
+      "properties": {
+        "kind": { "enum": ["commit", "snapshot"] },
+        "value": { "type": "string", "minLength": 1 },
+        "snapshotRoot": { "type": ["string", "null"] },
+        "gitStatusEvidence": { "type": ["string", "null"] }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "kind": { "const": "commit" } }, "required": ["kind"] },
+          "then": {
+            "properties": {
+              "value": { "pattern": "^[a-f0-9]{40}(?:[a-f0-9]{24})?$" },
+              "snapshotRoot": { "type": "null" }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "kind": { "const": "snapshot" } }, "required": ["kind"] },
+          "then": {
+            "properties": {
+              "snapshotRoot": { "type": "string", "minLength": 1 },
+              "gitStatusEvidence": { "type": "string", "minLength": 1 }
+            }
+          }
+        }
+      ]
+    },
+    "parentBaselineId": { "type": ["string", "null"] },
+    "promotedFrom": { "type": ["string", "null"] },
+    "approvalId": { "type": ["string", "null"] },
+    "fileSetSha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "SHA-256 of UTF-8 JSON produced from files by Python json.dumps(files, ensure_ascii=False, sort_keys=True, separators=(',', ':')). This is not the manifest file hash."
+    },
+    "files": {
+      "type": "array",
+      "minItems": 1,
+      "description": "Entries are sorted ascending by project-relative POSIX path; duplicate paths are invalid.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "bytes", "sha256", "version", "status"],
+        "properties": {
+          "path": { "type": "string", "minLength": 1 },
+          "bytes": { "type": "integer", "minimum": 0 },
+          "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+          "version": { "type": ["string", "null"] },
+          "status": {
+            "type": ["string", "null"],
+            "enum": ["draft", "review", "approved", "superseded", null]
+          }
+        }
+      }
+    },
+    "auditRecords": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id", "auditTrack", "path", "sha256", "candidateBaseline",
+          "criticalCount", "majorCount", "verdict"
+        ],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "auditTrack": { "enum": ["consistency", "roblox-readiness", "clean-room"] },
+          "path": { "type": "string", "minLength": 1 },
+          "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+          "candidateBaseline": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "path", "sha256", "fileSetSha256"],
+            "properties": {
+              "id": { "type": "string", "minLength": 1 },
+              "path": { "type": "string", "minLength": 1 },
+              "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+              "fileSetSha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+            }
+          },
+          "criticalCount": { "const": 0 },
+          "majorCount": { "const": 0 },
+          "verdict": { "const": "pass" }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "completeAuditRecords": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "allOf": [
+        {
+          "contains": { "properties": { "auditTrack": { "const": "consistency" } } },
+          "minContains": 1,
+          "maxContains": 1
+        },
+        {
+          "contains": { "properties": { "auditTrack": { "const": "roblox-readiness" } } },
+          "minContains": 1,
+          "maxContains": 1
+        },
+        {
+          "contains": { "properties": { "auditTrack": { "const": "clean-room" } } },
+          "minContains": 1,
+          "maxContains": 1
+        }
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "stage": { "const": "D4-CANDIDATE" } }, "required": ["stage"] },
+      "then": {
+        "properties": {
+          "baselineId": { "pattern": "^D4-CAND-[A-Z0-9][A-Z0-9._-]*$" },
+          "parentBaselineId": { "type": "null" },
+          "promotedFrom": { "type": "null" },
+          "approvalId": { "type": "null" },
+          "auditRecords": { "maxItems": 0 }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "stage": { "const": "P0-CANDIDATE" } }, "required": ["stage"] },
+      "then": {
+        "properties": {
+          "baselineId": { "pattern": "^P0-CAND-[A-Z0-9][A-Z0-9._-]*$" },
+          "parentBaselineId": { "pattern": "^B0-[A-Z0-9][A-Z0-9._-]*$" },
+          "promotedFrom": { "type": "null" },
+          "approvalId": { "type": "null" },
+          "auditRecords": { "maxItems": 0 }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "stage": { "const": "B0" } }, "required": ["stage"] },
+      "then": {
+        "properties": {
+          "baselineId": { "pattern": "^B0-[A-Z0-9][A-Z0-9._-]*$" },
+          "parentBaselineId": { "type": "null" },
+          "promotedFrom": { "pattern": "^D4-CAND-[A-Z0-9][A-Z0-9._-]*$" },
+          "approvalId": { "type": "null" },
+          "auditRecords": { "$ref": "#/$defs/completeAuditRecords" }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "stage": { "const": "B1" } }, "required": ["stage"] },
+      "then": {
+        "properties": {
+          "baselineId": { "pattern": "^B1-[A-Z0-9][A-Z0-9._-]*$" },
+          "parentBaselineId": { "pattern": "^B0-[A-Z0-9][A-Z0-9._-]*$" },
+          "promotedFrom": { "pattern": "^P0-CAND-[A-Z0-9][A-Z0-9._-]*$" },
+          "approvalId": { "type": "null" },
+          "auditRecords": { "$ref": "#/$defs/completeAuditRecords" }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "stage": { "const": "B2" } }, "required": ["stage"] },
+      "then": {
+        "properties": {
+          "baselineId": { "pattern": "^B2-[A-Z0-9][A-Z0-9._-]*$" },
+          "parentBaselineId": { "pattern": "^B1-[A-Z0-9][A-Z0-9._-]*$" },
+          "promotedFrom": { "type": "null" },
+          "approvalId": { "type": "string", "minLength": 1 },
+          "auditRecords": { "$ref": "#/$defs/completeAuditRecords" }
+        }
+      }
+    }
+  ]
+}

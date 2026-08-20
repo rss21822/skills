@@ -1,0 +1,48 @@
+{
+  "_comment": "P0 state-check template. Snapshot-only, non-Git, and no-remote projects are supported. Git current-fact hygiene is disabled until the project actually makes current Git/remote claims; baseline integrity is validated separately by baseline/W0 validators.",
+  "_required_edits": [
+    "If current Git/remote facts are applicable, set git_remote_ref to a real resolvable ref and enable rules.git-current-facts; otherwise keep it false and record the snapshot-baseline reason/evidence in the P0 record."
+  ],
+  "wp_status_source": "docs/{{PREFIX}}_work_packages.md",
+  "wp_status_mirrors": ["PROGRESS.md"],
+  "wp_id_pattern": "WP-[A-Z0-9]+-\\d+[A-Z]?",
+  "status_field": "Status",
+  "status_vocabulary": ["Proposed", "Approved", "In progress", "Verified", "Superseded"],
+  "history_markers": ["記録時点", "時点では", "時点の", "当時", "だった", "であった", "旧値"],
+  "git_fact_docs": ["PROGRESS.md"],
+  "git_remote_ref": "origin/main",
+  "open_docs": [
+    "docs/{{PREFIX}}_gdd.md",
+    "docs/{{PREFIX}}_detailed_design.md",
+    "docs/{{PREFIX}}_data_definition.md",
+    "docs/{{PREFIX}}_ui_ux_input_spec.md",
+    "docs/{{PREFIX}}_toolchain_spec.md",
+    "docs/{{PREFIX}}_phase_plan.md",
+    "docs/{{PREFIX}}_work_packages.md",
+    "docs/{{PREFIX}}_test_spec.md",
+    "docs/{{PREFIX}}_workflow.md",
+    "docs/{{PREFIX}}_release_rollback_runbook.md",
+    "PROGRESS.md",
+    "HUMAN_ACTIONS.md"
+  ],
+  "open_pattern": "\\[OPEN blocking:\\s*(yes|no)\\]",
+  "open_required_terms": ["closure evidence", "Owner"],
+  "decision_record": "DECISIONS.md",
+  "decision_heading_pattern": "^#{2,4}\\s+(.*?D-\\d+)\\s*[:：]",
+  "decision_ref_pattern": "(?<![A-Za-z0-9-])`?((?:[A-Za-z0-9 ]+ )?D-\\d+)`?",
+  "decision_ref_docs": [
+    "docs/{{PREFIX}}_gdd.md",
+    "docs/{{PREFIX}}_detailed_design.md",
+    "docs/{{PREFIX}}_data_definition.md",
+    "docs/{{PREFIX}}_phase_plan.md",
+    "docs/{{PREFIX}}_work_packages.md",
+    "PROGRESS.md"
+  ],
+  "strict": true,
+  "rules": {
+    "wp-status-cross-doc": true,
+    "git-current-facts": false,
+    "open-evidence": true,
+    "decision-ref": true
+  }
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Cursor Grok"
+  short_description: "CodexからCursorの複数AIモデルへ質問・検証"
+  default_prompt: "Use $cursor-grok to ask Grok for an independent second opinion."

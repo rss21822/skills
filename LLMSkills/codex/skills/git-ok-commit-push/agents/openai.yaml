@@ -1,0 +1,4 @@
+interface:
+  display_name: "OK Commit Push"
+  short_description: "Commit and push the current repo after a plain OK reply."
+  default_prompt: "Use $git-ok-commit-push to commit and push the current project when the user replies only OK."

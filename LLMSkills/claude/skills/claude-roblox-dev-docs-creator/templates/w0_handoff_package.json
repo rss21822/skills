@@ -1,0 +1,74 @@
+{
+  "schemaVersion": "1.0.0",
+  "packageId": "W0-HANDOFF-{{PREFIX}}-001",
+  "project": "{{PROJECT}}",
+  "prefix": "{{PREFIX}}",
+  "createdAt": "{{TIMESTAMP}}",
+  "d5Approval": {
+    "id": "{{D5_APPROVAL_ID}}",
+    "approvedAt": "{{D5_APPROVED_AT}}",
+    "approver": "{{HUMAN_APPROVER}}",
+    "recordPath": "{{D5_APPROVAL_RECORD_PATH}}",
+    "recordSha256": "{{D5_APPROVAL_RECORD_SHA256}}"
+  },
+  "p0": {
+    "startApprovalId": "{{P0_START_APPROVAL_ID}}",
+    "startApprovalRecordPath": "{{P0_START_APPROVAL_RECORD_PATH}}",
+    "startApprovalRecordSha256": "{{P0_START_APPROVAL_RECORD_SHA256}}",
+    "contractApprovalId": "{{P0_CONTRACT_APPROVAL_ID}}",
+    "contractApprovalRecordPath": "{{P0_CONTRACT_APPROVAL_RECORD_PATH}}",
+    "contractApprovalRecordSha256": "{{P0_CONTRACT_APPROVAL_RECORD_SHA256}}"
+  },
+  "baselines": {
+    "b0": {
+      "id": "{{B0_ID}}", "path": "{{B0_MANIFEST_PATH}}",
+      "sha256": "{{B0_MANIFEST_SHA256}}", "fileSetSha256": "{{B0_FILE_SET_SHA256}}"
+    },
+    "b1": {
+      "id": "{{B1_ID}}", "path": "{{B1_MANIFEST_PATH}}",
+      "sha256": "{{B1_MANIFEST_SHA256}}", "fileSetSha256": "{{B1_FILE_SET_SHA256}}"
+    },
+    "b2": {
+      "id": "{{B2_ID}}", "path": "{{B2_MANIFEST_PATH}}",
+      "sha256": "{{B2_MANIFEST_SHA256}}", "fileSetSha256": "{{B2_FILE_SET_SHA256}}"
+    }
+  },
+  "postSyncManifest": {
+    "path": "{{POST_SYNC_MANIFEST_PATH}}",
+    "sha256": "{{POST_SYNC_MANIFEST_SHA256}}"
+  },
+  "firstAuthorizedWp": {
+    "id": "{{FIRST_AUTHORIZED_WP_ID}}",
+    "path": "{{FIRST_AUTHORIZED_WP_PATH}}",
+    "sha256": "{{FIRST_AUTHORIZED_WP_SHA256}}"
+  },
+  "postP0D4Records": [
+    {
+      "id": "{{POST_P0_D4_CONSISTENCY_ID}}", "auditTrack": "consistency",
+      "path": "{{POST_P0_D4_CONSISTENCY_PATH}}", "sha256": "{{POST_P0_D4_CONSISTENCY_SHA256}}",
+      "candidateBaseline": {
+        "id": "{{P0_CANDIDATE_ID}}", "path": "{{P0_CANDIDATE_MANIFEST_PATH}}",
+        "sha256": "{{P0_CANDIDATE_MANIFEST_SHA256}}", "fileSetSha256": "{{P0_CANDIDATE_FILE_SET_SHA256}}"
+      },
+      "criticalCount": 0, "majorCount": 0, "verdict": "pass"
+    },
+    {
+      "id": "{{POST_P0_D4_ROBLOX_ID}}", "auditTrack": "roblox-readiness",
+      "path": "{{POST_P0_D4_ROBLOX_PATH}}", "sha256": "{{POST_P0_D4_ROBLOX_SHA256}}",
+      "candidateBaseline": {
+        "id": "{{P0_CANDIDATE_ID}}", "path": "{{P0_CANDIDATE_MANIFEST_PATH}}",
+        "sha256": "{{P0_CANDIDATE_MANIFEST_SHA256}}", "fileSetSha256": "{{P0_CANDIDATE_FILE_SET_SHA256}}"
+      },
+      "criticalCount": 0, "majorCount": 0, "verdict": "pass"
+    },
+    {
+      "id": "{{POST_P0_D4_CLEAN_ROOM_ID}}", "auditTrack": "clean-room",
+      "path": "{{POST_P0_D4_CLEAN_ROOM_PATH}}", "sha256": "{{POST_P0_D4_CLEAN_ROOM_SHA256}}",
+      "candidateBaseline": {
+        "id": "{{P0_CANDIDATE_ID}}", "path": "{{P0_CANDIDATE_MANIFEST_PATH}}",
+        "sha256": "{{P0_CANDIDATE_MANIFEST_SHA256}}", "fileSetSha256": "{{P0_CANDIDATE_FILE_SET_SHA256}}"
+      },
+      "criticalCount": 0, "majorCount": 0, "verdict": "pass"
+    }
+  ]
+}

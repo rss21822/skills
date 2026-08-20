@@ -1,0 +1,390 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/roblox-ai-development-os/intake.schema.json",
+  "title": "Roblox Project Intake",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "project", "answers", "fieldSources", "product", "technical", "state"],
+  "properties": {
+    "schemaVersion": { "const": "1.0.0" },
+    "project": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "prefix", "mode", "owner"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "prefix": { "type": "string", "pattern": "^[A-Z0-9]{2,6}$" },
+        "mode": { "enum": ["greenfield", "brownfield", "audit", "sub-spec"] },
+        "owner": { "type": "string", "minLength": 1 }
+      }
+    },
+    "answers": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "D0-A01", "D0-A02", "D0-A03", "D0-A04", "D0-A05", "D0-A06",
+        "D0-A07", "D0-A08", "D0-A09", "D0-A10", "D0-A11", "D0-A12",
+        "D0-B01", "D0-B02", "D0-B03", "D0-B04", "D0-B05", "D0-B06",
+        "D0-B07", "D0-B08", "D0-B09", "D0-B10", "D0-B11", "D0-B12",
+        "D0-B13", "D0-B14", "D0-B15"
+      ],
+      "properties": {
+        "D0-A01": { "$ref": "#/$defs/answer" },
+        "D0-A02": { "$ref": "#/$defs/answer" },
+        "D0-A03": { "$ref": "#/$defs/answer" },
+        "D0-A04": { "$ref": "#/$defs/answer" },
+        "D0-A05": { "$ref": "#/$defs/answer" },
+        "D0-A06": { "$ref": "#/$defs/answer" },
+        "D0-A07": { "$ref": "#/$defs/answer" },
+        "D0-A08": { "$ref": "#/$defs/answer" },
+        "D0-A09": { "$ref": "#/$defs/answer" },
+        "D0-A10": { "$ref": "#/$defs/answer" },
+        "D0-A11": { "$ref": "#/$defs/answer" },
+        "D0-A12": { "$ref": "#/$defs/answer" },
+        "D0-B01": { "$ref": "#/$defs/answer" },
+        "D0-B02": { "$ref": "#/$defs/answer" },
+        "D0-B03": { "$ref": "#/$defs/answer" },
+        "D0-B04": { "$ref": "#/$defs/answer" },
+        "D0-B05": { "$ref": "#/$defs/answer" },
+        "D0-B06": { "$ref": "#/$defs/answer" },
+        "D0-B07": { "$ref": "#/$defs/answer" },
+        "D0-B08": { "$ref": "#/$defs/answer" },
+        "D0-B09": { "$ref": "#/$defs/answer" },
+        "D0-B10": { "$ref": "#/$defs/answer" },
+        "D0-B11": { "$ref": "#/$defs/answer" },
+        "D0-B12": { "$ref": "#/$defs/answer" },
+        "D0-B13": { "$ref": "#/$defs/answer" },
+        "D0-B14": { "$ref": "#/$defs/answer" },
+        "D0-B15": { "$ref": "#/$defs/answer" }
+      }
+    },
+    "fieldSources": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Complete normalized-leaf provenance map. Schema and CLI validation enforce known non-empty D0 answer references and approved-state eligibility. Equivalence between free-form answer payloads and normalized values requires independent D0 review plus the global human approval evidence.",
+      "required": [
+        "product.one_sentence", "product.primary_action", "product.reference_games",
+        "product.unique_axes", "product.round_minutes", "product.session_minutes",
+        "product.meta_loop", "product.monetization.enabled",
+        "product.monetization.paid_random_items", "product.monetization.trading",
+        "product.monetization.p2w_allowed", "product.ip_risks", "product.top_risks",
+        "product.mvp_questions", "product.non_goals",
+        "technical.existing_repository", "technical.toolchain", "technical.multi_place",
+        "technical.reserved_servers", "technical.teleport", "technical.multiplayer",
+        "technical.pvp", "technical.persistent_data", "technical.commerce",
+        "technical.analytics", "technical.mobile", "technical.controller",
+        "technical.localization", "technical.liveops", "technical.external_services",
+        "technical.free_text_or_ugc", "technical.vehicle_or_custom_physics",
+        "technical.high_npc_or_fx_load", "technical.real_world_ip_or_history",
+        "technical.priority_devices", "technical.priority_locales", "technical.minimum_fps"
+      ],
+      "properties": {
+        "product.one_sentence": { "$ref": "#/$defs/answerIdList" },
+        "product.primary_action": { "$ref": "#/$defs/answerIdList" },
+        "product.reference_games": { "$ref": "#/$defs/answerIdList" },
+        "product.unique_axes": { "$ref": "#/$defs/answerIdList" },
+        "product.round_minutes": { "$ref": "#/$defs/answerIdList" },
+        "product.session_minutes": { "$ref": "#/$defs/answerIdList" },
+        "product.meta_loop": { "$ref": "#/$defs/answerIdList" },
+        "product.monetization.enabled": { "$ref": "#/$defs/answerIdList" },
+        "product.monetization.paid_random_items": { "$ref": "#/$defs/answerIdList" },
+        "product.monetization.trading": { "$ref": "#/$defs/answerIdList" },
+        "product.monetization.p2w_allowed": { "$ref": "#/$defs/answerIdList" },
+        "product.ip_risks": { "$ref": "#/$defs/answerIdList" },
+        "product.top_risks": { "$ref": "#/$defs/answerIdList" },
+        "product.mvp_questions": { "$ref": "#/$defs/answerIdList" },
+        "product.non_goals": { "$ref": "#/$defs/answerIdList" },
+        "technical.existing_repository": { "$ref": "#/$defs/answerIdList" },
+        "technical.toolchain": { "$ref": "#/$defs/answerIdList" },
+        "technical.multi_place": { "$ref": "#/$defs/answerIdList" },
+        "technical.reserved_servers": { "$ref": "#/$defs/answerIdList" },
+        "technical.teleport": { "$ref": "#/$defs/answerIdList" },
+        "technical.multiplayer": { "$ref": "#/$defs/answerIdList" },
+        "technical.pvp": { "$ref": "#/$defs/answerIdList" },
+        "technical.persistent_data": { "$ref": "#/$defs/answerIdList" },
+        "technical.commerce": { "$ref": "#/$defs/answerIdList" },
+        "technical.analytics": { "$ref": "#/$defs/answerIdList" },
+        "technical.mobile": { "$ref": "#/$defs/answerIdList" },
+        "technical.controller": { "$ref": "#/$defs/answerIdList" },
+        "technical.localization": { "$ref": "#/$defs/answerIdList" },
+        "technical.liveops": { "$ref": "#/$defs/answerIdList" },
+        "technical.external_services": { "$ref": "#/$defs/answerIdList" },
+        "technical.free_text_or_ugc": { "$ref": "#/$defs/answerIdList" },
+        "technical.vehicle_or_custom_physics": { "$ref": "#/$defs/answerIdList" },
+        "technical.high_npc_or_fx_load": { "$ref": "#/$defs/answerIdList" },
+        "technical.real_world_ip_or_history": { "$ref": "#/$defs/answerIdList" },
+        "technical.priority_devices": { "$ref": "#/$defs/answerIdList" },
+        "technical.priority_locales": { "$ref": "#/$defs/answerIdList" },
+        "technical.minimum_fps": { "$ref": "#/$defs/answerIdList" }
+      }
+    },
+    "product": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "one_sentence", "primary_action", "reference_games", "unique_axes",
+        "round_minutes", "session_minutes", "meta_loop", "monetization",
+        "ip_risks", "top_risks", "mvp_questions", "non_goals"
+      ],
+      "properties": {
+        "one_sentence": { "type": "string" },
+        "primary_action": { "type": "string" },
+        "reference_games": { "type": "array", "items": { "type": "string" } },
+        "unique_axes": { "type": "array", "maxItems": 3, "items": { "type": "string" } },
+        "round_minutes": { "type": ["number", "null"], "exclusiveMinimum": 0 },
+        "session_minutes": { "type": ["number", "null"], "exclusiveMinimum": 0 },
+        "meta_loop": { "type": "string" },
+        "monetization": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["enabled", "paid_random_items", "trading", "p2w_allowed"],
+          "properties": {
+            "enabled": { "type": "boolean" },
+            "paid_random_items": { "type": "boolean" },
+            "trading": { "type": "boolean" },
+            "p2w_allowed": { "type": "boolean" }
+          }
+        },
+        "ip_risks": { "type": "array", "items": { "type": "string" } },
+        "top_risks": { "type": "array", "items": { "type": "string" } },
+        "mvp_questions": { "type": "array", "items": { "type": "string" } },
+        "non_goals": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "technical": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "existing_repository", "toolchain", "multi_place", "reserved_servers", "teleport",
+        "multiplayer", "pvp", "persistent_data", "commerce", "analytics", "mobile",
+        "controller", "localization", "liveops", "external_services", "free_text_or_ugc",
+        "vehicle_or_custom_physics", "high_npc_or_fx_load", "real_world_ip_or_history",
+        "priority_devices", "priority_locales", "minimum_fps"
+      ],
+      "properties": {
+        "existing_repository": { "type": "boolean" },
+        "toolchain": { "type": "string", "minLength": 1 },
+        "multi_place": { "type": "boolean" },
+        "reserved_servers": { "type": "boolean" },
+        "teleport": { "type": "boolean" },
+        "multiplayer": { "type": "boolean" },
+        "pvp": { "type": "boolean" },
+        "persistent_data": { "type": "boolean" },
+        "commerce": { "type": "boolean" },
+        "analytics": { "type": "boolean" },
+        "mobile": { "type": "boolean" },
+        "controller": { "type": "boolean" },
+        "localization": { "type": "boolean" },
+        "liveops": { "type": "boolean" },
+        "external_services": { "type": "boolean" },
+        "free_text_or_ugc": { "type": "boolean" },
+        "vehicle_or_custom_physics": { "type": "boolean" },
+        "high_npc_or_fx_load": { "type": "boolean" },
+        "real_world_ip_or_history": { "type": "boolean" },
+        "priority_devices": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "priority_locales": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 2 }
+        },
+        "minimum_fps": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "state": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["approved", "approved_by", "approved_at", "approval_evidence"],
+      "properties": {
+        "approved": { "type": "boolean" },
+        "approved_by": { "type": ["string", "null"] },
+        "approved_at": { "type": ["string", "null"], "format": "date-time" },
+        "approval_evidence": { "type": ["string", "null"] }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "approved": { "const": true } }, "required": ["approved"] },
+          "then": {
+            "properties": {
+              "approved_by": { "type": "string", "minLength": 1 },
+              "approved_at": { "type": "string", "format": "date-time" },
+              "approval_evidence": { "type": "string", "minLength": 1 }
+            }
+          },
+          "else": {
+            "properties": {
+              "approved_by": { "type": "null" },
+              "approved_at": { "type": "null" },
+              "approval_evidence": { "type": "null" }
+            }
+          }
+        }
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "state": {
+            "properties": { "approved": { "const": true } },
+            "required": ["approved"]
+          }
+        },
+        "required": ["state"]
+      },
+      "then": {
+        "properties": {
+          "answers": {
+            "properties": {
+              "D0-A01": { "$ref": "#/$defs/approvedAnswer" },
+              "D0-A02": { "$ref": "#/$defs/approvedAnswer" },
+              "D0-A03": { "$ref": "#/$defs/approvedAnswer" },
+              "D0-A04": { "$ref": "#/$defs/approvedAnswer" },
+              "D0-A05": { "$ref": "#/$defs/approvedAnswer" },
+              "D0-A06": { "$ref": "#/$defs/approvedAnswer" },
+              "D0-A07": { "$ref": "#/$defs/approvedAnswer" },
+              "D0-A08": { "$ref": "#/$defs/approvedAnswer" },
+              "D0-A09": { "$ref": "#/$defs/approvedAnswer" },
+              "D0-A10": { "$ref": "#/$defs/approvedAnswer" },
+              "D0-A11": { "$ref": "#/$defs/approvedAnswer" },
+              "D0-A12": { "$ref": "#/$defs/approvedAnswer" },
+              "D0-B01": { "$ref": "#/$defs/approvedAnswer" },
+              "D0-B02": { "$ref": "#/$defs/approvedAnswer" },
+              "D0-B03": { "$ref": "#/$defs/approvedAnswer" },
+              "D0-B04": { "$ref": "#/$defs/approvedAnswer" },
+              "D0-B05": { "$ref": "#/$defs/approvedAnswer" },
+              "D0-B06": { "$ref": "#/$defs/approvedAnswer" },
+              "D0-B07": { "$ref": "#/$defs/approvedAnswer" },
+              "D0-B08": { "$ref": "#/$defs/approvedAnswer" },
+              "D0-B09": { "$ref": "#/$defs/approvedAnswer" },
+              "D0-B10": { "$ref": "#/$defs/approvedAnswer" },
+              "D0-B11": { "$ref": "#/$defs/approvedAnswer" },
+              "D0-B12": { "$ref": "#/$defs/approvedAnswer" },
+              "D0-B13": { "$ref": "#/$defs/approvedAnswer" },
+              "D0-B14": { "$ref": "#/$defs/approvedAnswer" },
+              "D0-B15": { "$ref": "#/$defs/approvedAnswer" }
+            }
+          },
+          "product": {
+            "properties": {
+              "one_sentence": { "type": "string", "pattern": "\\S" },
+              "primary_action": { "type": "string", "pattern": "\\S" },
+              "reference_games": {
+                "minItems": 2,
+                "maxItems": 3,
+                "items": { "type": "string", "pattern": "\\S" }
+              },
+              "unique_axes": {
+                "minItems": 1,
+                "maxItems": 3,
+                "items": { "type": "string", "pattern": "\\S" }
+              },
+              "round_minutes": { "type": "number", "exclusiveMinimum": 0 },
+              "session_minutes": { "type": "number", "exclusiveMinimum": 0 },
+              "meta_loop": { "type": "string", "pattern": "\\S" },
+              "mvp_questions": {
+                "minItems": 3,
+                "maxItems": 3,
+                "items": { "type": "string", "pattern": "\\S" }
+              }
+            }
+          },
+          "technical": {
+            "properties": {
+              "toolchain": {
+                "type": "string",
+                "pattern": "\\S",
+                "not": { "enum": ["unknown", "Unknown", "UNKNOWN"] }
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "answerIdList": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "D0-A01", "D0-A02", "D0-A03", "D0-A04", "D0-A05", "D0-A06",
+          "D0-A07", "D0-A08", "D0-A09", "D0-A10", "D0-A11", "D0-A12",
+          "D0-B01", "D0-B02", "D0-B03", "D0-B04", "D0-B05", "D0-B06",
+          "D0-B07", "D0-B08", "D0-B09", "D0-B10", "D0-B11", "D0-B12",
+          "D0-B13", "D0-B14", "D0-B15"
+        ]
+      }
+    },
+    "answer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["prompt", "value", "status", "source", "evidence", "approvedBy", "approvedAt"],
+      "properties": {
+        "prompt": { "type": "string", "minLength": 1 },
+        "value": true,
+        "status": { "enum": ["unanswered", "fact", "proposed", "approved"] },
+        "source": { "type": ["string", "null"], "enum": ["U", "W", "M", "J", null] },
+        "evidence": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+        "approvedBy": { "type": ["string", "null"] },
+        "approvedAt": { "type": ["string", "null"], "format": "date-time" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "status": { "const": "unanswered" } }, "required": ["status"] },
+          "then": {
+            "properties": {
+              "value": { "type": "null" },
+              "source": { "type": "null" },
+              "evidence": { "maxItems": 0 }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "status": { "enum": ["fact", "proposed", "approved"] } },
+            "required": ["status"]
+          },
+          "then": {
+            "properties": {
+              "value": { "not": { "type": "null" } },
+              "source": { "enum": ["U", "W", "M", "J"] },
+              "evidence": { "minItems": 1 }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "status": { "const": "approved" } }, "required": ["status"] },
+          "then": {
+            "properties": {
+              "approvedBy": { "type": "string", "minLength": 1 },
+              "approvedAt": { "type": "string", "format": "date-time" }
+            }
+          },
+          "else": {
+            "properties": {
+              "approvedBy": { "type": "null" },
+              "approvedAt": { "type": "null" }
+            }
+          }
+        }
+      ]
+    },
+    "approvedAnswer": {
+      "allOf": [
+        { "$ref": "#/$defs/answer" },
+        { "properties": { "status": { "enum": ["fact", "approved"] } } },
+        {
+          "if": { "properties": { "source": { "const": "J" } }, "required": ["source"] },
+          "then": { "properties": { "status": { "const": "approved" } } }
+        }
+      ]
+    }
+  }
+}

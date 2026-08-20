@@ -1,0 +1,342 @@
+{
+  "schemaVersion": "1.0.0",
+  "project": {
+    "name": "{{PROJECT}}",
+    "prefix": "{{PREFIX}}",
+    "mode": "greenfield",
+    "owner": "Project Owner"
+  },
+  "answers": {
+    "D0-A01": {
+      "prompt": "一言コンセプトと一動詞",
+      "value": null,
+      "status": "unanswered",
+      "source": null,
+      "evidence": [],
+      "approvedBy": null,
+      "approvedAt": null
+    },
+    "D0-A02": {
+      "prompt": "参照ゲーム2〜3本、取る点／捨てる点",
+      "value": null,
+      "status": "unanswered",
+      "source": null,
+      "evidence": [],
+      "approvedBy": null,
+      "approvedAt": null
+    },
+    "D0-A03": {
+      "prompt": "独自軸3点以内",
+      "value": null,
+      "status": "unanswered",
+      "source": null,
+      "evidence": [],
+      "approvedBy": null,
+      "approvedAt": null
+    },
+    "D0-A04": {
+      "prompt": "1ラウンド／1セッション時間",
+      "value": null,
+      "status": "unanswered",
+      "source": null,
+      "evidence": [],
+      "approvedBy": null,
+      "approvedAt": null
+    },
+    "D0-A05": {
+      "prompt": "キャラ・機体・クラス等の枠とカスタムスロット",
+      "value": null,
+      "status": "unanswered",
+      "source": null,
+      "evidence": [],
+      "approvedBy": null,
+      "approvedAt": null
+    },
+    "D0-A06": {
+      "prompt": "ラン内ループ、メタループ、収集対象",
+      "value": null,
+      "status": "unanswered",
+      "source": null,
+      "evidence": [],
+      "approvedBy": null,
+      "approvedAt": null
+    },
+    "D0-A07": {
+      "prompt": "収益方針、P2W、RNG、Trading",
+      "value": null,
+      "status": "unanswered",
+      "source": null,
+      "evidence": [],
+      "approvedBy": null,
+      "approvedAt": null
+    },
+    "D0-A08": {
+      "prompt": "IP・実在物・政治・史実リスク",
+      "value": null,
+      "status": "unanswered",
+      "source": null,
+      "evidence": [],
+      "approvedBy": null,
+      "approvedAt": null
+    },
+    "D0-A09": {
+      "prompt": "最大の操作・物理・ネットワーク・供給リスク",
+      "value": null,
+      "status": "unanswered",
+      "source": null,
+      "evidence": [],
+      "approvedBy": null,
+      "approvedAt": null
+    },
+    "D0-A10": {
+      "prompt": "MVPで検証する問い3つ",
+      "value": null,
+      "status": "unanswered",
+      "source": null,
+      "evidence": [],
+      "approvedBy": null,
+      "approvedAt": null
+    },
+    "D0-A11": {
+      "prompt": "端末優先度、モバイル操作予算、最低性能",
+      "value": null,
+      "status": "unanswered",
+      "source": null,
+      "evidence": [],
+      "approvedBy": null,
+      "approvedAt": null
+    },
+    "D0-A12": {
+      "prompt": "Non-Goals候補",
+      "value": null,
+      "status": "unanswered",
+      "source": null,
+      "evidence": [],
+      "approvedBy": null,
+      "approvedAt": null
+    },
+    "D0-B01": {
+      "prompt": "Greenfieldか既存リポジトリか",
+      "value": null,
+      "status": "unanswered",
+      "source": null,
+      "evidence": [],
+      "approvedBy": null,
+      "approvedAt": null
+    },
+    "D0-B02": {
+      "prompt": "Studio中心、Rojo、その他のToolchain",
+      "value": null,
+      "status": "unanswered",
+      "source": null,
+      "evidence": [],
+      "approvedBy": null,
+      "approvedAt": null
+    },
+    "D0-B03": {
+      "prompt": "Universe／Place構成",
+      "value": null,
+      "status": "unanswered",
+      "source": null,
+      "evidence": [],
+      "approvedBy": null,
+      "approvedAt": null
+    },
+    "D0-B04": {
+      "prompt": "Group所有、dev／staging／productionの分離",
+      "value": null,
+      "status": "unanswered",
+      "source": null,
+      "evidence": [],
+      "approvedBy": null,
+      "approvedAt": null
+    },
+    "D0-B05": {
+      "prompt": "対応端末、最低FPS・Memory目標",
+      "value": null,
+      "status": "unanswered",
+      "source": null,
+      "evidence": [],
+      "approvedBy": null,
+      "approvedAt": null
+    },
+    "D0-B06": {
+      "prompt": "永続化するデータ",
+      "value": null,
+      "status": "unanswered",
+      "source": null,
+      "evidence": [],
+      "approvedBy": null,
+      "approvedAt": null
+    },
+    "D0-B07": {
+      "prompt": "PvP、通貨、取引、課金、ランダム報酬",
+      "value": null,
+      "status": "unanswered",
+      "source": null,
+      "evidence": [],
+      "approvedBy": null,
+      "approvedAt": null
+    },
+    "D0-B08": {
+      "prompt": "Teleport、Reserved Server、Matchmaking",
+      "value": null,
+      "status": "unanswered",
+      "source": null,
+      "evidence": [],
+      "approvedBy": null,
+      "approvedAt": null
+    },
+    "D0-B09": {
+      "prompt": "外部API、Open Cloud、Secrets",
+      "value": null,
+      "status": "unanswered",
+      "source": null,
+      "evidence": [],
+      "approvedBy": null,
+      "approvedAt": null
+    },
+    "D0-B10": {
+      "prompt": "UI、入力、Localization、Accessibility",
+      "value": null,
+      "status": "unanswered",
+      "source": null,
+      "evidence": [],
+      "approvedBy": null,
+      "approvedAt": null
+    },
+    "D0-B11": {
+      "prompt": "既存アセットと権利状態",
+      "value": null,
+      "status": "unanswered",
+      "source": null,
+      "evidence": [],
+      "approvedBy": null,
+      "approvedAt": null
+    },
+    "D0-B12": {
+      "prompt": "人間しか行えないDashboard／Studio作業",
+      "value": null,
+      "status": "unanswered",
+      "source": null,
+      "evidence": [],
+      "approvedBy": null,
+      "approvedAt": null
+    },
+    "D0-B13": {
+      "prompt": "Release頻度、LiveOps",
+      "value": null,
+      "status": "unanswered",
+      "source": null,
+      "evidence": [],
+      "approvedBy": null,
+      "approvedAt": null
+    },
+    "D0-B14": {
+      "prompt": "障害時の停止・Rollback要件",
+      "value": null,
+      "status": "unanswered",
+      "source": null,
+      "evidence": [],
+      "approvedBy": null,
+      "approvedAt": null
+    },
+    "D0-B15": {
+      "prompt": "既存コード・文書・テストの信頼度",
+      "value": null,
+      "status": "unanswered",
+      "source": null,
+      "evidence": [],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  "fieldSources": {
+    "product.one_sentence": ["D0-A01"],
+    "product.primary_action": ["D0-A01"],
+    "product.reference_games": ["D0-A02"],
+    "product.unique_axes": ["D0-A03"],
+    "product.round_minutes": ["D0-A04"],
+    "product.session_minutes": ["D0-A04"],
+    "product.meta_loop": ["D0-A06"],
+    "product.monetization.enabled": ["D0-A07", "D0-B07"],
+    "product.monetization.paid_random_items": ["D0-A07", "D0-B07"],
+    "product.monetization.trading": ["D0-A07", "D0-B07"],
+    "product.monetization.p2w_allowed": ["D0-A07"],
+    "product.ip_risks": ["D0-A08"],
+    "product.top_risks": ["D0-A09"],
+    "product.mvp_questions": ["D0-A10"],
+    "product.non_goals": ["D0-A12"],
+    "technical.existing_repository": ["D0-B01"],
+    "technical.toolchain": ["D0-B02"],
+    "technical.multi_place": ["D0-B03"],
+    "technical.reserved_servers": ["D0-B08"],
+    "technical.teleport": ["D0-B08"],
+    "technical.multiplayer": ["D0-B03", "D0-B07", "D0-B08"],
+    "technical.pvp": ["D0-B07"],
+    "technical.persistent_data": ["D0-B06"],
+    "technical.commerce": ["D0-A07", "D0-B07"],
+    "technical.analytics": ["D0-A10", "D0-B13"],
+    "technical.mobile": ["D0-B05", "D0-B10"],
+    "technical.controller": ["D0-B05", "D0-B10"],
+    "technical.localization": ["D0-B10"],
+    "technical.liveops": ["D0-B13"],
+    "technical.external_services": ["D0-B09"],
+    "technical.free_text_or_ugc": ["D0-A05", "D0-A12", "D0-B10"],
+    "technical.vehicle_or_custom_physics": ["D0-A09"],
+    "technical.high_npc_or_fx_load": ["D0-A09"],
+    "technical.real_world_ip_or_history": ["D0-A08"],
+    "technical.priority_devices": ["D0-A11", "D0-B05", "D0-B10"],
+    "technical.priority_locales": ["D0-B10"],
+    "technical.minimum_fps": ["D0-A11", "D0-B05"]
+  },
+  "product": {
+    "one_sentence": "",
+    "primary_action": "",
+    "reference_games": [],
+    "unique_axes": [],
+    "round_minutes": null,
+    "session_minutes": null,
+    "meta_loop": "",
+    "monetization": {
+      "enabled": false,
+      "paid_random_items": false,
+      "trading": false,
+      "p2w_allowed": false
+    },
+    "ip_risks": [],
+    "top_risks": [],
+    "mvp_questions": [],
+    "non_goals": []
+  },
+  "technical": {
+    "existing_repository": false,
+    "toolchain": "unknown",
+    "multi_place": false,
+    "reserved_servers": false,
+    "teleport": false,
+    "multiplayer": false,
+    "pvp": false,
+    "persistent_data": false,
+    "commerce": false,
+    "analytics": true,
+    "mobile": true,
+    "controller": false,
+    "localization": false,
+    "liveops": false,
+    "external_services": false,
+    "free_text_or_ugc": false,
+    "vehicle_or_custom_physics": false,
+    "high_npc_or_fx_load": false,
+    "real_world_ip_or_history": false,
+    "priority_devices": ["mobile"],
+    "priority_locales": [],
+    "minimum_fps": 30
+  },
+  "state": {
+    "approved": false,
+    "approved_by": null,
+    "approved_at": null,
+    "approval_evidence": null
+  }
+}

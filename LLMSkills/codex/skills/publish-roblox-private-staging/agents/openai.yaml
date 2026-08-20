@@ -1,0 +1,4 @@
+interface:
+  display_name: "Roblox Private Staging Publish"
+  short_description: "Autonomously publish and verify private Roblox staging"
+  default_prompt: "Use $publish-roblox-private-staging to autonomously publish and verify this build in a private production-like staging Experience without confirmation checkpoints."

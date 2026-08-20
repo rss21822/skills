@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/roblox-ai-development-os/gate-approval-record.schema.json",
+  "title": "Gate Approval Record",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion", "id", "type", "approvalKind", "approver", "approvedAt",
+    "scope", "baseline", "firstAuthorizedWpId", "sourceEvidence"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "1.0.0" },
+    "id": { "type": "string", "minLength": 1 },
+    "type": { "enum": ["p0-start", "p0-contract", "d5"] },
+    "approvalKind": { "enum": ["human-direct", "delegated-process"] },
+    "approver": { "type": "string", "minLength": 1 },
+    "approvedAt": { "type": "string", "format": "date-time" },
+    "scope": { "type": "string", "minLength": 1 },
+    "baseline": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "path", "sha256", "fileSetSha256", "revision"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "path": { "type": "string", "minLength": 1 },
+        "sha256": { "$ref": "#/$defs/sha256" },
+        "fileSetSha256": { "$ref": "#/$defs/sha256" },
+        "revision": { "type": "string", "minLength": 1 }
+      }
+    },
+    "firstAuthorizedWpId": { "type": ["string", "null"] },
+    "sourceEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256"],
+      "properties": {
+        "path": { "type": "string", "minLength": 1 },
+        "sha256": { "$ref": "#/$defs/sha256" }
+      }
+    }
+  },
+  "$defs": {
+    "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "type": { "const": "p0-start" } }, "required": ["type"] },
+      "then": {
+        "properties": {
+          "approvalKind": { "const": "human-direct" },
+          "baseline": { "properties": { "id": { "pattern": "^B0-[A-Z0-9][A-Z0-9._-]*$" } } },
+          "firstAuthorizedWpId": { "type": "null" }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "type": { "const": "p0-contract" } }, "required": ["type"] },
+      "then": {
+        "properties": {
+          "baseline": { "properties": { "id": { "pattern": "^P0-CAND-[A-Z0-9][A-Z0-9._-]*$" } } },
+          "firstAuthorizedWpId": { "type": "null" }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "type": { "const": "d5" } }, "required": ["type"] },
+      "then": {
+        "properties": {
+          "approvalKind": { "const": "human-direct" },
+          "baseline": { "properties": { "id": { "pattern": "^B1-[A-Z0-9][A-Z0-9._-]*$" } } },
+          "firstAuthorizedWpId": { "type": "string", "minLength": 1 }
+        }
+      }
+    }
+  ]
+}
