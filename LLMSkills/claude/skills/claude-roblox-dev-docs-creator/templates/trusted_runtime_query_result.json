@@ -1,0 +1,18 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "TRQ-{{PREFIX}}-{{SUBJECT_TYPE}}-{{SEQUENCE}}",
+  "authority": "{{TRUSTED_PROVIDER_OR_RUNTIME}}",
+  "adapter": "{{PINNED_ADAPTER}}",
+  "adapterVersion": "{{PINNED_ADAPTER_VERSION}}",
+  "nonce": "{{UNPREDICTABLE_QUERY_NONCE}}",
+  "queriedAt": "{{ISO_8601_WITH_TIMEZONE}}",
+  "requestId": "{{PROVIDER_QUERY_REQUEST_ID}}",
+  "responseId": "{{PROVIDER_QUERY_RESPONSE_ID}}",
+  "subjectType": "{{d4-auditor-attestation|human-approval-capture|d1.5-measurement-evidence}}",
+  "subjectId": "{{SUBJECT_ID}}",
+  "claimsSha256": "{{CANONICAL_CLAIMS_SHA256}}",
+  "rawResponseArtifact": {
+    "path": "{{RAW_PROVIDER_RESPONSE_PATH}}",
+    "sha256": "{{RAW_PROVIDER_RESPONSE_SHA256}}"
+  }
+}

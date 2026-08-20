@@ -1,0 +1,110 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/roblox-ai-development-os/required-specs.schema.json",
+  "title": "Trigger-Derived Required Specifications",
+  "description": "Closed detect_triggers projection from the approved intake, not a hand-authored source of truth. feasibility_report fixes one combined D1.5 suite from exactly the five measurable technical risk flags; free-form product.top_risks stay in the D3/D4 risk registry and never become machine subchecks. Ordinary PvP alone is not a trigger. D0 independent review rejects high-frequency projectiles, fast PvP, or another measurable mechanic risk when its matching technical flag is not true. A later GDD risk requires return to intake and new Gate 1.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "project", "prefix", "required_specs"],
+  "properties": {
+    "schemaVersion": { "const": "1.0.0" },
+    "project": { "type": "string", "minLength": 1 },
+    "prefix": { "type": "string", "pattern": "^[A-Z0-9]{2,6}$" },
+    "required_specs": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/requiredSpec" },
+      "contains": {
+        "properties": { "id": { "const": "feasibility_report" } },
+        "required": ["id"]
+      },
+      "minContains": 0,
+      "maxContains": 1
+    }
+  },
+  "$defs": {
+    "requiredSpec": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "template", "reason", "measurementContract"],
+      "properties": {
+        "id": {
+          "enum": [
+            "repository_audit", "feasibility_report", "network_security",
+            "persistence_migration", "commerce_policy", "paid_random_items",
+            "analytics_observability", "performance_budget", "asset_content_pipeline",
+            "multi_place_matchmaking", "physics_control", "ugc_moderation",
+            "localization_accessibility", "liveops_content", "external_services_secrets",
+            "rights_provenance"
+          ]
+        },
+        "template": { "type": "string", "minLength": 1 },
+        "reason": { "type": "string", "minLength": 1 },
+        "measurementContract": {
+          "oneOf": [
+            { "$ref": "#/$defs/combinedMeasurementContract" },
+            { "type": "null" }
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "id": { "const": "feasibility_report" } }, "required": ["id"] },
+          "then": {
+            "properties": {
+              "template": { "const": "feasibility_report.md" },
+              "measurementContract": { "$ref": "#/$defs/combinedMeasurementContract" }
+            }
+          },
+          "else": { "properties": { "measurementContract": { "type": "null" } } }
+        }
+      ]
+    },
+    "combinedMeasurementContract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind", "experimentId", "cardinality", "coverage",
+        "requiredSubchecks", "requiredSubchecksSha256"
+      ],
+      "properties": {
+        "kind": { "const": "d1.5-combined-suite-v1" },
+        "experimentId": { "const": "feasibility_report-combined-v1" },
+        "cardinality": { "const": "exactly-one" },
+        "coverage": { "const": "all-triggered-high-risk-subchecks" },
+        "requiredSubchecks": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/requiredSubcheck" },
+          "description": "Lexicographically sorted exact set: one entry for each approved-intake technical flag that is true among vehicle_or_custom_physics, high_npc_or_fx_load, high_frequency_projectiles_or_fast_pvp, free_text_or_ugc, and multi_place. product.top_risks is excluded. sourceValueSha256 hashes canonical JSON boolean true."
+        },
+        "requiredSubchecksSha256": {
+          "$ref": "#/$defs/sha256",
+          "description": "SHA-256 of UTF-8 json.dumps(requiredSubchecks, ensure_ascii=False, sort_keys=True, separators=(',', ':')) after path/ID exactness and lexicographic order validation."
+        }
+      }
+    },
+    "requiredSubcheck": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "source", "sourceValueSha256"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^technical\\.(?:vehicle_or_custom_physics|high_npc_or_fx_load|high_frequency_projectiles_or_fast_pvp|free_text_or_ugc|multi_place)$"
+        },
+        "source": {
+          "type": "string",
+          "pattern": "^technical\\.(?:vehicle_or_custom_physics|high_npc_or_fx_load|high_frequency_projectiles_or_fast_pvp|free_text_or_ugc|multi_place)$",
+          "description": "Exact approved-intake boolean leaf path; semantic validation requires source == id and value true."
+        },
+        "sourceValueSha256": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    }
+  }
+}

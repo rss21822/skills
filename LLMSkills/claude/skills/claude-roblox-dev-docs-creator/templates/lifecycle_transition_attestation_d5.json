@@ -1,0 +1,100 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "LTA-D5-{{PREFIX}}-{{D5_APPROVAL_ID}}",
+  "transitionType": "d5",
+  "createdAt": "{{ISO_8601_WITH_TIMEZONE}}",
+  "claims": {
+    "kind": "d5-transition-v1",
+    "sourceBaseline": {
+      "id": "{{B1_ID}}",
+      "path": "{{B1_MANIFEST_PATH}}",
+      "sha256": "{{B1_MANIFEST_SHA256}}",
+      "fileSetSha256": "{{B1_FILE_SET_SHA256}}",
+      "revision": {
+        "kind": "snapshot",
+        "value": "{{B1_EXACT_REVISION_VALUE}}",
+        "snapshotRoot": "{{B1_IMMUTABLE_SNAPSHOT_ROOT}}",
+        "gitStatusEvidence": "{{B1_SOURCE_STATE_EVIDENCE_PATH}}"
+      }
+    },
+    "d5Approval": {
+      "approvalId": "{{D5_APPROVAL_ID}}",
+      "verification": { "path": "{{D5_PROVENANCE_PATH}}", "sha256": "{{D5_PROVENANCE_SHA256}}" },
+      "presentationAt": "{{D5_PRESENTATION_AT}}",
+      "humanResponseAt": "{{D5_HUMAN_RESPONSE_AT}}",
+      "verificationCompletedAt": "{{D5_PROVENANCE_VERIFIED_AT}}"
+    },
+    "monitoring": {
+      "sessionId": "{{D5_MONITOR_SESSION_ID}}",
+      "providerId": "{{D5_MONITOR_PROVIDER_ID}}",
+      "startEventId": "{{D5_MONITOR_START_EVENT_ID}}",
+      "startedAt": "{{D5_MONITORING_STARTED_AT}}",
+      "targets": [
+        { "role": "canonical-project", "resolvedRoot": "{{D5_RESOLVED_PROJECT_ROOT}}", "immutableTargetId": "{{D5_IMMUTABLE_TARGET_ID}}" },
+        { "role": "private-staging", "resolvedRoot": "{{D5_RESOLVED_STAGING_ROOT}}", "immutableTargetId": "{{D5_IMMUTABLE_STAGING_TARGET_ID}}" },
+        { "role": "result-artifacts", "resolvedRoot": "{{D5_RESOLVED_RESULT_ARTIFACT_ROOT}}", "immutableTargetId": "{{D5_IMMUTABLE_RESULT_TARGET_ID}}" }
+      ],
+      "startState": {
+        "observedAt": "{{D5_MONITOR_START_STATE_OBSERVED_AT}}",
+        "sourceBaselineTreeSha256": "{{B1_BASELINE_TREE_SHA256}}",
+        "fileSetSha256": "{{B1_FILE_SET_SHA256}}",
+        "targetStartStates": [
+          { "role": "canonical-project", "stateSetSha256": "{{D5_CANONICAL_START_STATE_SET_SHA256}}" },
+          { "role": "private-staging", "stateSetSha256": "{{D5_STAGING_START_STATE_SET_SHA256}}" },
+          { "role": "result-artifacts", "stateSetSha256": "{{D5_RESULT_START_STATE_SET_SHA256}}" }
+        ]
+      },
+      "scope": {
+        "kind": "in-scope-transition-mutations-v1",
+        "coverage": "all-product-ledger-staging-and-result-mutations",
+        "includeSetArtifact": { "path": "{{D5_CANONICAL_MUTATION_TARGET_SET_PATH}}", "sha256": "{{D5_CANONICAL_MUTATION_TARGET_SET_ARTIFACT_SHA256}}" },
+        "includeSetSha256": "{{D5_CANONICAL_MUTATION_TARGET_SET_SHA256}}",
+        "evidenceAcquisitionPolicy": "approval-evidence-outside-transition-mutation-scope",
+        "postMonitorExclusions": ["lifecycle-write-log", "lifecycle-transition-attestation", "lifecycle-transition-provenance", "w0-handoff-package"]
+      }
+    },
+    "writeLog": {
+      "path": "{{D5_COMPLETE_WRITE_LOG_PATH}}",
+      "sha256": "{{D5_COMPLETE_WRITE_LOG_SHA256}}",
+      "entryCount": 7,
+      "entrySetSha256": "{{D5_WRITE_LOG_ENTRY_SET_SHA256}}",
+      "eventSequenceSha256": "{{D5_ACTUAL_OPERATION_EVENT_SEQUENCE_SHA256}}",
+      "complete": true
+    },
+    "noUnloggedWrites": true,
+    "firstSyncWriteAt": "{{D5_FIRST_SYNC_WRITE_AT}}",
+    "lastSyncWriteAt": "{{D5_LAST_SYNC_WRITE_AT}}",
+    "allowedDiffRule": "d5-fixed-allowlist-v1",
+    "allowedDiffArtifact": { "path": "{{D5_EXACT_ALLOWED_DIFF_PATH}}", "sha256": "{{D5_EXACT_ALLOWED_DIFF_ARTIFACT_SHA256}}" },
+    "allowedDiffSha256": "{{D5_EXACT_ALLOWED_DIFF_SHA256}}",
+    "allowedDiffArtifactCreatedAt": "{{D5_ALLOWED_DIFF_ARTIFACT_CREATED_AT}}",
+    "postSyncManifest": { "path": "{{POST_SYNC_MANIFEST_PATH}}", "sha256": "{{POST_SYNC_MANIFEST_SHA256}}" },
+    "postSyncManifestCreatedAt": "{{D5_POST_SYNC_MANIFEST_CREATED_AT}}",
+    "resultBaseline": {
+      "id": "{{B2_ID}}",
+      "path": "{{B2_MANIFEST_PATH}}",
+      "sha256": "{{B2_MANIFEST_SHA256}}",
+      "fileSetSha256": "{{B2_FILE_SET_SHA256}}",
+      "revision": {
+        "kind": "snapshot",
+        "value": "{{B2_EXACT_REVISION_VALUE}}",
+        "snapshotRoot": "{{B2_IMMUTABLE_SNAPSHOT_ROOT}}",
+        "gitStatusEvidence": "{{B2_SOURCE_STATE_EVIDENCE_PATH}}"
+      }
+    },
+    "resultSnapshot": {
+      "sourceFileSetSha256": "{{B2_FILE_SET_SHA256}}",
+      "snapshotRoot": "{{B2_IMMUTABLE_SNAPSHOT_ROOT}}",
+      "copiedFileCount": 1,
+      "copyMapSha256": "{{D5_SNAPSHOT_COPY_MAP_SHA256}}",
+      "copyStartedAt": "{{D5_SNAPSHOT_COPY_STARTED_AT}}",
+      "copyCompletedAt": "{{D5_SNAPSHOT_COPY_COMPLETED_AT}}",
+      "manifestCreatedAt": "{{D5_SNAPSHOT_MANIFEST_CREATED_AT}}",
+      "manifest": { "path": "{{B2_MANIFEST_PATH}}", "sha256": "{{B2_MANIFEST_SHA256}}" },
+      "sealEventId": "{{AUTHORITY_D5_SEAL_EVENT_ID}}"
+    },
+    "sealCompletedAt": "{{D5_SEAL_COMPLETED_AT}}",
+    "eventSequenceSha256": "{{D5_ACTUAL_OPERATION_EVENT_SEQUENCE_SHA256}}",
+    "completedAt": "{{D5_TRANSITION_COMPLETED_AT}}"
+  }
+}

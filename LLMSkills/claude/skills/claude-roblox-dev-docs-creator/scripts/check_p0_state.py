@@ -22,6 +22,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+from strict_json import loads as strict_json_loads
+
 DEFAULT_CONFIG = {
     # Status の正本（索引表と詳細節を持つ文書）
     "wp_status_source": "docs/{PREFIX}_work_packages.md",
@@ -188,11 +190,11 @@ def rule_wp_status_cross_doc(root, cfg, out):
                     f"履歴なら時制を限定し、現況なら正本へ同期する", line))
 
 
-def git(root: Path, *args) -> str | None:
+def git(root: Path, executable: Path, *args) -> str | None:
     try:
-        r = subprocess.run(["git", "-C", str(root), *args],
+        r = subprocess.run([str(executable), "-C", str(root), *args],
                            capture_output=True, text=True, encoding="utf-8",
-                           errors="replace", timeout=20)
+                           errors="replace", timeout=20, shell=False)
     except (OSError, subprocess.SubprocessError):
         return None
     return r.stdout.strip() if r.returncode == 0 else None
@@ -208,19 +210,25 @@ def rule_git_current_facts(root, cfg, out):
     走査は**現況が宣言されるヘッダ区間**（最初の `##` 見出しより前）に限る。
     それ以降は履歴節であり、旧値が残っているのが正しい。
     """
-    head = git(root, "rev-parse", "HEAD")
+    executable = cfg.get("_git_executable")
+    if not isinstance(executable, Path):
+        out.append(Finding(
+            "git-current-facts", "error", "<git>", 1,
+            "git-current-facts requires explicit --git-executable; ambient PATH lookup is forbidden"))
+        return
+    head = git(root, executable, "rev-parse", "HEAD")
     if head is None:
         out.append(Finding("git-current-facts", "error", "<git>", 1,
                            "git が実行できない、または repository ではない"))
         return
     remote_ref = cfg["git_remote_ref"]
-    remote = git(root, "rev-parse", remote_ref)
+    remote = git(root, executable, "rev-parse", remote_ref)
     if remote is None:
         out.append(Finding("git-current-facts", "error", "<git>", 1,
                            f"git_remote_ref `{remote_ref}` を解決できない。"
                            f"remote 側の比較が成立しないので設定を確認する"))
         return
-    ahead = git(root, "rev-list", "--count", f"{remote_ref}..HEAD")
+    ahead = git(root, executable, "rev-list", "--count", f"{remote_ref}..HEAD")
     markers = cfg["history_markers"]
     count_re = re.compile(r"未\s*push\s*(?:が|は)?\s*(\d+)\s*(?:件|commit)")
     ref_re = re.compile(re.escape(remote_ref) + r"\s*(?:=|は|:)\s*`?([0-9a-f]{7,40})`?")
@@ -393,7 +401,7 @@ def load_config(path: Path | None, explicit: bool, prefix: str) -> dict:
     cfg = dict(DEFAULT_CONFIG)
     if path is not None and path.is_file():
         try:
-            user = json.loads(path.read_text(encoding="utf-8"))
+            user = strict_json_loads(path.read_text(encoding="utf-8"))
         except json.JSONDecodeError as exc:
             raise ConfigError(f"設定 JSON を解析できない: {path}: {exc}") from exc
         if not isinstance(user, dict):
@@ -419,6 +427,9 @@ def main() -> int:
     ap.add_argument("--project-root", type=Path, default=Path.cwd())
     ap.add_argument("--prefix", default="", help="文書名の PREFIX（{PREFIX} を置換）")
     ap.add_argument("--config", type=Path, default=None)
+    ap.add_argument(
+        "--git-executable", type=Path, default=None,
+        help="absolute pinned Git executable; required when git-current-facts is enabled")
     ap.add_argument("--only", nargs="+", default=None,
                     help=f"実行する rule 名。選べるのは: {', '.join(KNOWN_RULES)}")
     ap.add_argument("--json", action="store_true")
@@ -462,6 +473,22 @@ def main() -> int:
     # 見分けが付かない PASS になる。空にできる設定と、空だと検査が成立しない設定を
     # 分けて、後者は設定不備として落とす（fail-closed）
     disabled = {k for k, v in cfg["rules"].items() if v is False}
+    git_enabled = "git-current-facts" not in disabled \
+        and (not args.only or "git-current-facts" in args.only)
+    if git_enabled:
+        if args.git_executable is None or not args.git_executable.is_absolute():
+            print("ERROR: git-current-facts requires absolute --git-executable; "
+                  "ambient PATH lookup is forbidden", file=sys.stderr)
+            return 2
+        try:
+            git_executable = args.git_executable.resolve(strict=True)
+        except OSError as exc:
+            print(f"ERROR: --git-executable cannot be resolved: {exc}", file=sys.stderr)
+            return 2
+        if not git_executable.is_file():
+            print("ERROR: --git-executable must resolve to a file", file=sys.stderr)
+            return 2
+        cfg["_git_executable"] = git_executable
     required_nonempty = {
         "wp_status_mirrors": ("wp-status-cross-doc", "突合先が無い"),
         "status_vocabulary": ("wp-status-cross-doc",

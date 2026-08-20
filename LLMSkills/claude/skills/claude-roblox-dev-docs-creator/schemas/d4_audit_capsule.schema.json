@@ -1,0 +1,355 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/roblox-ai-development-os/d4-audit-capsule.schema.json",
+  "title": "D4 Sanitized Audit Capsule",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion", "id", "candidate", "auditScope", "auditPolicy", "runtimeAllowlist",
+    "assemblyAttestation", "capsuleAssemblyProvenance", "p0LifecycleTransition",
+    "createdAt", "sanitizedRoot", "inputs", "inputSetSha256", "preflight",
+    "requiredAuditCommands", "denyCategories"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "1.0.0" },
+    "id": { "type": "string", "pattern": "^D4-CAPSULE-[A-Z0-9][A-Z0-9._-]*$" },
+    "candidate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "path", "sha256", "fileSetSha256", "revision"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^(?:D4|P0)-CAND-[A-Z0-9][A-Z0-9._-]*$" },
+        "path": { "type": "string", "minLength": 1 },
+        "sha256": { "$ref": "#/$defs/sha256" },
+        "fileSetSha256": { "$ref": "#/$defs/sha256" },
+        "revision": { "$ref": "#/$defs/revision" }
+      }
+    },
+    "auditScope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "mode", "sourceBaseline", "machineDiff", "dependencyClosure"],
+      "properties": {
+        "kind": { "enum": ["initial-d4-v1", "post-p0-d4-v1"] },
+        "mode": { "enum": ["full", "delta"] },
+        "sourceBaseline": {
+          "oneOf": [
+            { "$ref": "#/$defs/baselineReference" },
+            { "type": "null" }
+          ]
+        },
+        "machineDiff": {
+          "oneOf": [
+            { "$ref": "#/$defs/artifactReference" },
+            { "type": "null" }
+          ]
+        },
+        "dependencyClosure": {
+          "$ref": "#/$defs/artifactReference",
+          "description": "Immutable manifest of every validator/policy/evidence dependency included in sanitizedRoot."
+        }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "kind": { "const": "initial-d4-v1" } }, "required": ["kind"] },
+          "then": {
+            "properties": {
+              "mode": { "const": "full" },
+              "sourceBaseline": { "type": "null" },
+              "machineDiff": { "type": "null" }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "kind": { "const": "post-p0-d4-v1" } }, "required": ["kind"] },
+          "then": {
+            "properties": {
+              "sourceBaseline": { "$ref": "#/$defs/baselineReference" },
+              "machineDiff": { "$ref": "#/$defs/artifactReference" }
+            }
+          }
+        }
+      ],
+      "description": "Mode never weakens candidate/full-input coverage or the installed policy command set. Post-P0 always includes historical B0 canonical bytes, the complete P0-CAND canonical set, a machine diff, and dependency closure; full versus delta changes semantic review scope only."
+    },
+    "auditPolicy": {
+      "$ref": "#/$defs/policyReference",
+      "description": "Hash-pinned d4_audit_policy_manifest. The validator must reconstruct it from the actual installed skill and exact built-in command compiler; the project copy is not trusted."
+    },
+    "runtimeAllowlist": {
+      "$ref": "#/$defs/runtimeAllowlistReference",
+      "description": "Hash-pinned d4_runtime_allowlist. Policy entrypoints/imports execute only from sanitizedRoot/_policy_runtime; outside sanitizedRoot only its externally pinned Python/Git runtime and exact provenance verifier config/adapter closure may be read."
+    },
+    "assemblyAttestation": {
+      "$ref": "#/$defs/assemblyAttestationReference",
+      "description": "Cycle-free d4_capsule_assembly_attestation created before this capsule; it binds candidate revision, full source-tree/input digest, dependency closure, and the exact three preflight outputs."
+    },
+    "capsuleAssemblyProvenance": {
+      "$ref": "#/$defs/artifactReference",
+      "description": "Outer provenance_verification whose subject is assemblyAttestation. An operator-pinned query/signature must independently bind actual full source enumeration and exact SOURCE-STATE/REVISION/TREE argv, exits, and output hashes."
+    },
+    "p0LifecycleTransition": {
+      "oneOf": [
+        { "$ref": "#/$defs/transitionProofReference" },
+        { "type": "null" }
+      ],
+      "description": "Initial D4 requires null. Post-P0 D4 requires exactly one cycle-free P0 transition attestation, closed complete write log, and external actual-operation provenance created after P0-CAND freeze; all three lanes share this exact proof."
+    },
+    "createdAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" },
+    "sanitizedRoot": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Project-relative immutable sanitized-copy root made before all three D4 lanes."
+    },
+    "inputs": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/input" }
+    },
+    "inputSetSha256": {
+      "$ref": "#/$defs/sha256",
+      "description": "SHA-256 of UTF-8 json.dumps(inputs sorted by (role,sourcePath,capsulePath), ensure_ascii=False, sort_keys=True, separators=(',', ':'))."
+    },
+    "preflight": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/commandRecord" },
+      "allOf": [
+        { "contains": { "properties": { "checkId": { "const": "D4-PREFLIGHT-SOURCE-STATE-001" } }, "required": ["checkId"] }, "minContains": 1, "maxContains": 1 },
+        { "contains": { "properties": { "checkId": { "const": "D4-PREFLIGHT-REVISION-001" } }, "required": ["checkId"] }, "minContains": 1, "maxContains": 1 },
+        { "contains": { "properties": { "checkId": { "const": "D4-PREFLIGHT-TREE-001" } }, "required": ["checkId"] }, "minContains": 1, "maxContains": 1 }
+      ],
+      "description": "Must exact-cover auditPolicy.preflightCommands after resolving only fixed candidate/runtime tokens. All outputs are raw immutable bytes rehashed locally and bound by assemblyAttestation plus outer provenance."
+    },
+    "requiredAuditCommands": {
+      "type": "array",
+      "minItems": 3,
+      "items": { "$ref": "#/$defs/auditCommand" },
+      "allOf": [
+        {
+          "contains": { "properties": { "auditTrack": { "const": "consistency" } } },
+          "minContains": 1
+        },
+        {
+          "contains": { "properties": { "auditTrack": { "const": "roblox-readiness" } } },
+          "minContains": 1
+        },
+        {
+          "contains": { "properties": { "auditTrack": { "const": "clean-room" } } },
+          "minContains": 1
+        }
+      ],
+      "description": "Closed lane/check command contract. checkId values are globally unique; each request selects exactly its lane's IDs and each attestation must exact-cover those commands."
+    },
+    "denyCategories": {
+      "const": [
+        "conversation-history",
+        "worker-identity",
+        "prior-findings",
+        "expected-verdict",
+        "e0-capability-probe",
+        "handoff-conversation",
+        "self-evaluation"
+      ]
+    }
+  },
+  "$defs": {
+    "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "policyReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "path", "sha256", "compiledPolicySha256"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^D4-POLICY-[A-Z0-9][A-Z0-9._-]*$" },
+        "path": { "type": "string", "minLength": 1 },
+        "sha256": { "$ref": "#/$defs/sha256" },
+        "compiledPolicySha256": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "artifactReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256"],
+      "properties": {
+        "path": { "type": "string", "minLength": 1 },
+        "sha256": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "assemblyAttestationReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "path", "sha256"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^D4-CAPSULE-ASSEMBLY-[A-Z0-9][A-Z0-9._-]*$" },
+        "path": { "type": "string", "minLength": 1 },
+        "sha256": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "transitionProofReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["attestation", "writeLog", "provenanceVerification"],
+      "properties": {
+        "attestation": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["id", "path", "sha256"],
+          "properties": {
+            "id": { "type": "string", "pattern": "^LTA-P0-[A-Z0-9][A-Z0-9._-]*$" },
+            "path": { "type": "string", "minLength": 1 },
+            "sha256": { "$ref": "#/$defs/sha256" }
+          }
+        },
+        "writeLog": { "$ref": "#/$defs/artifactReference" },
+        "provenanceVerification": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["id", "path", "sha256"],
+          "properties": {
+            "id": { "type": "string", "pattern": "^PV-P0-TRANSITION-[A-Z0-9][A-Z0-9._-]*$" },
+            "path": { "type": "string", "minLength": 1 },
+            "sha256": { "$ref": "#/$defs/sha256" }
+          }
+        }
+      }
+    },
+    "revision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "value", "snapshotRoot", "gitStatusEvidence"],
+      "properties": {
+        "kind": { "enum": ["commit", "snapshot"] },
+        "value": { "type": "string", "minLength": 1 },
+        "snapshotRoot": { "type": ["string", "null"] },
+        "gitStatusEvidence": { "type": ["string", "null"] }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "kind": { "const": "commit" } }, "required": ["kind"] },
+          "then": { "properties": { "value": { "pattern": "^[a-f0-9]{40}(?:[a-f0-9]{24})?$" }, "snapshotRoot": { "type": "null" } } }
+        },
+        {
+          "if": { "properties": { "kind": { "const": "snapshot" } }, "required": ["kind"] },
+          "then": { "properties": { "snapshotRoot": { "type": "string", "minLength": 1 }, "gitStatusEvidence": { "type": "string", "minLength": 1 } } }
+        }
+      ]
+    },
+    "baselineReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "path", "sha256", "fileSetSha256"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^B0-[A-Z0-9][A-Z0-9._-]*$" },
+        "path": { "type": "string", "minLength": 1 },
+        "sha256": { "$ref": "#/$defs/sha256" },
+        "fileSetSha256": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "runtimeAllowlistReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256", "digestSha256"],
+      "properties": {
+        "path": { "type": "string", "minLength": 1 },
+        "sha256": { "$ref": "#/$defs/sha256" },
+        "digestSha256": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "input": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sourcePath", "capsulePath", "bytes", "sha256", "role"],
+      "properties": {
+        "sourcePath": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Original project-relative path; canonical entries must cover the candidate manifest file set."
+        },
+        "capsulePath": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Project-relative immutable copy path below sanitizedRoot; bytes and sha256 are verified from this path."
+        },
+        "bytes": { "type": "integer", "minimum": 0 },
+        "sha256": { "$ref": "#/$defs/sha256" },
+        "role": {
+          "enum": [
+            "canonical", "baseline-canonical", "validation", "evidence", "repo-fact",
+            "machine-diff", "dependency"
+          ]
+        }
+      }
+    },
+    "commandRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["checkId", "argv", "cwd", "expectedExitCode", "actualExitCode", "outputPath", "outputSha256"],
+      "properties": {
+        "checkId": {
+          "enum": ["D4-PREFLIGHT-SOURCE-STATE-001", "D4-PREFLIGHT-REVISION-001", "D4-PREFLIGHT-TREE-001"]
+        },
+        "argv": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "cwd": { "type": "string", "minLength": 1 },
+        "expectedExitCode": { "const": 0 },
+        "actualExitCode": { "const": 0 },
+        "outputPath": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Project-relative immutable evidence path containing the exact command output."
+        },
+        "outputSha256": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "auditCommand": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["auditTrack", "checkId", "argv", "cwd", "expectedExitCode"],
+      "properties": {
+        "auditTrack": { "enum": ["consistency", "roblox-readiness", "clean-room"] },
+        "checkId": { "type": "string", "pattern": "^[A-Z0-9][A-Z0-9._-]*$" },
+        "argv": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 },
+          "description": "Exact argv compiled from auditPolicy and runtimeAllowlist. Run with shell=false."
+        },
+        "cwd": { "type": "string", "minLength": 1 },
+        "expectedExitCode": { "type": "integer" }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": { "candidate": { "properties": { "id": { "pattern": "^D4-CAND-" } }, "required": ["id"] } },
+        "required": ["candidate"]
+      },
+      "then": {
+        "properties": {
+          "auditScope": {
+            "properties": { "kind": { "const": "initial-d4-v1" }, "mode": { "const": "full" } }
+          },
+          "p0LifecycleTransition": { "type": "null" }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": { "candidate": { "properties": { "id": { "pattern": "^P0-CAND-" } }, "required": ["id"] } },
+        "required": ["candidate"]
+      },
+      "then": {
+        "properties": {
+          "auditScope": { "properties": { "kind": { "const": "post-p0-d4-v1" } } },
+          "p0LifecycleTransition": { "$ref": "#/$defs/transitionProofReference" }
+        }
+      }
+    }
+  ]
+}

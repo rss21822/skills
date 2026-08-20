@@ -13,7 +13,7 @@
 
 P0 は選択の記録が多い。Change Request 1件で6群の選択を確定することもある。**記録の構造を間違えると、後から選択を変えたときに片側更新が起きる。**
 
-P0 開始承認は `templates/p0_start_handoff.md` で人間本人へ B0 と許可 scope を提示し、`DECISIONS.md` に記録する。P0 内の個別選択承認とは別記録、D5 承認とも別 ID。P0 完了後は `P0-CAND-n` を固定し、B0→candidate の D4 差分再監査合格後に同一 **file-set hash** で B1 へ昇格する。
+P0 開始承認は `templates/p0_start_handoff.md` で人間本人へ B0 と許可 scope を提示し、`DECISIONS.md` に記録する。P0 内の個別選択承認とは別記録、最終 P0契約承認、D5 承認とも別 ID。P0内の個別選択は有効な委任下で `[AI-APPROVED]` にできるが、**P0開始と最終 `p0-contract` gateはhuman-directだけ**。P0 完了後は `P0-CAND-n` を固定し、B0開始状態・全canonical/staging mutation target scope・P0-start/P0-contractの順序・全in-scope actual write・未記録書込み0・candidate結果をauthority側で証明した外部provenance付きlifecycle transition attestationをcandidate外に固定する。これをpost-P0 D4で検証し、B0→candidate の3系統差分再監査合格後に同一 **file-set hash** で B1 へ昇格する。
 
 ## 1. 承認内訳の正本は1箇所
 
@@ -80,7 +80,7 @@ Owner が「以降は AI が承認判断してよい」と委任した場合、�
         （上流 skill が [HUMAN] 操作として定める全項目）
 ```
 
-**委任されたのはP0工程内の `[AI-APPROVED]` 判断であって、外部状態を変える権限ではない。** ここを曖昧にすると、AI が publish や商品 ID に手を出す余地ができる。
+**委任されたのはP0工程内の個別 `[AI-APPROVED]` 判断であって、P0開始・最終 `p0-contract` gate・外部状態を変える権限ではない。** ここを曖昧にすると、AI が最終契約承認や publish、商品 ID に手を出す余地ができる。
 
 ### 人間専権とAI承認をタグで分離する
 
@@ -90,7 +90,7 @@ Owner が「以降は AI が承認判断してよい」と委任した場合、�
 
 - AI行使を `[DECISION]` と呼んでいないか
 - `[HUMAN]` 行をAIがCompletedにする経路がないか
-- `[AI-APPROVED]` をGate 1、D5、formal document昇格、commit、外部状態変更へ流用していないか
+- `[AI-APPROVED]` をP0開始、最終 `p0-contract`、Gate 1、D5、formal document昇格、commit、外部状態変更へ流用していないか
 
 **委任の内容を複製せず参照で表す**のが要点。範囲と対象外の正本は委任 `[DECISION]` 1箇所に置く。
 
@@ -100,7 +100,7 @@ Owner が「以降は AI が承認判断してよい」と委任した場合、�
 - **委任の範囲外を判断しない**。実測を必要とする決定、承認済み `[DECISION]` の変更を伴うものは、材料を揃えて Owner へ返す
 - 承認記録を `[AI-APPROVED]` とし、**委任の人間 `[DECISION]` IDを参照**する。「AI が承認した」だけでは根拠が辿れない
 - `[PROPOSAL]` を `[DECISION]` へ変えない。formal documentの `Status`／`Last approved` も変えない
-- 承認の性質を書き分ける: **「照合の承認可」「P0管理WPのVerified」「P0の `[AI-APPROVED]`」「人間D5承認」は別の事象**
+- 承認の性質を書き分ける: **「照合の承認可」「P0管理WPのVerified」「P0個別 `[AI-APPROVED]`」「人間direct `p0-contract`」「人間D5承認」は別の事象**
 
 ---
 

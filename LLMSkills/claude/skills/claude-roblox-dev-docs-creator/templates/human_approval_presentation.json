@@ -1,0 +1,33 @@
+{
+  "schemaVersion": "1.0.0",
+  "challengeId": "HCH-{{PREFIX}}-P0-START-{{SEQUENCE}}",
+  "gateType": "p0-start",
+  "issuedAt": "{{ISO_8601_WITH_TIMEZONE}}",
+  "target": {
+    "kind": "baseline",
+    "id": "{{B0_ID}}",
+    "path": "{{B0_MANIFEST_PATH}}",
+    "sha256": "{{B0_MANIFEST_SHA256}}",
+    "fileSetSha256": "{{B0_FILE_SET_SHA256}}",
+    "revision": "{{B0_EXACT_REVISION}}"
+  },
+  "scope": {
+    "kind": "p0-start-v1",
+    "inventory": {
+      "path": "PROGRESS.md",
+      "section": "Proposed P0 closure inventory",
+      "fileSha256": "{{B0_HISTORICAL_PROGRESS_SHA256}}",
+      "inventoryId": "{{P0_CLOSURE_INVENTORY_ID}}",
+      "sourceItemIds": []
+    },
+    "p0ManagementWp": {
+      "id": "{{P0_MANAGEMENT_WP_ID}}",
+      "path": "docs/{{PREFIX}}_work_packages.md"
+    },
+    "productContentMutation": "inventory-rows-only",
+    "fixedProcedure": "p0-standard-six-step-v1",
+    "additionalScope": false
+  },
+  "targetScopeSha256": "{{CANONICAL_TARGET_AND_SCOPE_SHA256}}",
+  "canonicalResponse": "APPROVE HCH-{{PREFIX}}-P0-START-{{SEQUENCE}} {{CANONICAL_TARGET_AND_SCOPE_SHA256}}"
+}

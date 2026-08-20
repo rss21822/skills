@@ -1,0 +1,12 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "PSE-{{PREFIX}}-{{SUBJECT_TYPE_TOKEN_UPPERCASE}}-{{SEQUENCE}}",
+  "authority": "{{TRUSTED_RUNTIME_AUTHORITY}}",
+  "algorithm": "{{ed25519|ecdsa-p256-sha256|rsa-pss-sha256}}",
+  "keyId": "{{PINNED_KEY_ID}}",
+  "verifiedAt": "{{ISO_8601_WITH_TIMEZONE}}",
+  "claimsSha256": "{{CANONICAL_CLAIMS_SHA256}}",
+  "trustAnchorArtifact": { "path": "{{PINNED_TRUST_ANCHOR_PATH}}", "sha256": "{{PINNED_TRUST_ANCHOR_SHA256}}" },
+  "signedPayloadArtifact": { "path": "{{SIGNED_PAYLOAD_PATH}}", "sha256": "{{SIGNED_PAYLOAD_SHA256}}" },
+  "signatureArtifact": { "path": "{{SIGNATURE_PATH}}", "sha256": "{{SIGNATURE_SHA256}}" }
+}

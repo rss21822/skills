@@ -26,6 +26,8 @@ import sys
 import tempfile
 from pathlib import Path
 
+from strict_json import loads as strict_json_loads
+
 FIELDS = ["Document ID", "Version", "Status", "Canonical domain", "Owner",
           "Inputs", "Downstream", "Last approved"]
 
@@ -407,7 +409,7 @@ def main() -> int:
         if not cfg_path.is_file():
             print(f"ERROR: --config が存在しない: {cfg_path}", file=sys.stderr)
             return 2
-        cfg = json.loads(cfg_path.read_text(encoding="utf-8"))
+        cfg = strict_json_loads(cfg_path.read_text(encoding="utf-8"))
         globs = args.globs or cfg.get("index_globs") or cfg.get("doc_globs") or DEFAULT_GLOBS
         excludes = cfg.get("exclude_globs", [])
         config_project = cfg.get("manifest_project")
@@ -446,7 +448,7 @@ def main() -> int:
     existing = None
     if existing_path is not None:
         try:
-            existing = json.loads(existing_path.read_text(encoding="utf-8"))
+            existing = strict_json_loads(existing_path.read_text(encoding="utf-8"))
         except json.JSONDecodeError as exc:
             print(f"ERROR: 既存 manifest が不正: {existing_path}: {exc}", file=sys.stderr)
             return 2
@@ -455,6 +457,26 @@ def main() -> int:
         args.project or config_project, args.prefix or config_prefix,
         args.baseline_id if args.baseline_id is not None else BASELINE_UNSET,
         args.approve_non_formal)
+    if target is not None and args.emit in ("manifest", "both"):
+        try:
+            manifest_rel = target.resolve().relative_to(root).as_posix()
+        except ValueError:
+            manifest_rel = None
+        if manifest_rel is not None and all(
+                item["path"] != manifest_rel for item in manifest["documents"]):
+            manifest["documents"].append({
+                "id": f"{manifest['prefix']}-DOCS-MANIFEST",
+                "path": manifest_rel,
+                "domain": "machine-readable document inventory",
+                "required": True,
+                "status": "approved" if args.approve_non_formal else "draft",
+                "version": "1.0.0",
+                "phase": "D0",
+                "trigger": None,
+            })
+            manifest["documents"].sort(
+                key=lambda item: (item.get("phase", ""), item["path"]))
+            validate_manifest_shape(manifest)
 
     if args.emit in ("index", "both"):
         index_text = make_index_from_manifest(manifest)

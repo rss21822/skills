@@ -6,7 +6,7 @@
   "additionalProperties": false,
   "required": [
     "schemaVersion", "baselineId", "stage", "project", "prefix", "createdAt",
-    "revision", "parentBaselineId", "promotedFrom", "approvalId",
+    "revision", "admission", "gddGate1", "d15Measurements", "p0Transition", "parentBaselineId", "promotedFrom", "approvalId",
     "fileSetSha256", "files", "auditRecords"
   ],
   "properties": {
@@ -15,37 +15,76 @@
     "stage": { "enum": ["D4-CANDIDATE", "P0-CANDIDATE", "B0", "B1", "B2"] },
     "project": { "type": "string", "minLength": 1 },
     "prefix": { "type": "string", "pattern": "^[A-Z0-9]{2,6}$" },
-    "createdAt": { "type": "string", "format": "date-time" },
+    "createdAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" },
     "revision": {
       "type": "object",
       "additionalProperties": false,
       "required": ["kind", "value", "snapshotRoot", "gitStatusEvidence"],
       "properties": {
-        "kind": { "enum": ["commit", "snapshot"] },
+        "kind": {
+          "const": "snapshot",
+          "description": "Lifecycle v1 is snapshot-only. Commit-backed candidates/baselines cannot become W0-eligible until a future schema adds externally authenticated VCS-operation and loaded-Git-runtime proof."
+        },
         "value": { "type": "string", "minLength": 1 },
-        "snapshotRoot": { "type": ["string", "null"] },
-        "gitStatusEvidence": { "type": ["string", "null"] }
+        "snapshotRoot": { "type": "string", "minLength": 1, "description": "Project-relative immutable snapshot root whose complete regular-file set exact-matches files. Every member is an independently copied, link-count-1 file with a unique OS identity disjoint from canonical/staging sources; symlink, junction, reparse point, hardlink, and extra byte are forbidden and are semantic-validator failures." },
+        "gitStatusEvidence": { "type": "string", "minLength": 1 }
+      }
+    },
+    "admission": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "d15TriggerRegistry", "deficiencies"],
+      "properties": {
+        "status": { "enum": ["complete", "deficient-audit-admission"] },
+        "d15TriggerRegistry": {
+          "oneOf": [
+            { "$ref": "#/$defs/triggerRegistryReference" },
+            { "type": "null" }
+          ],
+          "description": "Reference to schema-valid required_specs. applicableMeasurementCount is 0 without feasibility_report and 1 with its fixed combined-suite contract; null means registry missing."
+        },
+        "deficiencies": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/admissionDeficiency" }
+        }
       },
       "allOf": [
         {
-          "if": { "properties": { "kind": { "const": "commit" } }, "required": ["kind"] },
+          "if": { "properties": { "status": { "const": "complete" } }, "required": ["status"] },
           "then": {
             "properties": {
-              "value": { "pattern": "^[a-f0-9]{40}(?:[a-f0-9]{24})?$" },
-              "snapshotRoot": { "type": "null" }
+              "d15TriggerRegistry": { "$ref": "#/$defs/triggerRegistryReference" },
+              "deficiencies": { "maxItems": 0 }
             }
           }
         },
         {
-          "if": { "properties": { "kind": { "const": "snapshot" } }, "required": ["kind"] },
-          "then": {
-            "properties": {
-              "snapshotRoot": { "type": "string", "minLength": 1 },
-              "gitStatusEvidence": { "type": "string", "minLength": 1 }
-            }
-          }
+          "if": { "properties": { "status": { "const": "deficient-audit-admission" } }, "required": ["status"] },
+          "then": { "properties": { "deficiencies": { "minItems": 1 } } }
         }
-      ]
+      ],
+      "description": "AUDIT admission may freeze a deficient D4 candidate so independent D4 can report missing prerequisites. Only D4-CANDIDATE may be deficient; no deficient candidate can promote to B0."
+    },
+    "gddGate1": {
+      "oneOf": [
+        { "$ref": "#/$defs/gateRecordReference" },
+        { "type": "null" }
+      ],
+      "description": "The original gdd-gate1 machine record itself is inherited unchanged. Its targetArtifact is the exact Gate1-approved Draft GDD bytes and must match every complete D4/P0 candidate plus B0/B1. B2 may change only fixed D5 formal metadata; its normalized GDD body digest must still equal B1 and the W0 package binds the transformation. null is allowed only for a deficient D4 audit-admission candidate that records missing-gdd-gate1 and can never promote."
+    },
+    "d15Measurements": {
+      "type": "array",
+      "maxItems": 1,
+      "items": { "$ref": "#/$defs/d15MeasurementBinding" },
+      "description": "Exactly zero or one combined-suite D1.5 measurement and its outer verification, inherited unchanged. required_specs without feasibility_report requires zero; feasibility_report requires exactly one feasibility_report-combined-v1 pass."
+    },
+    "p0Transition": {
+      "oneOf": [
+        { "$ref": "#/$defs/transitionProofReference" },
+        { "type": "null" }
+      ],
+      "description": "D4-CAND/B0/P0-CAND are null. B1/B2 bind the same cycle-free P0 LTA/write-log/PV proof already required by every post-P0 D4 audit capsule/request; semantic validation exact-compares those refs. This never appears inside P0-CAND and creates no hash cycle."
     },
     "parentBaselineId": { "type": ["string", "null"] },
     "promotedFrom": { "type": ["string", "null"] },
@@ -81,7 +120,7 @@
         "type": "object",
         "additionalProperties": false,
         "required": [
-          "id", "auditTrack", "path", "sha256", "candidateBaseline",
+          "id", "auditTrack", "path", "sha256", "auditCapsule", "auditRequest", "auditorAttestation", "provenanceVerification", "candidateBaseline",
           "criticalCount", "majorCount", "verdict"
         ],
         "properties": {
@@ -89,6 +128,15 @@
           "auditTrack": { "enum": ["consistency", "roblox-readiness", "clean-room"] },
           "path": { "type": "string", "minLength": 1 },
           "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "auditCapsule": {
+          "allOf": [
+            { "$ref": "#/$defs/artifactReference" },
+            { "description": "Capsule must contain one shared cycle-free assembly attestation and outer provenance refs binding policy-fixed complete SOURCE-STATE/REVISION/TREE preflight facts." }
+          ]
+        },
+          "auditRequest": { "$ref": "#/$defs/artifactReference" },
+          "auditorAttestation": { "$ref": "#/$defs/artifactReference" },
+          "provenanceVerification": { "$ref": "#/$defs/artifactReference" },
           "candidateBaseline": {
             "type": "object",
             "additionalProperties": false,
@@ -108,6 +156,94 @@
     }
   },
   "$defs": {
+    "d15MeasurementBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["triggerId", "experimentId", "evidence", "provenanceVerification", "result"],
+      "properties": {
+        "triggerId": { "const": "feasibility_report" },
+        "experimentId": { "const": "feasibility_report-combined-v1" },
+        "evidence": { "$ref": "#/$defs/gateRecordReference" },
+        "provenanceVerification": { "$ref": "#/$defs/artifactReference" },
+        "result": { "const": "pass" }
+      }
+    },
+    "triggerRegistryReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256", "applicableMeasurementCount"],
+      "properties": {
+        "path": { "type": "string", "minLength": 1 },
+        "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "applicableMeasurementCount": { "type": "integer", "minimum": 0, "maximum": 1 }
+      }
+    },
+    "admissionDeficiency": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["code", "artifactPath", "detail"],
+      "properties": {
+        "code": {
+          "enum": [
+            "missing-gdd-gate1",
+            "missing-d1.5-trigger-registry",
+            "incomplete-d1.5-evidence",
+            "missing-required-document",
+            "invalid-machine-contract",
+            "unresolved-d0-d3-gate"
+          ]
+        },
+        "artifactPath": { "type": ["string", "null"], "minLength": 1 },
+        "detail": { "type": "string", "minLength": 1 }
+      }
+    },
+    "gateRecordReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "path", "sha256"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "path": { "type": "string", "minLength": 1 },
+        "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+      }
+    },
+    "transitionProofReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["attestation", "writeLog", "provenanceVerification"],
+      "properties": {
+        "attestation": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["id", "path", "sha256"],
+          "properties": {
+            "id": { "type": "string", "pattern": "^LTA-P0-[A-Z0-9][A-Z0-9._-]*$" },
+            "path": { "type": "string", "minLength": 1 },
+            "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+          }
+        },
+        "writeLog": { "$ref": "#/$defs/artifactReference" },
+        "provenanceVerification": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["id", "path", "sha256"],
+          "properties": {
+            "id": { "type": "string", "pattern": "^PV-P0-TRANSITION-[A-Z0-9][A-Z0-9._-]*$" },
+            "path": { "type": "string", "minLength": 1 },
+            "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+          }
+        }
+      }
+    },
+    "artifactReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256"],
+      "properties": {
+        "path": { "type": "string", "minLength": 1 },
+        "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+      }
+    },
     "completeAuditRecords": {
       "type": "array",
       "minItems": 3,
@@ -133,6 +269,37 @@
   },
   "allOf": [
     {
+      "if": {
+        "properties": {
+          "admission": {
+            "properties": { "status": { "const": "complete" } },
+            "required": ["status"]
+          }
+        },
+        "required": ["admission"]
+      },
+      "then": { "properties": { "gddGate1": { "$ref": "#/$defs/gateRecordReference" } } }
+    },
+    {
+      "if": { "properties": { "gddGate1": { "type": "null" } }, "required": ["gddGate1"] },
+      "then": {
+        "properties": {
+          "admission": {
+            "properties": {
+              "status": { "const": "deficient-audit-admission" },
+              "deficiencies": {
+                "contains": {
+                  "properties": { "code": { "const": "missing-gdd-gate1" } },
+                  "required": ["code"]
+                },
+                "minContains": 1
+              }
+            }
+          }
+        }
+      }
+    },
+    {
       "if": { "properties": { "stage": { "const": "D4-CANDIDATE" } }, "required": ["stage"] },
       "then": {
         "properties": {
@@ -140,6 +307,13 @@
           "parentBaselineId": { "type": "null" },
           "promotedFrom": { "type": "null" },
           "approvalId": { "type": "null" },
+          "p0Transition": { "type": "null" },
+          "gddGate1": {
+            "oneOf": [
+              { "$ref": "#/$defs/gateRecordReference" },
+              { "type": "null" }
+            ]
+          },
           "auditRecords": { "maxItems": 0 }
         }
       }
@@ -152,6 +326,14 @@
           "parentBaselineId": { "pattern": "^B0-[A-Z0-9][A-Z0-9._-]*$" },
           "promotedFrom": { "type": "null" },
           "approvalId": { "type": "null" },
+          "p0Transition": { "type": "null" },
+          "admission": {
+            "properties": {
+              "status": { "const": "complete" },
+              "deficiencies": { "maxItems": 0 }
+            }
+          },
+          "gddGate1": { "$ref": "#/$defs/gateRecordReference" },
           "auditRecords": { "maxItems": 0 }
         }
       }
@@ -164,7 +346,30 @@
           "parentBaselineId": { "type": "null" },
           "promotedFrom": { "pattern": "^D4-CAND-[A-Z0-9][A-Z0-9._-]*$" },
           "approvalId": { "type": "null" },
-          "auditRecords": { "$ref": "#/$defs/completeAuditRecords" }
+          "p0Transition": { "type": "null" },
+          "admission": {
+            "properties": {
+              "status": { "const": "complete" },
+              "deficiencies": { "maxItems": 0 }
+            }
+          },
+          "gddGate1": { "$ref": "#/$defs/gateRecordReference" },
+          "auditRecords": {
+            "allOf": [
+              { "$ref": "#/$defs/completeAuditRecords" },
+              {
+                "items": {
+                  "properties": {
+                    "candidateBaseline": {
+                      "properties": {
+                        "id": { "pattern": "^D4-CAND-[A-Z0-9][A-Z0-9._-]*$" }
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
         }
       }
     },
@@ -176,7 +381,30 @@
           "parentBaselineId": { "pattern": "^B0-[A-Z0-9][A-Z0-9._-]*$" },
           "promotedFrom": { "pattern": "^P0-CAND-[A-Z0-9][A-Z0-9._-]*$" },
           "approvalId": { "type": "null" },
-          "auditRecords": { "$ref": "#/$defs/completeAuditRecords" }
+          "p0Transition": { "$ref": "#/$defs/transitionProofReference" },
+          "admission": {
+            "properties": {
+              "status": { "const": "complete" },
+              "deficiencies": { "maxItems": 0 }
+            }
+          },
+          "gddGate1": { "$ref": "#/$defs/gateRecordReference" },
+          "auditRecords": {
+            "allOf": [
+              { "$ref": "#/$defs/completeAuditRecords" },
+              {
+                "items": {
+                  "properties": {
+                    "candidateBaseline": {
+                      "properties": {
+                        "id": { "pattern": "^P0-CAND-[A-Z0-9][A-Z0-9._-]*$" }
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
         }
       }
     },
@@ -188,7 +416,30 @@
           "parentBaselineId": { "pattern": "^B1-[A-Z0-9][A-Z0-9._-]*$" },
           "promotedFrom": { "type": "null" },
           "approvalId": { "type": "string", "minLength": 1 },
-          "auditRecords": { "$ref": "#/$defs/completeAuditRecords" }
+          "p0Transition": { "$ref": "#/$defs/transitionProofReference" },
+          "admission": {
+            "properties": {
+              "status": { "const": "complete" },
+              "deficiencies": { "maxItems": 0 }
+            }
+          },
+          "gddGate1": { "$ref": "#/$defs/gateRecordReference" },
+          "auditRecords": {
+            "allOf": [
+              { "$ref": "#/$defs/completeAuditRecords" },
+              {
+                "items": {
+                  "properties": {
+                    "candidateBaseline": {
+                      "properties": {
+                        "id": { "pattern": "^P0-CAND-[A-Z0-9][A-Z0-9._-]*$" }
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
         }
       }
     }

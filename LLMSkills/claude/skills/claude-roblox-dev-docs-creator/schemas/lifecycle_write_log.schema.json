@@ -1,0 +1,342 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/roblox-ai-development-os/lifecycle-write-log.schema.json",
+  "title": "Lifecycle Transition Complete Write Log",
+  "description": "Closed ordered log of every in-scope P0 or D5 transition mutation across canonical project, private staging, and result-artifact roots. Approval presentation/capture/PV evidence acquisition is a separate phase outside this mutation scope. The log/LTA/PV and D5 W0 proof-sealing artifacts are created only after monitor close and are explicit fixed exclusions, avoiding cycles. The semantic validator parses/rehashes this artifact, exact-compares count/set/sequence digests, rejects duplicate provider events, and independently checks no unlogged in-scope mutations. This local log is evidence bytes, not a trust root.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion", "id", "transitionType", "startedAt", "completedAt",
+    "entries", "entrySetSha256", "eventSequenceSha256", "noUnloggedWrites"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "1.0.0" },
+    "id": { "type": "string", "pattern": "^LTWL-(?:P0|D5)-[A-Z0-9][A-Z0-9._-]*$" },
+    "transitionType": { "enum": ["p0", "d5"] },
+    "startedAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" },
+    "completedAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" },
+    "entries": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/writeEvent" },
+      "description": "Strictly increasing contiguous sequence beginning at 1, then occurredAt; every eventId is globally unique. P0 and D5 transitions always contain one final seal event. Authorization is checked per event, not merely against the final net diff: net-zero restore does not erase an unauthorized event."
+    },
+    "entrySetSha256": {
+      "$ref": "#/$defs/sha256",
+      "description": "SHA-256 of UTF-8 json.dumps(entries sorted by sequence, ensure_ascii=False, sort_keys=True, separators=(',', ':'))."
+    },
+    "eventSequenceSha256": {
+      "$ref": "#/$defs/sha256",
+      "description": "SHA-256 of UTF-8 json.dumps(projection, ensure_ascii=False, sort_keys=True, separators=(',', ':')), where projection is entries sorted by sequence and each closed object has exactly sequence,eventId,operation,rootRole,path,beforeSha256,afterSha256,occurredAt,phase,classification,ruleId,sourceInventoryId,copySourceRootRole,copySourcePath,copySourceSha256; nullable fields remain null. Must equal transition claims."
+    },
+    "noUnloggedWrites": {
+      "const": true,
+      "description": "No unlogged mutation within the exact monitored roots/include set. Does not claim every host filesystem write; only fixed approval-evidence and post-monitor proof-sealing exclusions may be outside."
+    }
+  },
+  "$defs": {
+    "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "fileState": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["exists", "bytes", "sha256"],
+      "properties": {
+        "exists": { "type": "boolean" },
+        "bytes": { "type": ["integer", "null"], "minimum": 0 },
+        "sha256": {
+          "oneOf": [
+            { "$ref": "#/$defs/sha256" },
+            { "type": "null" }
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "exists": { "const": false } }, "required": ["exists"] },
+          "then": { "properties": { "bytes": { "type": "null" }, "sha256": { "type": "null" } } },
+          "else": { "properties": { "bytes": { "type": "integer", "minimum": 0 }, "sha256": { "$ref": "#/$defs/sha256" } } }
+        }
+      ]
+    },
+    "copySource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["rootRole", "path", "sha256"],
+      "properties": {
+        "rootRole": { "enum": ["canonical-project", "private-staging", "result-artifacts"] },
+        "path": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^(?![A-Za-z]:)(?!/)(?!.*(?:^|/)[.][.](?:/|$)).+$"
+        },
+        "sha256": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "writeEvent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sequence", "eventId", "operation", "rootRole", "path", "before", "after", "occurredAt", "phase", "classification", "ruleId", "sourceInventoryId", "copySource"],
+      "properties": {
+        "sequence": { "type": "integer", "minimum": 1 },
+        "eventId": { "type": "string", "minLength": 1 },
+        "operation": { "enum": ["create", "replace", "append", "delete", "monitor-seal"] },
+        "rootRole": {
+          "oneOf": [
+            { "enum": ["canonical-project", "private-staging", "result-artifacts"] },
+            { "type": "null" }
+          ]
+        },
+        "path": {
+          "oneOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "^(?![A-Za-z]:)(?!/)(?!.*(?:^|/)[.][.](?:/|$)).+$"
+            },
+            { "type": "null" }
+          ],
+          "description": "Normalized POSIX path relative to the matching monitored rootRole; no traversal, absolute path, symlink, junction, or reparse escape."
+        },
+        "before": { "oneOf": [{ "$ref": "#/$defs/fileState" }, { "type": "null" }] },
+        "after": { "oneOf": [{ "$ref": "#/$defs/fileState" }, { "type": "null" }] },
+        "occurredAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" },
+        "phase": {
+          "enum": [
+            "p0-inventory-content", "p0-preapproval-procedure", "p0-postapproval-metadata",
+            "p0-freeze-copy", "p0-freeze-manifest", "p0-freeze",
+            "p0-postfreeze-record", "p0-apply", "p0-seal",
+            "d5-staging", "d5-sync", "d5-allowed-diff", "d5-post-sync-manifest",
+            "d5-snapshot-copy", "d5-snapshot-manifest", "d5-seal"
+          ]
+        },
+        "classification": {
+          "enum": [
+            "inventory-content", "preapproval-procedural", "postapproval-metadata",
+            "snapshot-copy", "snapshot-manifest", "candidate-freeze", "postfreeze-record",
+            "canonical-apply", "transition-seal", "d5-staging", "d5-allowed-sync", "d5-result-artifact"
+          ]
+        },
+        "ruleId": {
+          "enum": [
+            "p0-inventory-row-affected-doc-v1", "p0-fixed-preapproval-procedure-v1",
+            "p0-fixed-postapproval-metadata-v1", "p0-snapshot-file-copy-v1",
+            "p0-snapshot-manifest-v1", "p0-candidate-freeze-v1",
+            "p0-contract-machine-record-v1", "p0-candidate-exact-atomic-apply-v1",
+            "p0-single-transition-seal-v1",
+            "d5-decisions-append-block-v1", "d5-progress-controlled-fields-v1",
+            "d5-progress-history-block-v1", "d5-progress-composite-v1", "d5-changelog-append-block-v1",
+            "d5-formal-document-promotion-v1", "d5-docs-index-sync-v1",
+            "d5-docs-manifest-sync-v1",
+            "d5-first-wp-handoff-metadata-v1", "d5-post-sync-manifest-v1",
+            "d5-allowed-diff-artifact-v1", "d5-snapshot-file-copy-v1",
+            "d5-b2-baseline-manifest-v1", "d5-snapshot-immutability-seal-v1"
+          ]
+        },
+        "sourceInventoryId": {
+          "type": ["string", "null"],
+          "minLength": 1,
+          "description": "Exact B0 historical PROGRESS inventory row ID for an inventory-content event; null for fixed procedural, postapproval, D5, and sealing events."
+        },
+        "copySource": {
+          "oneOf": [
+            { "$ref": "#/$defs/copySource" },
+            { "type": "null" }
+          ],
+          "description": "Required source root/path/hash only for snapshot-copy phases; semantic validation requires destination after.sha256 to equal source sha256 and exact-cover every baseline file once."
+        }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "operation": { "const": "monitor-seal" } }, "required": ["operation"] },
+          "then": {
+            "properties": {
+              "rootRole": { "type": "null" }, "path": { "type": "null" },
+              "before": { "type": "null" }, "after": { "type": "null" }
+            }
+          },
+          "else": {
+            "properties": {
+              "rootRole": { "enum": ["canonical-project", "private-staging", "result-artifacts"] },
+              "path": { "type": "string", "minLength": 1, "pattern": "^(?![A-Za-z]:)(?!/)(?!.*(?:^|/)[.][.](?:/|$)).+$" },
+              "before": { "$ref": "#/$defs/fileState" },
+              "after": { "$ref": "#/$defs/fileState" }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "phase": { "const": "p0-inventory-content" } }, "required": ["phase"] },
+          "then": { "properties": { "classification": { "const": "inventory-content" }, "ruleId": { "const": "p0-inventory-row-affected-doc-v1" }, "sourceInventoryId": { "type": "string", "minLength": 1 }, "copySource": { "type": "null" } } }
+        },
+        {
+          "if": { "properties": { "phase": { "const": "p0-preapproval-procedure" } }, "required": ["phase"] },
+          "then": { "properties": { "classification": { "const": "preapproval-procedural" }, "ruleId": { "const": "p0-fixed-preapproval-procedure-v1" }, "sourceInventoryId": { "type": "null" }, "copySource": { "type": "null" } } }
+        },
+        {
+          "if": { "properties": { "phase": { "const": "p0-postapproval-metadata" } }, "required": ["phase"] },
+          "then": { "properties": { "classification": { "const": "postapproval-metadata" }, "ruleId": { "const": "p0-fixed-postapproval-metadata-v1" }, "sourceInventoryId": { "type": "null" }, "copySource": { "type": "null" } } }
+        },
+        {
+          "if": { "properties": { "phase": { "const": "p0-freeze" } }, "required": ["phase"] },
+          "then": { "properties": { "operation": { "const": "monitor-seal" }, "classification": { "const": "candidate-freeze" }, "ruleId": { "const": "p0-candidate-freeze-v1" }, "sourceInventoryId": { "type": "null" }, "copySource": { "type": "null" } } }
+        },
+        {
+          "if": { "properties": { "phase": { "const": "p0-freeze-copy" } }, "required": ["phase"] },
+          "then": {
+            "properties": {
+              "rootRole": { "const": "result-artifacts" }, "classification": { "const": "snapshot-copy" },
+              "ruleId": { "const": "p0-snapshot-file-copy-v1" }, "sourceInventoryId": { "type": "null" },
+              "copySource": { "allOf": [{ "$ref": "#/$defs/copySource" }, { "properties": { "rootRole": { "const": "private-staging" } } }] }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "phase": { "const": "p0-freeze-manifest" } }, "required": ["phase"] },
+          "then": { "properties": { "rootRole": { "const": "result-artifacts" }, "classification": { "const": "snapshot-manifest" }, "ruleId": { "const": "p0-snapshot-manifest-v1" }, "sourceInventoryId": { "type": "null" }, "copySource": { "type": "null" } } }
+        },
+        {
+          "if": { "properties": { "phase": { "const": "p0-postfreeze-record" } }, "required": ["phase"] },
+          "then": { "properties": { "classification": { "const": "postfreeze-record" }, "ruleId": { "const": "p0-contract-machine-record-v1" }, "sourceInventoryId": { "type": "null" }, "copySource": { "type": "null" } } }
+        },
+        {
+          "if": { "properties": { "phase": { "const": "p0-apply" } }, "required": ["phase"] },
+          "then": {
+            "properties": {
+              "rootRole": { "const": "canonical-project" }, "classification": { "const": "canonical-apply" },
+              "ruleId": { "const": "p0-candidate-exact-atomic-apply-v1" }, "sourceInventoryId": { "type": "null" },
+              "copySource": { "allOf": [{ "$ref": "#/$defs/copySource" }, { "properties": { "rootRole": { "const": "result-artifacts" } } }] }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "phase": { "const": "p0-seal" } }, "required": ["phase"] },
+          "then": { "properties": { "operation": { "const": "monitor-seal" }, "classification": { "const": "transition-seal" }, "ruleId": { "const": "p0-single-transition-seal-v1" }, "sourceInventoryId": { "type": "null" }, "copySource": { "type": "null" } } }
+        },
+        {
+          "if": { "properties": { "phase": { "const": "d5-staging" } }, "required": ["phase"] },
+          "then": {
+            "properties": {
+              "rootRole": { "const": "private-staging" }, "classification": { "const": "d5-staging" },
+              "ruleId": {
+                "enum": [
+                  "d5-decisions-append-block-v1", "d5-progress-controlled-fields-v1",
+                  "d5-progress-history-block-v1", "d5-progress-composite-v1", "d5-changelog-append-block-v1",
+                  "d5-formal-document-promotion-v1", "d5-docs-index-sync-v1", "d5-docs-manifest-sync-v1",
+                  "d5-first-wp-handoff-metadata-v1"
+                ]
+              },
+              "sourceInventoryId": { "type": "null" }, "copySource": { "type": "null" }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "phase": { "const": "d5-sync" } }, "required": ["phase"] },
+          "then": {
+            "properties": {
+              "classification": { "const": "d5-allowed-sync" },
+              "ruleId": {
+                "enum": [
+                  "d5-decisions-append-block-v1", "d5-progress-controlled-fields-v1",
+                  "d5-progress-history-block-v1", "d5-progress-composite-v1", "d5-changelog-append-block-v1",
+                  "d5-formal-document-promotion-v1", "d5-docs-index-sync-v1",
+                  "d5-docs-manifest-sync-v1",
+                  "d5-first-wp-handoff-metadata-v1", "d5-post-sync-manifest-v1",
+                  "d5-b2-baseline-manifest-v1"
+                ]
+              },
+              "sourceInventoryId": { "type": "null" },
+              "copySource": { "allOf": [{ "$ref": "#/$defs/copySource" }, { "properties": { "rootRole": { "const": "private-staging" } } }] }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "phase": { "const": "d5-allowed-diff" } }, "required": ["phase"] },
+          "then": { "properties": { "classification": { "const": "d5-result-artifact" }, "ruleId": { "const": "d5-allowed-diff-artifact-v1" }, "sourceInventoryId": { "type": "null" }, "copySource": { "type": "null" } } }
+        },
+        {
+          "if": { "properties": { "phase": { "const": "d5-post-sync-manifest" } }, "required": ["phase"] },
+          "then": { "properties": { "classification": { "const": "d5-result-artifact" }, "ruleId": { "const": "d5-post-sync-manifest-v1" }, "sourceInventoryId": { "type": "null" }, "copySource": { "type": "null" } } }
+        },
+        {
+          "if": { "properties": { "phase": { "const": "d5-snapshot-copy" } }, "required": ["phase"] },
+          "then": {
+            "properties": {
+              "rootRole": { "const": "result-artifacts" }, "classification": { "const": "snapshot-copy" },
+              "ruleId": { "const": "d5-snapshot-file-copy-v1" }, "sourceInventoryId": { "type": "null" },
+              "copySource": {
+                "allOf": [
+                  { "$ref": "#/$defs/copySource" },
+                  { "properties": { "rootRole": { "enum": ["canonical-project", "result-artifacts"] } } }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "phase": { "const": "d5-snapshot-manifest" } }, "required": ["phase"] },
+          "then": { "properties": { "rootRole": { "const": "result-artifacts" }, "classification": { "const": "snapshot-manifest" }, "ruleId": { "const": "d5-b2-baseline-manifest-v1" }, "sourceInventoryId": { "type": "null" }, "copySource": { "type": "null" } } }
+        },
+        {
+          "if": { "properties": { "phase": { "const": "d5-seal" } }, "required": ["phase"] },
+          "then": { "properties": { "operation": { "const": "monitor-seal" }, "classification": { "const": "transition-seal" }, "ruleId": { "const": "d5-snapshot-immutability-seal-v1" }, "sourceInventoryId": { "type": "null" }, "copySource": { "type": "null" } } }
+        }
+      ],
+      "description": "Every event must independently match its authorized phase/classification/rule. Snapshot-copy events bind source root/path/hash to destination path/hash and exact-cover every file in the final snapshot manifest; hidden VCS writes are forbidden. P0 copies private-staging candidate bytes, writes its manifest, then performs a logical immutability freeze before the actual-candidate record and exact canonical apply. D5 copies the complete post-sync B2 file set, writes the B2 manifest, then performs a logical immutability seal. Approved-intake, required_specs, and Gate-1 GDD paths are immutable: any event touching them is forbidden even if later restored to the original hash."
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "transitionType": { "const": "p0" } }, "required": ["transitionType"] },
+      "then": {
+        "properties": {
+          "id": { "pattern": "^LTWL-P0-" },
+          "entries": {
+            "contains": { "properties": { "phase": { "const": "p0-freeze" } }, "required": ["phase"] },
+            "minContains": 1,
+            "maxContains": 1,
+            "items": {
+              "properties": {
+                "phase": { "enum": ["p0-inventory-content", "p0-preapproval-procedure", "p0-postapproval-metadata", "p0-freeze-copy", "p0-freeze-manifest", "p0-freeze", "p0-postfreeze-record", "p0-apply", "p0-seal"] },
+                "classification": { "enum": ["inventory-content", "preapproval-procedural", "postapproval-metadata", "snapshot-copy", "snapshot-manifest", "candidate-freeze", "postfreeze-record", "canonical-apply", "transition-seal"] }
+              }
+            },
+            "allOf": [
+              { "contains": { "properties": { "phase": { "const": "p0-freeze-copy" } }, "required": ["phase"] }, "minContains": 1 },
+              { "contains": { "properties": { "phase": { "const": "p0-freeze-manifest" } }, "required": ["phase"] }, "minContains": 1, "maxContains": 1 },
+              { "contains": { "properties": { "phase": { "const": "p0-freeze" } }, "required": ["phase"] }, "minContains": 1, "maxContains": 1 },
+              { "contains": { "properties": { "phase": { "const": "p0-postfreeze-record" } }, "required": ["phase"] }, "minContains": 1, "maxContains": 1 },
+              { "contains": { "properties": { "phase": { "const": "p0-apply" } }, "required": ["phase"] }, "minContains": 1 },
+              { "contains": { "properties": { "phase": { "const": "p0-seal" } }, "required": ["phase"] }, "minContains": 1, "maxContains": 1 }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "transitionType": { "const": "d5" } }, "required": ["transitionType"] },
+      "then": {
+        "properties": {
+          "id": { "pattern": "^LTWL-D5-" },
+          "entries": {
+            "contains": { "properties": { "phase": { "const": "d5-seal" } }, "required": ["phase"] },
+            "minContains": 1,
+            "maxContains": 1,
+            "items": {
+              "properties": {
+                "phase": { "enum": ["d5-staging", "d5-sync", "d5-allowed-diff", "d5-post-sync-manifest", "d5-snapshot-copy", "d5-snapshot-manifest", "d5-seal"] },
+                "classification": { "enum": ["d5-staging", "d5-allowed-sync", "d5-result-artifact", "snapshot-copy", "snapshot-manifest", "transition-seal"] }
+              }
+            },
+            "allOf": [
+              { "contains": { "properties": { "phase": { "const": "d5-staging" } }, "required": ["phase"] }, "minContains": 1 },
+              { "contains": { "properties": { "phase": { "const": "d5-sync" } }, "required": ["phase"] }, "minContains": 1 },
+              { "contains": { "properties": { "phase": { "const": "d5-allowed-diff" } }, "required": ["phase"] }, "minContains": 1, "maxContains": 1 },
+              { "contains": { "properties": { "phase": { "const": "d5-post-sync-manifest" } }, "required": ["phase"] }, "minContains": 1, "maxContains": 1 },
+              { "contains": { "properties": { "phase": { "const": "d5-snapshot-copy" } }, "required": ["phase"] }, "minContains": 1 },
+              { "contains": { "properties": { "phase": { "const": "d5-snapshot-manifest" } }, "required": ["phase"] }, "minContains": 1, "maxContains": 1 },
+              { "contains": { "properties": { "phase": { "const": "d5-seal" } }, "required": ["phase"] }, "minContains": 1, "maxContains": 1 }
+            ]
+          }
+        }
+      }
+    }
+  ]
+}

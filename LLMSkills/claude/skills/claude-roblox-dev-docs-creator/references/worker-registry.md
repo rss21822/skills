@@ -79,6 +79,8 @@ stageを跨いでCodex routeを混ぜない。D1〜D4のcompanion承認をP0/D5/
 - requested model、cost cap
 - project内容を一切含めない固定probeを送ること
 
+この承認も `execution-envelope.md` §2 のjob固有 `transferApproval` として、closed scope digest、current human message evidence、expiry、single-use消費を固定する。単なる approval ID や過去probeの同意を使い回さない。
+
 credential値・prefixを表示または保存しない。probe結果はsanitized request/response hash、CLI/server version、requested/resolved model、finish reason、usage、exit codeを保存する。
 
 ## 4. Class B context
@@ -123,13 +125,16 @@ GDD、通常handoff、是正、reviewの全てに適用する。
 
 - worker/class/route/role
 - 選択者とapproval ID
-- `transferApproval`
+- job固有 `transferApproval`。closed scope hash、current human messageのinteraction/message/actor/timeとstatement path/hash、単回消費、expiryを含み、送信直前に再照合する。IDだけ・過去jobからの再利用・scope変更は不可
 - request/context bundle/response/artifact hash
 - requested/resolved model、effort、CLI/server version
 - sandbox、approval policy、requested/observed network
 - auth channel/account identity（secret値なし）
 - finish reason、usage、exit code、時刻
+- external provenance verification mode、operator-pinned verifier/authority/key ID、fresh nonce/query IDまたはsignature verdict。secret/key bytesは記録しない
 
-requested値だけの記録はattestationにならない。resolved値を取得不能なら`unverifiable`。exact pin必須jobでは停止する。
+requested値だけの記録はattestationにならない。resolved値を取得不能なら`unverifiable`。exact pin必須jobでは停止する。locally authored execution/session/model文字列も独立証明にならないため、D4 Class A attestationは外部runtime queryまたはpinned signatureの`provenance_verification`を持たなければbaselineへ昇格できない。
+
+`transferApproval`はcurrent human interactionをtrust rootにした**単一jobのruntime consent**であり、後続baseline/W0の歴史的真正性証明には使わない。current message bytesを直接照合できない経路では、同じscopeを対象とする外部署名済み証拠を用意するか、そのsendを停止する。
 
 worker変更は`DECISIONS.md`へ追記し、既に作成済みartifact範囲を記録する。

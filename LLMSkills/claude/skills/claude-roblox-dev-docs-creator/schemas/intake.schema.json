@@ -75,7 +75,8 @@
         "technical.analytics", "technical.mobile", "technical.controller",
         "technical.localization", "technical.liveops", "technical.external_services",
         "technical.free_text_or_ugc", "technical.vehicle_or_custom_physics",
-        "technical.high_npc_or_fx_load", "technical.real_world_ip_or_history",
+        "technical.high_npc_or_fx_load", "technical.high_frequency_projectiles_or_fast_pvp",
+        "technical.real_world_ip_or_history",
         "technical.priority_devices", "technical.priority_locales", "technical.minimum_fps"
       ],
       "properties": {
@@ -112,6 +113,7 @@
         "technical.free_text_or_ugc": { "$ref": "#/$defs/answerIdList" },
         "technical.vehicle_or_custom_physics": { "$ref": "#/$defs/answerIdList" },
         "technical.high_npc_or_fx_load": { "$ref": "#/$defs/answerIdList" },
+        "technical.high_frequency_projectiles_or_fast_pvp": { "$ref": "#/$defs/answerIdList" },
         "technical.real_world_ip_or_history": { "$ref": "#/$defs/answerIdList" },
         "technical.priority_devices": { "$ref": "#/$defs/answerIdList" },
         "technical.priority_locales": { "$ref": "#/$defs/answerIdList" },
@@ -158,7 +160,8 @@
         "existing_repository", "toolchain", "multi_place", "reserved_servers", "teleport",
         "multiplayer", "pvp", "persistent_data", "commerce", "analytics", "mobile",
         "controller", "localization", "liveops", "external_services", "free_text_or_ugc",
-        "vehicle_or_custom_physics", "high_npc_or_fx_load", "real_world_ip_or_history",
+        "vehicle_or_custom_physics", "high_npc_or_fx_load", "high_frequency_projectiles_or_fast_pvp",
+        "real_world_ip_or_history",
         "priority_devices", "priority_locales", "minimum_fps"
       ],
       "properties": {
@@ -180,6 +183,10 @@
         "free_text_or_ugc": { "type": "boolean" },
         "vehicle_or_custom_physics": { "type": "boolean" },
         "high_npc_or_fx_load": { "type": "boolean" },
+        "high_frequency_projectiles_or_fast_pvp": {
+          "type": "boolean",
+          "description": "True only for high-frequency projectile mechanics or fast PvP whose hit/network timing requires D1.5 measurement; ordinary PvP alone does not trigger it."
+        },
         "real_world_ip_or_history": { "type": "boolean" },
         "priority_devices": {
           "type": "array",
@@ -202,7 +209,7 @@
       "properties": {
         "approved": { "type": "boolean" },
         "approved_by": { "type": ["string", "null"] },
-        "approved_at": { "type": ["string", "null"], "format": "date-time" },
+        "approved_at": { "type": ["string", "null"], "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" },
         "approval_evidence": { "type": ["string", "null"] }
       },
       "allOf": [
@@ -211,7 +218,7 @@
           "then": {
             "properties": {
               "approved_by": { "type": "string", "minLength": 1 },
-              "approved_at": { "type": "string", "format": "date-time" },
+              "approved_at": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" },
               "approval_evidence": { "type": "string", "minLength": 1 }
             }
           },
@@ -333,7 +340,7 @@
         "source": { "type": ["string", "null"], "enum": ["U", "W", "M", "J", null] },
         "evidence": { "type": "array", "items": { "type": "string", "minLength": 1 } },
         "approvedBy": { "type": ["string", "null"] },
-        "approvedAt": { "type": ["string", "null"], "format": "date-time" }
+        "approvedAt": { "type": ["string", "null"], "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" }
       },
       "allOf": [
         {
@@ -364,7 +371,7 @@
           "then": {
             "properties": {
               "approvedBy": { "type": "string", "minLength": 1 },
-              "approvedAt": { "type": "string", "format": "date-time" }
+              "approvedAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" }
             }
           },
           "else": {

@@ -1,11 +1,27 @@
 {
   "schemaVersion": "1.0.0",
-  "id": "{{APPROVAL_ID}}",
-  "type": "{{p0-start|p0-contract|d5}}",
-  "approvalKind": "{{human-direct|delegated-process}}",
+  "id": "{{P0_START_APPROVAL_ID}}",
+  "type": "p0-start",
+  "approvalKind": "human-direct",
   "approver": "{{APPROVER}}",
   "approvedAt": "{{ISO_8601_WITH_TIMEZONE}}",
-  "scope": "{{EXACT_APPROVAL_SCOPE}}",
+  "scope": {
+    "kind": "p0-start-v1",
+    "inventory": {
+      "path": "PROGRESS.md",
+      "section": "Proposed P0 closure inventory",
+      "fileSha256": "{{B0_HISTORICAL_PROGRESS_SHA256}}",
+      "inventoryId": "{{P0_CLOSURE_INVENTORY_ID}}",
+      "sourceItemIds": []
+    },
+    "p0ManagementWp": {
+      "id": "{{P0_MANAGEMENT_WP_ID}}",
+      "path": "docs/{{PREFIX}}_work_packages.md"
+    },
+    "productContentMutation": "inventory-rows-only",
+    "fixedProcedure": "p0-standard-six-step-v1",
+    "additionalScope": false
+  },
   "baseline": {
     "id": "{{BASELINE_ID}}",
     "path": "{{BASELINE_MANIFEST_PATH}}",
@@ -15,7 +31,11 @@
   },
   "firstAuthorizedWpId": null,
   "sourceEvidence": {
-    "path": "{{SOURCE_EVIDENCE_PATH}}",
-    "sha256": "{{SOURCE_EVIDENCE_SHA256}}"
+    "path": "{{HUMAN_APPROVAL_CAPTURE_PATH}}",
+    "sha256": "{{HUMAN_APPROVAL_CAPTURE_SHA256}}"
+  },
+  "sourceVerification": {
+    "path": "{{HUMAN_APPROVAL_PROVENANCE_VERIFICATION_PATH}}",
+    "sha256": "{{HUMAN_APPROVAL_PROVENANCE_VERIFICATION_SHA256}}"
   }
 }

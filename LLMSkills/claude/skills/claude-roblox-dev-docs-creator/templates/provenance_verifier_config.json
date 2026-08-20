@@ -1,0 +1,207 @@
+{
+  "schemaVersion": "1.0.0",
+  "d4RuntimePins": [
+    {
+      "id": "{{OPERATOR_D4_RUNTIME_PIN_ID}}",
+      "pythonExecutable": {
+        "path": "{{ABSOLUTE_EXTERNALLY_PINNED_PYTHON_EXE}}",
+        "bytes": 1,
+        "sha256": "{{PINNED_PYTHON_EXE_SHA256}}",
+        "version": "{{PINNED_PYTHON_VERSION}}",
+        "fixedArgs": ["-B", "-S", "-E", "-X", "utf8"]
+      },
+      "readOnlyLibraryRoots": [
+        {
+          "path": "{{ABSOLUTE_EXTERNALLY_PINNED_PYTHON_RUNTIME_ROOT}}",
+          "manifestFormat": "canonical-library-tree-v1",
+          "manifestPath": "{{ABSOLUTE_OPERATOR_PYTHON_RUNTIME_MANIFEST_PATH}}",
+          "manifestSha256": "{{PYTHON_RUNTIME_MANIFEST_SHA256}}",
+          "treeSha256": "{{PYTHON_RUNTIME_TREE_SHA256}}"
+        }
+      ],
+      "gitExecutable": null,
+      "gitRuntimeRoots": []
+    }
+  ],
+  "w0ValidatorRuntime": {
+    "id": "{{OPERATOR_W0_VALIDATOR_RUNTIME_ID}}",
+    "installedSkillRoot": "{{ABSOLUTE_INSTALLED_CLAUDE_ROBLOX_DEV_DOCS_CREATOR_ROOT}}",
+    "installedSkillReadClosure": {
+      "path": "{{ABSOLUTE_INSTALLED_CLAUDE_ROBLOX_DEV_DOCS_CREATOR_ROOT}}",
+      "manifestFormat": "canonical-library-tree-v1",
+      "manifestPath": "{{ABSOLUTE_OPERATOR_INSTALLED_SKILL_TREE_MANIFEST_PATH}}",
+      "manifestSha256": "{{INSTALLED_SKILL_TREE_MANIFEST_SHA256}}",
+      "treeSha256": "{{INSTALLED_SKILL_TREE_SHA256}}"
+    },
+    "pythonExecutable": {
+      "path": "{{ABSOLUTE_EXTERNALLY_PINNED_PYTHON_EXE}}",
+      "bytes": 1,
+      "sha256": "{{PINNED_PYTHON_EXE_SHA256}}",
+      "version": "{{PINNED_PYTHON_VERSION}}",
+      "fixedArgs": ["-B", "-S", "-E", "-X", "utf8"]
+    },
+    "validatorEntrypoint": {
+      "path": "{{ABSOLUTE_INSTALLED_VALIDATE_D5_ACCEPTANCE_PATH}}",
+      "sha256": "{{INSTALLED_VALIDATE_D5_ACCEPTANCE_SHA256}}",
+      "copyPath": "scripts/validate_d5_acceptance.py"
+    },
+    "supportArtifacts": [
+      {
+        "path": "{{ABSOLUTE_INSTALLED_GEN_INDEX_PATH}}",
+        "sha256": "{{INSTALLED_GEN_INDEX_SHA256}}",
+        "copyPath": "scripts/gen_index.py"
+      },
+      {
+        "path": "{{ABSOLUTE_INSTALLED_STATE_READINESS_PATH}}",
+        "sha256": "{{INSTALLED_STATE_READINESS_SHA256}}",
+        "copyPath": "scripts/state_readiness.py"
+      },
+      {
+        "path": "{{ABSOLUTE_INSTALLED_STRICT_JSON_PATH}}",
+        "sha256": "{{INSTALLED_STRICT_JSON_SHA256}}",
+        "copyPath": "scripts/strict_json.py"
+      }
+    ],
+    "readOnlyLibraryRoots": [
+      {
+        "path": "{{ABSOLUTE_EXTERNALLY_PINNED_PYTHON_RUNTIME_ROOT}}",
+        "manifestFormat": "canonical-library-tree-v1",
+        "manifestPath": "{{ABSOLUTE_OPERATOR_PYTHON_RUNTIME_MANIFEST_PATH}}",
+        "manifestSha256": "{{PYTHON_RUNTIME_MANIFEST_SHA256}}",
+        "treeSha256": "{{PYTHON_RUNTIME_TREE_SHA256}}"
+      }
+    ],
+    "gitExecutable": null,
+    "gitRuntimeRoots": [],
+    "receiverBootstrap": {
+      "script": { "path": "{{ABSOLUTE_INSTALLED_W0_RECEIVER_BOOTSTRAP_PATH}}", "sha256": "{{INSTALLED_W0_RECEIVER_BOOTSTRAP_SHA256}}" },
+      "hostExecutable": { "path": "{{ABSOLUTE_OPERATOR_PINNED_POWERSHELL_EXE}}", "bytes": 1, "sha256": "{{PINNED_POWERSHELL_EXE_SHA256}}" },
+      "hostVersion": "{{PINNED_POWERSHELL_7_5_OR_LATER_VERSION}}",
+      "hostFixedArgs": ["-NoLogo", "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-File"],
+      "hostRuntimeRoots": [
+        {
+          "path": "{{ABSOLUTE_OPERATOR_PINNED_POWERSHELL_RUNTIME_ROOT}}",
+          "manifestFormat": "canonical-library-tree-v1",
+          "manifestPath": "{{ABSOLUTE_OPERATOR_POWERSHELL_RUNTIME_MANIFEST_PATH}}",
+          "manifestSha256": "{{POWERSHELL_RUNTIME_MANIFEST_SHA256}}",
+          "treeSha256": "{{POWERSHELL_RUNTIME_TREE_SHA256}}"
+        }
+      ],
+      "trustBoundary": "operator-pinned-powershell-os-host-and-bootstrap-v1",
+      "threePhaseProtocol": "prepare-validate-admit-continuous-lock-v1",
+      "phaseFlag": "-Phase",
+      "phaseValues": ["PREPARE", "VALIDATE", "ADMIT"],
+      "phaseInvocationProtocol": "host-fixed-args-script-phase-first-absolute-named-paths-v1",
+      "phaseArgvTailGrammar": {
+        "PREPARE": ["-ConfigPath", "<ABS>", "-ExpectedConfigSha256", "<LOWER64HEX>", "-PackagePath", "<ABS>", "-ProjectRoot", "<ABS>", "-LaunchChallengeOutputPath", "<ABS>", "-AuthorizationEvidenceRoot", "<ABS>"],
+        "VALIDATE": ["-ConfigPath", "<ABS>", "-ExpectedConfigSha256", "<LOWER64HEX>", "-PackagePath", "<ABS>", "-ProjectRoot", "<ABS>", "-LaunchChallengePath", "<ABS>", "-PrepareAttestationPath", "<ABS>", "-PrepareSignaturePath", "<ABS>", "-PrelaunchAssertionPath", "<ABS>", "-PrelaunchSignaturePath", "<ABS>", "-PostexecutionAttestationPath", "<ABS>", "-PostexecutionSignaturePath", "<ABS>"],
+        "ADMIT": ["-ConfigPath", "<ABS>", "-ExpectedConfigSha256", "<LOWER64HEX>", "-PackagePath", "<ABS>", "-ProjectRoot", "<ABS>", "-LaunchChallengePath", "<ABS>", "-PresentationPath", "<ABS>", "-HumanChallengePath", "<ABS>", "-TranscriptPath", "<ABS>", "-StatementPath", "<ABS>", "-CapturePath", "<ABS>", "-CaptureProvenancePath", "<ABS>", "-RunAuthorizationPath", "<ABS>", "-RunAdmissionAttestationPath", "<ABS>", "-RunAdmissionSignaturePath", "<ABS>", "-AdmitExecutionAttestationPath", "<ABS>", "-AdmitExecutionSignaturePath", "<ABS>"]
+      }
+    },
+    "immutableRuntimeAuthority": {
+      "authority": "{{OPERATOR_W0_RUNTIME_AUTHORITY}}",
+      "verificationMode": "receiver-native-rsa-pss-sha256",
+      "keyId": "{{OPERATOR_W0_RUNTIME_KEY_ID}}",
+      "trustAnchor": { "path": "{{ABSOLUTE_OPERATOR_W0_RUNTIME_TRUST_ANCHOR}}", "sha256": "{{W0_RUNTIME_TRUST_ANCHOR_SHA256}}" },
+      "trustAnchorFormat": "x509-der",
+      "prepareExecutionSchemaId": "https://example.invalid/roblox-ai-development-os/w0-runtime-prepare-execution-attestation.schema.json",
+      "prelaunchSchemaId": "https://example.invalid/roblox-ai-development-os/w0-runtime-prelaunch-assertion.schema.json",
+      "postexecutionSchemaId": "https://example.invalid/roblox-ai-development-os/w0-runtime-postexecution-attestation.schema.json",
+      "runAuthorizationSchemaId": "https://example.invalid/roblox-ai-development-os/w0-run-authorization.schema.json",
+      "runAdmissionSchemaId": "https://example.invalid/roblox-ai-development-os/w0-run-admission-attestation.schema.json",
+      "admitExecutionSchemaId": "https://example.invalid/roblox-ai-development-os/w0-runtime-admit-execution-attestation.schema.json",
+      "detachedSignatureProtocol": "raw-fixed-order-json-detached-rsa-pss-sha256-v1",
+      "signedBytesSerialization": "fixed-property-order-minified-utf8-no-bom-no-newline-v1",
+      "signatureEncoding": "base64-text-no-whitespace",
+      "rsaPssSaltLength": "hash-length",
+      "argvDigestProtocol": "utf8-nul-joined-no-trailing-nul-v1",
+      "cwdDigestProtocol": "normalized-absolute-path-utf8-v1",
+      "envDigestProtocol": "ordinal-name-equals-value-utf8-nul-joined-no-trailing-nul-v1",
+      "projectTreeDigestProtocol": "all-regular-project-files-canonical-json-v1",
+      "readInputDigestProtocol": "sorted-read-input-records-canonical-json-v1",
+      "readInputIdentityDigestProtocol": "authority-observed-read-input-identities-canonical-json-v1",
+      "assertionInputs": {
+        "pathSource": "validate-challenge-plus-six-and-admit-external-input-set-absolute-cli-paths-only",
+        "expectedConfigHashSource": "operator-authority-or-user-out-of-band-lower64hex-never-config-project-package",
+        "challengeSource": "pinned-bootstrap-cryptographic-rng-before-authority-issuance",
+        "challengeInputs": "schema-valid-launch-challenge-with-run-id-nonce-temp-and-digests",
+        "prepareExecutionAvailability": "prepare-attestation-and-signature-created-by-authority-after-monitored-prepare-before-prelaunch",
+        "prelaunchAvailability": "assertion-and-signature-exist-before-launch-and-remain-byte-identical",
+        "postexecutionAvailability": "attestation-and-signature-absent-before-validate-created-by-authority-after-validator-exit",
+        "runAuthorizationAvailability": "external-human-chain-and-authorization-created-after-post-pass-under-continuous-lock-before-admit",
+        "runAdmissionAvailability": "admission-attestation-and-signature-created-after-run-authorization-before-admit-invocation",
+        "admitExecutionAvailability": "receipt-and-signature-paths-predeclared-and-absent-before-admit-created-by-authority-after-semantic-pass-token-consumption-and-suspended-worker-observation",
+        "admitPathSet": ["presentation", "challenge", "transcript", "statement", "capture", "capture-provenance", "run-authorization", "run-admission-attestation", "run-admission-signature", "admit-execution-attestation", "admit-execution-signature"]
+      },
+      "maxPrelaunchAgeSeconds": 60,
+      "maxAdmissionLifetimeSeconds": 30,
+      "maxWorkerReadyLifetimeSeconds": 30,
+      "maxClockSkewSeconds": 5
+    }
+  },
+  "trustedRuntimeAdapters": [
+    {
+      "id": "{{OPERATOR_ADAPTER_ID}}",
+      "authority": "{{TRUSTED_AUTHORITY}}",
+      "adapter": "{{ADAPTER_NAME}}",
+      "adapterVersion": "{{PINNED_ADAPTER_VERSION}}",
+      "launchMode": "host-with-adapter-arg",
+      "executable": { "path": "{{ABSOLUTE_EXECUTABLE_PATH}}", "sha256": "{{EXECUTABLE_SHA256}}" },
+      "adapterArtifact": {
+        "path": "{{ABSOLUTE_ADAPTER_PATH}}",
+        "sha256": "{{ADAPTER_ARTIFACT_SHA256}}",
+        "copyPath": "adapter/runtime_adapter.py"
+      },
+      "supportArtifacts": [],
+      "runtimeLibraryRoots": [
+        {
+          "path": "{{ABSOLUTE_EXTERNALLY_PINNED_ADAPTER_RUNTIME_ROOT}}",
+          "manifestFormat": "canonical-library-tree-v1",
+          "manifestPath": "{{ABSOLUTE_OPERATOR_ADAPTER_RUNTIME_MANIFEST_PATH}}",
+          "manifestSha256": "{{ADAPTER_RUNTIME_MANIFEST_SHA256}}",
+          "treeSha256": "{{ADAPTER_RUNTIME_TREE_SHA256}}"
+        }
+      ],
+      "staticArgs": [],
+      "inputProtocol": "json-stdin-v1",
+      "allowedEnvNames": [],
+      "timeoutSeconds": 60,
+      "maxOutputBytes": 1048576
+    }
+  ],
+  "signatureVerifiers": [
+    {
+      "id": "{{OPERATOR_SIGNATURE_VERIFIER_ID}}",
+      "authority": "{{SIGNATURE_AUTHORITY}}",
+      "keyId": "{{PINNED_KEY_ID}}",
+      "algorithm": "ed25519",
+      "launchMode": "host-with-adapter-arg",
+      "executable": { "path": "{{ABSOLUTE_EXECUTABLE_PATH}}", "sha256": "{{EXECUTABLE_SHA256}}" },
+      "adapterArtifact": {
+        "path": "{{ABSOLUTE_VERIFIER_PATH}}",
+        "sha256": "{{VERIFIER_ARTIFACT_SHA256}}",
+        "copyPath": "adapter/signature_verifier.py"
+      },
+      "supportArtifacts": [],
+      "runtimeLibraryRoots": [
+        {
+          "path": "{{ABSOLUTE_EXTERNALLY_PINNED_SIGNATURE_RUNTIME_ROOT}}",
+          "manifestFormat": "canonical-library-tree-v1",
+          "manifestPath": "{{ABSOLUTE_OPERATOR_SIGNATURE_RUNTIME_MANIFEST_PATH}}",
+          "manifestSha256": "{{SIGNATURE_RUNTIME_MANIFEST_SHA256}}",
+          "treeSha256": "{{SIGNATURE_RUNTIME_TREE_SHA256}}"
+        }
+      ],
+      "staticArgs": [],
+      "inputProtocol": "json-stdin-v1",
+      "allowedEnvNames": [],
+      "timeoutSeconds": 60,
+      "maxOutputBytes": 1048576,
+      "trustAnchor": {
+        "path": "{{ABSOLUTE_TRUST_ANCHOR_PATH}}",
+        "sha256": "{{TRUST_ANCHOR_SHA256}}",
+        "copyPath": "trust/anchor.pem"
+      }
+    }
+  ]
+}

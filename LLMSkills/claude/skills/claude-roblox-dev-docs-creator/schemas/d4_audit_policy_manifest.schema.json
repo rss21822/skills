@@ -1,0 +1,240 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/roblox-ai-development-os/d4-audit-policy-manifest.schema.json",
+  "title": "Installed D4 Audit Policy Manifest",
+  "description": "Hash-pinned policy bundle for all D4 lanes. This project-side manifest is not a trust anchor: the receiver must rehash the named files from the actually installed claude-roblox-dev-docs-creator skill root, recompile the built-in lane command set, and compare the canonical digest. A project copy, arbitrary check IDs, or arbitrary commands cannot authorize D4.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion", "id", "policyVersion", "createdAt", "installedSkillRoot",
+    "sourceComponents", "promptCompilation", "sourceTreePolicy", "preflightCommands", "lanePolicies", "denyCategories",
+    "compiledPolicySha256"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "1.0.0" },
+    "id": { "type": "string", "pattern": "^D4-POLICY-[A-Z0-9][A-Z0-9._-]*$" },
+    "policyVersion": { "const": "d4-audit-policy-v1" },
+    "createdAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" },
+    "installedSkillRoot": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Informational absolute installed-skill root used when the manifest was compiled. The receiver resolves its own installed skill root and must not trust this string."
+    },
+    "sourceComponents": {
+      "type": "array",
+      "minItems": 33,
+      "maxItems": 33,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/sourceComponent" },
+      "description": "Lexicographically path-sorted exact closure of SKILL.md, every installed references/*.md file, every installed checklists/*.md file, templates/d4_findings.md, scripts/validate_d5_acceptance.py, and scripts/validate_lifecycle_transition.py. Paths are semantically unique. Receiver derives this fixed set from its installed skill root and rejects missing, duplicate, extra, reordered, or hash-mismatched components; any policy-document or fixed-validator edit forces a new audit."
+    },
+    "promptCompilation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind", "encoding", "lineEndings", "requestProjection", "orderedSections",
+        "sectionSeparator", "terminalNewline"
+      ],
+      "properties": {
+        "kind": { "const": "d4-full-provider-prompt-v1" },
+        "encoding": { "const": "utf-8" },
+        "lineEndings": { "const": "lf" },
+        "requestProjection": { "const": "canonical-request-core-v1" },
+        "orderedSections": {
+          "const": [
+            "fixed-safety-contract",
+            "policy-document-closure",
+            "findings-template",
+            "canonical-request-core"
+          ]
+        },
+        "sectionSeparator": { "const": "\n\n---\n\n" },
+        "terminalNewline": { "const": true }
+      },
+      "description": "The validator rebuilds the complete orchestrator-submitted payload byte-for-byte from a built-in safety contract, the LF-normalized bytes of SKILL.md plus every references/*.md and checklists/*.md component in lexicographic path order, the findings template, and canonical JSON of requestCore. It excludes the outer request and fullPromptArtifact, avoiding a hash cycle, and does not claim provider-internal implicit frames. The stored payload hash must equal this output and the trusted authority's actual submitted-payload hash."
+    },
+    "sourceTreePolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "pathEncoding", "sort", "entryFields", "exclusions", "symlinks", "hardlinks", "specialFiles"],
+      "properties": {
+        "kind": { "const": "target-revision-complete-tree-v1" },
+        "pathEncoding": { "const": "utf-8-posix-relative" },
+        "sort": { "const": "unicode-codepoint-by-path" },
+        "entryFields": { "const": ["path", "bytes", "sha256"] },
+        "exclusions": { "const": [] },
+        "symlinks": { "const": "reject" },
+        "hardlinks": { "const": "reject-link-count-not-1-or-duplicate-os-identity" },
+        "specialFiles": { "const": "reject" }
+      },
+      "description": "TREE exact policy. Snapshot source root resolves to revision.snapshotRoot exactly, has no excluded path (including .git), and every member must be an independently copied link-count-1 regular file with a unique OS identity disjoint from canonical/staging source. Commit source uses pinned Git object enumeration, which exposes tracked blobs rather than repository metadata. SOURCE-STATE rehashes snapshot gitStatusEvidence or records pinned-Git state; REVISION/TREE remain gate-critical proof. Curated alternate roots, hidden extra bytes, aliases/hardlinks, and null Git for commit are invalid."
+    },
+    "preflightCommands": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/preflightCommand" },
+      "allOf": [
+        { "contains": { "properties": { "checkId": { "const": "D4-PREFLIGHT-SOURCE-STATE-001" } }, "required": ["checkId"] }, "minContains": 1, "maxContains": 1 },
+        { "contains": { "properties": { "checkId": { "const": "D4-PREFLIGHT-REVISION-001" } }, "required": ["checkId"] }, "minContains": 1, "maxContains": 1 },
+        { "contains": { "properties": { "checkId": { "const": "D4-PREFLIGHT-TREE-001" } }, "required": ["checkId"] }, "minContains": 1, "maxContains": 1 }
+      ],
+      "description": "Stage-independent exact SOURCE-STATE/REVISION/TREE assembly set. Every argv starts with pinned Python fixedArgs and sanitized d4_preflight.py. Git is an explicit pin or literal none; commit rejects none. Script verifies --source-root equals resolved snapshotRoot or exact-object repository. shell/PATH/caller commands forbidden."
+    },
+    "lanePolicies": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/lanePolicy" },
+      "allOf": [
+        { "contains": { "properties": { "auditTrack": { "const": "consistency" } }, "required": ["auditTrack"] }, "minContains": 1, "maxContains": 1 },
+        { "contains": { "properties": { "auditTrack": { "const": "roblox-readiness" } }, "required": ["auditTrack"] }, "minContains": 1, "maxContains": 1 },
+        { "contains": { "properties": { "auditTrack": { "const": "clean-room" } }, "required": ["auditTrack"] }, "minContains": 1, "maxContains": 1 }
+      ]
+    },
+    "denyCategories": {
+      "const": [
+        "conversation-history",
+        "worker-identity",
+        "prior-findings",
+        "expected-verdict",
+        "e0-capability-probe",
+        "handoff-conversation",
+        "self-evaluation"
+      ]
+    },
+    "compiledPolicySha256": {
+      "$ref": "#/$defs/sha256",
+      "description": "SHA-256 of UTF-8 json.dumps({policyVersion, sourceComponents sorted by path, promptCompilation, sourceTreePolicy, preflightCommands sorted by checkId, lanePolicies sorted by auditTrack, denyCategories}, ensure_ascii=False, sort_keys=True, separators=(',', ':'))."
+    }
+  },
+  "$defs": {
+    "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "sourceComponent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["role", "auditTrack", "path", "sha256"],
+      "properties": {
+        "role": {
+          "enum": [
+            "skill-d4", "policy-reference", "policy-checklist",
+            "findings-template", "validator"
+          ]
+        },
+        "auditTrack": {
+          "type": ["string", "null"],
+          "enum": [null, "consistency", "roblox-readiness", "clean-room"]
+        },
+        "path": {
+          "type": "string",
+          "enum": [
+            "SKILL.md",
+            "checklists/clean_room.md",
+            "checklists/completion.md",
+            "checklists/consistency.md",
+            "checklists/production_readiness.md",
+            "checklists/security.md",
+            "references/absolute-rules.md",
+            "references/audit-d4.md",
+            "references/audit-dimensions.md",
+            "references/autonomous-execution.md",
+            "references/config-example.md",
+            "references/defect-catalog.md",
+            "references/document-system.md",
+            "references/execution-envelope.md",
+            "references/findings-report.md",
+            "references/gdd-and-intake.md",
+            "references/orchestration.md",
+            "references/ordering.md",
+            "references/output-layout.md",
+            "references/p0-approval-and-state.md",
+            "references/p0-gate-design.md",
+            "references/p0-rework-catalog.md",
+            "references/p0-work-units.md",
+            "references/phase-definitions.md",
+            "references/quality-gates.md",
+            "references/repository-audit.md",
+            "references/review-protocol.md",
+            "references/roblox-readiness.md",
+            "references/trigger-matrix.md",
+            "references/worker-registry.md",
+            "scripts/validate_d5_acceptance.py",
+            "scripts/validate_lifecycle_transition.py",
+            "templates/d4_findings.md"
+          ],
+          "description": "Fixed POSIX path relative to the installed skill root. role and auditTrack must match the installed compiler's fixed mapping."
+        },
+        "sha256": { "$ref": "#/$defs/sha256" }
+      },
+      "description": "Semantic validation rederives exact role/auditTrack from path; only the three lane-owned checklist paths carry a non-null auditTrack."
+    },
+    "lanePolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["auditTrack", "checklist", "requiredCheckIds", "requiredCommands"],
+      "properties": {
+        "auditTrack": { "enum": ["consistency", "roblox-readiness", "clean-room"] },
+        "checklist": { "$ref": "#/$defs/artifactReference" },
+        "requiredCheckIds": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string", "pattern": "^[A-Z0-9][A-Z0-9._-]*$" },
+          "description": "Catalog union for this lane. The applicable subset is derived only from candidate ID: D4-CAND selects applicability all+initial; P0-CAND selects all+post-p0. request.mode never controls applicability."
+        },
+        "requiredCommands": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/auditCommand" },
+          "description": "Exact command catalog compiled from installed sources for this lane. Its checkId set equals requiredCheckIds; capsule/request/attestation/provenance exact-cover only the candidate-derived applicable subset. argv runs with shell=false and policy scripts come from the immutable _policy_runtime copy, never the installed skill root."
+        }
+      }
+    },
+    "artifactReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256"],
+      "properties": {
+        "path": { "type": "string", "minLength": 1 },
+        "sha256": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "auditCommand": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["checkId", "applicability", "argv", "cwd", "expectedExitCode"],
+      "properties": {
+        "checkId": { "type": "string", "pattern": "^[A-Z0-9][A-Z0-9._-]*$" },
+        "applicability": { "enum": ["all", "initial", "post-p0"] },
+        "argv": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 },
+          "description": "Exact absolute argv after the installed-policy compiler resolves Python, skill root, sanitized root, PREFIX, and project paths. No shell parsing is permitted."
+        },
+        "cwd": { "type": "string", "minLength": 1 },
+        "expectedExitCode": { "type": "integer" }
+      }
+    },
+    "preflightCommand": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["checkId", "argv", "cwd", "expectedExitCode"],
+      "properties": {
+        "checkId": {
+          "enum": ["D4-PREFLIGHT-SOURCE-STATE-001", "D4-PREFLIGHT-REVISION-001", "D4-PREFLIGHT-TREE-001"]
+        },
+        "argv": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "cwd": { "type": "string", "minLength": 1 },
+        "expectedExitCode": { "const": 0 }
+      }
+    }
+  }
+}

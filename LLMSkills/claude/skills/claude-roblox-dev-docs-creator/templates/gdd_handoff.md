@@ -130,7 +130,7 @@ data_definition はこの時点で存在しないので、GDD には**指標の 
 
 ## evidence
 
-作成パス / タグ集計（特に `[PROPOSAL]` と `[OPEN]` の件数と位置）/ **出所内訳（U/W/M/J の件数、出所または人間承認記録がない `[DECISION]` の位置）** / Non-Goals の件数と各々の理由の有無 / 記載数値一覧（各々について、可変閾値か製品意図かの区別を付す。可変閾値は原則ゼロ件）/ validator 出力 / 自己実行検証のみ
+作成パス / タグ集計（特に `[PROPOSAL]` と `[OPEN blocking: yes|no]` の極性別件数・位置）/ **出所内訳（U/W/M/J の件数、出所または人間承認記録がない `[DECISION]` の位置）** / Non-Goals の件数と各々の理由の有無 / 記載数値一覧（各々について、可変閾値か製品意図かの区別を付す。可変閾値は原則ゼロ件）/ validator 出力 / 自己実行検証のみ
 
 ## rollback
 
@@ -147,6 +147,14 @@ data_definition はこの時点で存在しないので、GDD には**指標の 
 2. 独立照合 Critical 0 / Major 0
 3. `[PROPOSAL]` 残数 0。各 `[DECISION]` に出所が付いている
 4. Gate 1 の条件を条件文ごとに充足確認した記録がある
-使用者の明示承認後に D1.5 を実測する。D1.5 は Gate 1 の前提ではない。FAIL なら GDD を改訂し、人間の再承認へ戻る。
+使用者の明示承認後に、次を順番どおり記録してから D1.5 を実測する。D1.5 は Gate 1 の前提ではない。FAIL なら GDD を改訂し、人間の再承認へ戻る。
 
-`DECISIONS.md` には承認者・承認対象 revision・日時・承認記録への参照を書く。人間承認前は `承認準備完了` とし、`承認済み` と書かない。記録形式は `references/autonomous-execution.md` §5。
+1. approved intakeからclosed `required_specs.schema.json` projectionを`detect_triggers.py`で先に生成・検証する。承認対象GDDを`targetArtifact`、scopeをclosed `{kind:"gdd-gate1-v1", decision:"approve-gdd-for-d1.5-and-d2", approvedIntake:{path,sha256}, requiredSpecs:{path,sha256}, additionalScope:false}`として決定論digestを作る。unique challenge IDを先に割り当て、full target/scope/digest/canonical responseを含む`human_approval_presentation` canonical bytesを生成・hashし、それを指すchallengeを発行する
+2. presentation canonical bytesをassistant/system messageとして人間へ提示した後だけcanonical responseを受け取る。両messageを同一structured transcriptへ保存し、human response exact bytesをstatement artifactへ保存する。`human_approval_capture.schema.json` の`gateType:gdd-gate1`を作り、target/scope/challenge/presentation message ID/human message ID/statementをexact一致させる。順序はchallenge issued <= presentation < human response <= capture。local bytes/ID/hash自体を真正性rootにしない
+3. captureのpresentation role/time/content、human actor/role/time/content、channel/message/gate target claimsを、operator管理の外部configでpinしたprovider adapterによるfresh query（nonce＋raw response）またはprovider署名＋pinned trust anchorで検証し、outer `provenance_verification`を作る。claimsはpresentation hash、canonical response hash、GDD＋approved intake＋required_specs scope digestを含み、verifiedAtはcapture以後。この外部query/署名だけがmachine gateの真正性root。adapter/署名検証不能なら`STOP/HUMAN`
+4. `gate_approval_record.schema.json` でtype `gdd-gate1` machine recordを作る。`targetArtifact` とscopeはcaptureへexact一致し、`sourceEvidence`はcapture JSON path/hash、`sourceVerification`は手順3のouter verification path/hashを指す。Gate 1時点で存在しないbaselineを捏造しない
+5. `DECISIONS.md` へ承認者・GDD revision・approved intake/required_specs hashes・日時・Gate 1 record ID/path/hashを追記する。D1.5/D2 entry、initial D4/B0、P0/D5/W0は同じrecordと3 artifact bindingsを不変継承し、別の承認へ置換しない
+
+人間承認前は `承認準備完了` とし、`承認済み` と書かない。capture/provider verification/recordのschema・bytes・相互一致が未検証ならD1.5/D2へ進まない。
+
+Gate 1固定済`required_specs`にfeasibility row無し→D1.5 evidence/proof 0件。rowあり→combined suite 1件。`requiredSubchecks`はapproved intakeでtrueの5 technical flags（vehicle/custom physics、high NPC/FX load、高頻度projectile／高速PvP、free text/UGC、Multi-Place）だけをID/source/value hash固定し、free-form `product.top_risks`はD3/D4 risk registryで扱う。通常PvPだけではtriggerしない。D0独立reviewはGDD/answerが高頻度projectileまたは高速PvPを述べるのに`high_frequency_projectiles_or_fast_pvp=false`、または他のmeasurable mechanic riskに対応flagがfalseなら再intake。各subcheckはtrial/threshold/raw-output artifact refsと個別evidence digestを持ち、outer claimsのset digestがexact-coverする。top-level bundleだけ、欠落/重複、fail→inconclusive弱化、2件分割、外部検証不能はPASS不可。GDD追加riskはintake/Gate1へ戻す。E0非流用。以後Gate1 intake/required_specs refsとzero/one proofを不変継承。

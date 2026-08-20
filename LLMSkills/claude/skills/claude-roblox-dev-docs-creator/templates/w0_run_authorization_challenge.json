@@ -1,0 +1,9 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "HCH-W0-RUN-{{RUN_AUTH_ID}}",
+  "gateType": "w0-run-authorization",
+  "issuedAt": "{{RUN_AUTH_CHALLENGE_ISSUED_AT}}",
+  "targetScopeSha256": "{{RUN_AUTHORIZATION_TARGET_SCOPE_SHA256}}",
+  "canonicalResponse": "APPROVE HCH-W0-RUN-{{RUN_AUTH_ID}} {{RUN_AUTHORIZATION_TARGET_SCOPE_SHA256}}",
+  "presentationArtifact": { "path": "{{ABSOLUTE_OPERATOR_EXTERNAL_RUN_AUTH_PRESENTATION_PATH}}", "sha256": "{{RUN_AUTH_PRESENTATION_SHA256}}" }
+}

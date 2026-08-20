@@ -56,7 +56,7 @@
       "approvedBy": "Project Owner", "approvedAt": "2026-08-05T10:00:00+09:00"
     },
     "D0-A09": {
-      "prompt": "最大の操作・物理・ネットワーク・供給リスク",
+      "prompt": "最大の操作・物理・ネットワーク・供給リスク（高頻度projectile／高速PvPを含む）",
       "value": ["mobile mounted control", "high-speed PvP hit validation"],
       "status": "approved", "source": "U", "evidence": ["conversation:2026-08-05#D0-A09"],
       "approvedBy": "Project Owner", "approvedAt": "2026-08-05T10:00:00+09:00"
@@ -189,6 +189,7 @@
     "technical.free_text_or_ugc": ["D0-A05", "D0-A12", "D0-B10"],
     "technical.vehicle_or_custom_physics": ["D0-A09"],
     "technical.high_npc_or_fx_load": ["D0-A09"],
+    "technical.high_frequency_projectiles_or_fast_pvp": ["D0-A09", "D0-B07"],
     "technical.real_world_ip_or_history": ["D0-A08"],
     "technical.priority_devices": ["D0-A11", "D0-B05", "D0-B10"],
     "technical.priority_locales": ["D0-B10"],
@@ -227,6 +228,7 @@
     "free_text_or_ugc": false,
     "vehicle_or_custom_physics": true,
     "high_npc_or_fx_load": false,
+    "high_frequency_projectiles_or_fast_pvp": true,
     "real_world_ip_or_history": true,
     "priority_devices": ["mobile", "pc", "controller"],
     "priority_locales": ["en", "ja"],

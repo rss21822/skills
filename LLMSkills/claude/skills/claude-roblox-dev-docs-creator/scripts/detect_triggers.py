@@ -7,10 +7,13 @@ from __future__ import annotations
 
 import argparse
 import datetime as dt
+import hashlib
 import json
 import re
 from pathlib import Path
 from typing import Any
+
+from strict_json import loads as strict_json_loads
 
 SPEC_MAP = {
     "repository_audit": "repository_audit.md",
@@ -52,7 +55,8 @@ TECHNICAL_KEYS = {
     "existing_repository", "toolchain", "multi_place", "reserved_servers", "teleport",
     "multiplayer", "pvp", "persistent_data", "commerce", "analytics", "mobile",
     "controller", "localization", "liveops", "external_services", "free_text_or_ugc",
-    "vehicle_or_custom_physics", "high_npc_or_fx_load", "real_world_ip_or_history",
+    "vehicle_or_custom_physics", "high_npc_or_fx_load",
+    "high_frequency_projectiles_or_fast_pvp", "real_world_ip_or_history",
     "priority_devices", "priority_locales", "minimum_fps",
 }
 FIELD_SOURCE_KEYS = {
@@ -67,6 +71,32 @@ FIELD_SOURCE_KEYS = {
 
 def _nonempty_string(value: Any) -> bool:
     return isinstance(value, str) and bool(value.strip())
+
+
+def _contains_positive_fast_projectile_signal(value: Any) -> bool:
+    """Recognize only explicit, machine-decidable positive high-frequency risk facts."""
+    if value is True:
+        return True
+    if isinstance(value, dict):
+        direct = value.get("high_frequency_projectiles_or_fast_pvp")
+        if direct is True:
+            return True
+        return any(_contains_positive_fast_projectile_signal(item)
+                   for item in value.values())
+    if isinstance(value, list):
+        return any(_contains_positive_fast_projectile_signal(item) for item in value)
+    if not isinstance(value, str):
+        return False
+    text = value.strip()
+    positive = re.search(
+        r"(?:high[ -]?frequency\s+(?:projectiles?|shots?|fire)|fast[ -]?pvp|"
+        r"高頻度(?:projectile|弾|射撃|投射)|高速\s*pvp)", text, re.I)
+    if positive is None:
+        return False
+    prefix = text[max(0, positive.start() - 20):positive.start()]
+    suffix = text[positive.end():positive.end() + 12]
+    return re.search(r"(?:\bno\b|\bnot\b|\bwithout\b|なし|無し)\s*$", prefix, re.I) is None \
+        and re.match(r"\s*(?:なし|無し)", suffix) is None
 
 
 def _timezone_datetime(value: Any) -> bool:
@@ -315,6 +345,15 @@ def validate_intake(
         if not _nonempty_string(technical.get("toolchain")) \
                 or technical.get("toolchain", "").strip().lower() == "unknown":
             errors.append("technical.toolchain must be resolved when state.approved is true")
+        fast_leaf = "technical.high_frequency_projectiles_or_fast_pvp"
+        if technical.get("high_frequency_projectiles_or_fast_pvp") is False:
+            for answer_id in field_sources.get(fast_leaf, []):
+                answer = answers.get(answer_id)
+                if isinstance(answer, dict) and _contains_positive_fast_projectile_signal(
+                        answer.get("value")):
+                    errors.append(
+                        f"{fast_leaf}=false contradicts explicit positive risk fact in "
+                        f"answers.{answer_id}.value")
     elif approved is False and any(state.get(key) is not None for key in (
             "approved_by", "approved_at", "approval_evidence")):
         errors.append("unapproved state requires null approved_by/approved_at/approval_evidence")
@@ -330,7 +369,7 @@ def nested(data: dict[str, Any], *keys: str, default: Any = None) -> Any:
     return cur
 
 
-def detect(data: dict[str, Any]) -> list[dict[str, str]]:
+def detect(data: dict[str, Any]) -> list[dict[str, Any]]:
     tech = data.get("technical", {}) or {}
     product = data.get("product", {}) or {}
     monet = product.get("monetization", {}) or {}
@@ -347,10 +386,11 @@ def detect(data: dict[str, Any]) -> list[dict[str, str]]:
             "high_npc_or_fx_load",
             "free_text_or_ugc",
             "multi_place",
+            "high_frequency_projectiles_or_fast_pvp",
         )
-    ) or bool(product.get("top_risks"))
+    )
     if high_risk:
-        triggers["feasibility_report"] = "one or more high-risk mechanics or explicit top risks"
+        triggers["feasibility_report"] = "one or more measurable high-risk technical flags"
 
     if any(bool(tech.get(k)) for k in ("multiplayer", "pvp", "commerce", "persistent_data")):
         triggers["network_security"] = "multiplayer/PvP/economy/persistence requires trust boundaries"
@@ -395,10 +435,35 @@ def detect(data: dict[str, Any]) -> list[dict[str, str]]:
     if bool(tech.get("real_world_ip_or_history")) or bool(product.get("ip_risks")):
         triggers["rights_provenance"] = "real-world IP/history or recorded IP risks"
 
-    return [
-        {"id": key, "template": SPEC_MAP[key], "reason": reason}
-        for key, reason in triggers.items()
-    ]
+    subchecks: list[dict[str, str]] = []
+    for key in (
+            "vehicle_or_custom_physics", "high_npc_or_fx_load",
+            "free_text_or_ugc", "multi_place",
+            "high_frequency_projectiles_or_fast_pvp"):
+        if tech.get(key) is True:
+            source = f"technical.{key}"
+            encoded = json.dumps(
+                tech[key], ensure_ascii=False, sort_keys=True,
+                separators=(",", ":")).encode("utf-8")
+            subchecks.append({
+                "id": source, "source": source,
+                "sourceValueSha256": hashlib.sha256(encoded).hexdigest(),
+            })
+    subchecks.sort(key=lambda item: item["id"])
+    combined_contract = {
+        "kind": "d1.5-combined-suite-v1",
+        "experimentId": "feasibility_report-combined-v1",
+        "cardinality": "exactly-one",
+        "coverage": "all-triggered-high-risk-subchecks",
+        "requiredSubchecks": subchecks,
+        "requiredSubchecksSha256": hashlib.sha256(json.dumps(
+            subchecks, ensure_ascii=False, sort_keys=True,
+            separators=(",", ":")).encode("utf-8")).hexdigest(),
+    }
+    return [{
+        "id": key, "template": SPEC_MAP[key], "reason": reason,
+        "measurementContract": combined_contract if key == "feasibility_report" else None,
+    } for key, reason in triggers.items()]
 
 
 def main() -> int:
@@ -417,7 +482,7 @@ def main() -> int:
         parser.error("an intake path is required (positional or --intake)")
 
     try:
-        data = json.loads(intake_path.read_text(encoding="utf-8-sig"))
+        data = strict_json_loads(intake_path.read_text(encoding="utf-8-sig"))
     except (OSError, json.JSONDecodeError) as exc:
         parser.error(f"Cannot read intake JSON: {exc}")
 
@@ -426,6 +491,7 @@ def main() -> int:
         parser.error("Invalid approved intake:\n  - " + "\n  - ".join(problems))
 
     payload = {
+        "schemaVersion": "1.0.0",
         "project": nested(data, "project", "name", default=""),
         "prefix": nested(data, "project", "prefix", default=""),
         "required_specs": detect(data),

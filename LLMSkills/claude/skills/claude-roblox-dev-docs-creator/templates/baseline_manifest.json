@@ -11,10 +11,28 @@
     "snapshotRoot": "{{PROJECT_RELATIVE_IMMUTABLE_SNAPSHOT_ROOT}}",
     "gitStatusEvidence": "{{RAW_GIT_STATUS_EVIDENCE_PATH}}"
   },
+  "admission": {
+    "status": "complete",
+    "d15TriggerRegistry": {
+      "path": "docs/{{PREFIX}}_required_specs.json",
+      "sha256": "{{D15_TRIGGER_REGISTRY_SHA256}}",
+      "applicableMeasurementCount": 0
+    },
+    "deficiencies": []
+  },
+  "gddGate1": {
+    "id": "{{GDD_GATE1_APPROVAL_ID}}",
+    "path": "{{GDD_GATE1_APPROVAL_RECORD_PATH}}",
+    "sha256": "{{GDD_GATE1_APPROVAL_RECORD_SHA256}}"
+  },
+  "d15Measurements": [],
+  "p0Transition": null,
   "parentBaselineId": null,
   "promotedFrom": null,
   "approvalId": null,
   "fileSetSha256": "{{CANONICAL_FILE_SET_SHA256}}",
-  "files": [],
+  "files": [
+    { "path": "docs/{{PREFIX}}_gdd.md", "bytes": 1, "sha256": "{{GDD_FILE_SHA256}}", "version": "0.1.0", "status": "draft" }
+  ],
   "auditRecords": []
 }

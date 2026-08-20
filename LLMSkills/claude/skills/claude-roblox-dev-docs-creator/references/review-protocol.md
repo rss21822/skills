@@ -49,7 +49,7 @@ Codex CLI を**文書単位の照合役**にする場合は、`worker-registry.m
 
 **なぜ絞るか**: 全面再読を繰り返すと、前巡で合格した領域に新しい指摘が出続けて終わらない。実プロジェクトで、5巡かかった文書と2巡で終わった文書の差は、ほぼスコープ限定を始めた時期の差だった。
 
-**適用境界**: residual-only は1文書の制作サイクル内だけ。D4 gate で Critical / Major 是正後に行う再監査へ適用しない。D4 再監査は毎回、過去 findings と差分を渡さない fresh clean context の3系統 full audit。post-P0 だけは `audit-d4.md` §6 の B0→candidate delta D4 を使う。
+**適用境界**: residual-only は1文書の制作サイクル内だけ。D4 gate で Critical / Major 是正後に行う再監査へ適用しない。initial D4 再監査は毎回、過去 findings と差分を渡さない fresh clean context の3系統 full audit。post-P0 は `audit-d4.md` §6 の B0→candidate delta D4を基本とし、同節の条件に該当すればfull escalationする。
 
 ## 是正方針を判定基準として渡す
 

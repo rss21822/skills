@@ -28,6 +28,7 @@ project-root/
     ├── {PREFIX}_release_rollback_runbook.md
     ├── specs/
     ├── schemas/
+    │   ├── *.schema.json
     │   ├── {PREFIX}_remote_contracts.json
     │   ├── {PREFIX}_save_schema.json
     │   ├── {PREFIX}_analytics_events.json
@@ -38,6 +39,23 @@ project-root/
     ├── audits/
     │   └── {PREFIX}_d4_{lane}_{candidate-id}_r{N}.md
     └── evidence/
+        ├── baselines/<baseline-id>/
+        ├── d4/<candidate-id>/
+        │   ├── d4_audit_capsule.json
+        │   ├── requests/
+        │   ├── attestations/
+        │   ├── preflight/
+        │   └── sanitized/
+        ├── approvals/<gate-id>/
+        │   ├── challenge.json
+        │   ├── presentation.json
+        │   ├── transcript.json
+        │   ├── statement.txt
+        │   ├── capture.json
+        │   ├── provenance_verification.json
+        │   ├── pinned_signature_evidence.json
+        │   └── gate_record.json
+        └── d5/
 ```
 
 Conditional reports:
@@ -72,7 +90,7 @@ Every formal document contains:
 - last approved date
 - change history
 
-Gate 1 approval authorizes the selected GDD revision as a D1.5/D2 input, but the header remains `Draft`. `Approved` and `last approved date` are written only in the direct-human D5 transition. P0 or delegated `[AI-APPROVED]` must leave these formal-document fields unchanged.
+Gate 1 approval binds the exact Draft GDD path/hash/revision used through B1. Only direct-human D5 external verification may apply the fixed metadata-only `Approved` / `Last approved` / history transformation in B2; W0 rechecks the B1/B2 normalized body digest is identical. P0 and delegated `[AI-APPROVED]` leave all formal metadata unchanged.
 
 Machine-readable instance paths and their Markdown ownership boundaries are defined in `document-system.md` §Machine-readable contracts. Do not create a second instance path for the same domain.
 
@@ -80,4 +98,6 @@ Machine-readable instance paths and their Markdown ownership boundaries are defi
 
 Do not embed large logs in specifications. Store them under `docs/evidence/` and link by relative path.
 
-Immutable snapshot baselines use `docs/evidence/baselines/<baseline-id>/snapshot/`. W0 handoff uses `docs/evidence/d5/<D5-ID>_w0_handoff_package.json`. A candidate/baseline lifecycle manifest does not list itself in its file set or contain its own hash; the outer audit/promotion/transition/handoff record binds that manifest sha256. The W0 package is outside the B2 file set.
+Immutable snapshot baselines use `docs/evidence/baselines/<baseline-id>/snapshot/`. D4 uses one schema-valid capsule per candidate/run and one structured request/post-run attestation plus operator-pinned external runtime provenance per lane under `docs/evidence/d4/<candidate-id>/`; baseline `auditRecords` bind their paths/hashes together with each unedited raw report. Triggered D1.5 experiments have one external runtime provenance artifact per raw measurement. Human gates use a challenge → exact presentation → trusted transcript/exact statement → capture → external channel query/signature provenance → machine record chain under `docs/evidence/approvals/<gate-id>/`; the exact project-relative paths may vary but presentation, capture, provenance, machine-record W0 refs and hashes are mandatory. W0-bound provenance is fixed as offline `pinned-signature` evidence before immutable binding. W0 handoff uses `docs/evidence/d5/<D5-ID>_w0_handoff_package.json`. A candidate/baseline lifecycle manifest does not list itself in its file set or contain its own hash; the outer audit/promotion/transition/handoff record binds that manifest sha256. The W0 package is outside the B2 file set.
+
+W0 receiver trust inputs are a separate operator-external chain and are never project artifacts: verifier config/trust anchor; launch challenge; authority-signed PREPARE execution attestation; prelaunch assertion; postexecution attestation; their detached signatures; closed run-authorization challenge/presentation/transcript/statement/capture/provenance/authorization; signed expected-only run-admission attestation; signed ADMIT execution/worker-ready receipt; and their detached signatures. The authority monitors PREPARE from process creation, locks the complete source+temp read set without a gap through VALIDATE, ADMIT semantic PASS, token consumption, suspended/pre-entry worker observation, receipt verification, bootstrap PASS, and first-effect capability consumption, and binds current project/B2/package/WP identities. Paths are supplied out of band and may not resolve below the project, creator/receiver Skill trees, prepared temp tree, or W0 package. Admission/receipt attestations plus their signatures are the exact four cycle-breaking proof-sealing exclusions; their predeclared raw paths, identities, hashes when available, signatures, and session/run/nonce links remain mandatory.

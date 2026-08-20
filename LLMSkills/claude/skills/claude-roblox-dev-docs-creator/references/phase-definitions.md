@@ -6,7 +6,7 @@
 
 ## E0 — capability preflight
 
-D0 より前に、実行面と候補 worker の能力を固定 probe で確認する。**project 内容を含まない worker probe は E0 の外部送信であり、D0 の文書制作ではない。** provider・account・model・cost・送信内容の承認を先に得る。
+D0 より前に、実行面と候補 worker の能力を固定 probe で確認する。**project 内容を含まない worker probe は E0 の外部送信であり、D0 の文書制作ではない。** provider・account・model・cost・送信内容の承認を先に得る。D5/W0 full routeには、後続の全W0-bound proofを生成時点からoffline `pinned-signature` modeで発行できるoperator管理authority／trust anchorを既知test claimで検証する。query-only adapterは限定到達点には使えてもW0証拠へ後変換できないため、signature probeが失敗したらD0前にfull routeを停止する。project内の自己申告設定、local ID/hashだけでは合格にしない。
 
 結果は `docs/handoffs/out/E0_capability_probe.md` へ生出力つきで保存し、使用者が執筆役・照合役・到達点を選ぶ材料にする。E0 は製品判断を作らず、intake を承認せず、失敗した候補を自動 install しない。詳細は `autonomous-execution.md` §2 と `worker-registry.md` §3。
 
@@ -94,9 +94,9 @@ D0 より前に、実行面と候補 worker の能力を固定 probe で確認�
 - OQ とブロッキング有無
 - 収益・権利・年齢表現の方針
 
-GDD を提示し、**人間本人の明示的な承認**を得る。承認前に D2 へ進まない。
+exact Draft GDD の path/hash/revision と、同じ時点のapproved intake path/hash、intakeから再導出したrequired specs path/hashをclosed `gdd-gate1-v1` scopeへ固定して提示し、人間本人から challenge の canonical response による明示承認を得る。trusted interaction transcript、exact statement artifact、`human_approval_capture.json`、operator-pinned external query/signature `provenance_verification`、type `gdd-gate1` の machine gate recordを順に作り、相互hashと内容を検証する。required specsはapproved intake bytesからreceiverが再生成してexact一致させる。外部proofを作れなければ承認未確認として停止し、D1.5 / D2 へ進まない。
 
-Gate 1 承認は「この GDD revision を D1.5 / D2 の入力にしてよい」という工程承認。`DECISIONS.md` へ対象 revision と承認 ID を記録するが、GDD を含む formal document のヘッダは **`Status: Draft` のまま**にする。`Status: Approved` と `Last approved` は D5 の原子的同期でのみ設定する。
+Gate 1 承認は「このapproved intake／required-specs projection／exact Draft GDD revisionを D1.5 / D2 の入力にしてよい」という工程承認。`DECISIONS.md` の人間向け正本記録とmachine gate recordは同じID・対象・approver・authority timestampへ解決し、gate recordの`sourceEvidence`はcapture、`sourceVerification`は外部proofのpath/hashと一致する。local hashはbyte bindingに限り、人間真正性はoperator外部configへpinしたchannel queryまたは署名trust anchorで検証する。GDD headerはB1まで `Status: Draft` のままbyte-immutable。D5 external verification後のfixed metadata-only transformationだけがB2で `Approved` / `Last approved` / exact historyを設定し、receiverはB1/B2 normalized body digest一致を再計算する。
 
 ## 4. D1.5 — Feasibility Gate
 
@@ -109,7 +109,7 @@ Gate 1 承認は「この GDD revision を D1.5 / D2 の入力にしてよい」
 - 高頻度 Projectile、サーバー権威の高速 PvP
 - 未検証の Multi-Place／Teleport 構成
 
-Feasibility Report には、仮説・最小実装・測定条件・端末・**合格閾値**・結果・D/F 判断を記す。
+Feasibility Report には、仮説・最小実装・測定条件・端末・**合格閾値**・結果・D/F 判断を記す。machine-generated required specs は、approved intake でtrueの5 technical flag（custom physics、high load、free text/UGC、high-frequency projectile/fast PvP、multi-place）だけから、source/value hash付きのsorted `requiredSubchecks` とそのdigestを導出する。free-form `product.top_risks` はD3/D4のrisk registryで扱い、D1.5 machine subcheckへ自動変換しない。D0独立reviewは、measurable mechanic riskに対応するtechnical flagがtrueでなければintakeへ差し戻す。GDDが新しいhigh-risk仮説を追加するなら、先にintake/GDDを更新してGate 1を取り直し、inventory外の仮説を黙って除外しない。現schema versionでは、`feasibility_report` trigger があれば、このexpected setを1つのcombined gate experimentとしてexactly 1件作る。bindingは `triggerId: feasibility_report`、`experimentId: feasibility_report-combined-v1` に固定する。evidenceのsubcheck IDはrequired setを重複・欠落・余分0でexact-coverし、各rowが固有のtrial／pre-fixed threshold／raw-output artifact path・実SHA-256、個別result、canonical row digestを持つ。top-level bundleだけで個別証拠を代替しない。combined resultは全必須subcheckがPASSの場合だけPASS。operator管理の外部configへpinされたruntime queryまたは署名で、その1 evidenceに対する `provenance_verification` を作る。proofはtarget Studio/Place/session/datamodel、experiment/trigger ID、subcheck-set digest、各subcheck evidence digest集合、request/command hash、result、tool/runtime IDs、開始/完了時刻を束縛する。trigger が無ければbinding/proofは0件。別々のexperimentへ拡張する場合はschema versionを上げ、required experiment registryを追加するまで現gateへ混在させない。外部proofを作れない実測をPASSにしない。
 
 **閾値は計測前に固定する。** 事後変更を禁じる。判定は PASS / FAIL / INCONCLUSIVE の3値。不合格なら上流 GDD を改訂し、再承認する。**失敗した前提のまま下流文書を量産しない。**
 
@@ -172,7 +172,7 @@ Markdown Spec は意味・所有者・failure policy、機械可読 instance は
 |---|---|---|
 | 1 | `consistency-auditor` | 二重正本、参照切れ、矛盾、未解決状態、変更伝播 |
 | 2 | `roblox-readiness-auditor` | Remote、保存、性能、UI/Input、課金、Policy、権利、公開、安全 |
-| 3 | `clean-room-auditor` | 過去会話を知らない AI が D5 authorization 後に最初の candidate WP を追加製品判断なしで開始できるか |
+| 3 | `clean-room-auditor` | 過去会話を知らない AI が D5 authorization 後に最初の candidate WP を追加製品判断なしで W0 へ渡し、W0 provenance/permission gate後だけ開始できるか |
 
 **3系統すべてが必要。** 1系統だけで全体の Critical 0 / Major 0 や D4 合格を宣言しない。
 
@@ -180,7 +180,7 @@ Markdown Spec は意味・所有者・failure policy、機械可読 instance は
 
 initial D4 は immutable `D4-CAND-n` を監査し、3系統合格後に**同じ file-set hash のまま** B0 へ昇格する。監査 raw report は候補 ID を指したまま無編集保存し、B0 へ書き換えない。
 
-initial candidate に残せる未決は、canonical operating file `PROGRESS.md` § Proposed P0 closure inventory へ完全列挙され、source ID/path・正確に境界づけた P0 closure question/scope・owner・closure evidence/pass rule・影響正本が明確な項目だけ。この台帳は candidate と同じ file set で B0 に固定し、代替案は P0 の CR 起草で作る。これを理由なく 0 件要求すると P0 自身が不要／到達不能になる。post-P0 candidate では blocking open・proposal・未検証 assumption を 0 にし、B0 historical inventory の全 ID を Completed record・actual evidence・影響正本の post-change hash へ一対一で解決する。
+initial candidate に残せる未決は、canonical operating file `PROGRESS.md` § Proposed P0 closure inventory へ完全列挙され、source ID/path・正確に境界づけた P0 closure question/scope・owner・closure evidence/pass rule・影響正本が明確な項目だけ。この台帳は candidate と同じ file set で B0 に固定し、代替案は P0 の CR 起草で作る。未決が実際に無い場合は inventory 0 行でもよいが、初回 D4 が未決 0 を一律要求して P0 closure を先取りしない。0 行でも P0 の既存契約検証・契約承認記録・管理WP遷移・candidate固定は実行する。post-P0 candidate では blocking open・proposal・未検証 assumption を 0 にし、B0 historical inventory の全 ID を Completed record・actual evidence・影響正本の post-change hash へ一対一で解決する。
 
 出口語彙は `D4合格 / P0着手資格あり（人間P0開始承認待ち）`。これはP0開始承認を求められる資格判定であり、P0作業のauthorizationではない。**`実装に入れる` / `implementation ready` は使わない**（D5 前のため）。
 
@@ -190,9 +190,9 @@ initial candidate に残せる未決は、canonical operating file `PROGRESS.md`
 
 **D4 合格後、D5 の前に実行する。** P0 は D5 の前提工程であり、D5 承認そのものではない。P0 内の `[AI-APPROVED]` は D5 を満たさない。**P0 は formal document の `Status` / `Last approved` を変更しない。**
 
-開始前に、D4 合格済み **B0** を対象とする人間の P0 開始承認を得る。`templates/p0_start_handoff.md` で B0 ID/hash と許可 scope を提示・記録する。P0 開始承認 ID は D5 承認 ID と分ける。
+開始前に、D4 合格済み **B0** を対象とする人間の P0 開始承認を得る。`templates/p0_start_handoff.md` で B0 ID/hash と許可 scope を提示・記録する。operator-pinned external authorityの監視をpresentation前に開始し、canonical source-baseline projection/file-setがB0と一致すること、canonical-project／private-staging／result-artifactsの3対象のinclude set上actual before-state、全in-scope mutation scopeを証明する。製品内容の変更は B0 historical closure inventory 行だけ、常に許可する手続は既存契約の検証・承認記録・P0管理WP遷移・candidate固定だけと分離する。ただし Gate 1 承認済み intake、そこから再導出したrequired specs、GDD、Gate 1 chain は inventory の対象外かつ immutable。変更が必要なら P0 で閉じず、D0/D1 → unique new Gate 1 → D1.5/D2/D3 → new initial D4/B0へ戻す。inventory 0 行なら製品内容の変更を0件のまま、規定済みP0手続だけを実行する。P0 開始承認 ID は P0 契約承認・D5 承認 ID と分ける。
 
-作業単位・gate 設計・承認記録・状態検査は `p0-work-units.md` / `p0-gate-design.md` / `p0-approval-and-state.md` が所有する。P0 改訂後は `P0-CAND-n` を固定し、B0→candidate の D4 差分再監査で Critical = 0 / Major = 0 を確認する。合格 candidate だけ同じ file-set hash のまま **B1** へ昇格し、D5 へ提示する。
+作業単位・gate 設計・承認記録・状態検査は `p0-work-units.md` / `p0-gate-design.md` / `p0-approval-and-state.md` が所有する。P0 改訂後はsnapshot-only `P0-CAND-n` を固定し、candidate/B1外の lifecycle transition attestationと外部provenanceで、P0-start verification後の全pre-approval write、approval payload作成、P0-contract verification後の固定metadata、snapshot全file freeze、actual-candidate machine record、exact frozen-byte canonical apply、final seal、未記録書込み0、seal後書込み0、実結果hashをauthority側actual eventsから証明する。B0→candidate の D4 差分再監査で Critical = 0 / Major = 0 を確認し、両方を満たす candidate だけ同じ file-set hash のまま **B1** へ昇格してD5へ提示する。
 
 P0 core の出口は `post-P0 D4待ち`。post-P0 D4 合格と B1 昇格までを含む P0 route 完了時点の結論は `D5提示可能` まで。
 
@@ -200,7 +200,7 @@ P0 core の出口は `post-P0 D4待ち`。post-P0 D4 合格と B1 昇格まで�
 
 ### 汎用の成立条件
 
-次をすべて満たしたときだけ「実装開始可能」とする。
+次をすべて満たしたときだけ「W0引渡し可能 / 実装契約承認済み」とする。これは code／Studio／OS／外部送信の side effect を許可しない。
 
 - ブロッキング OQ 0
 - `[PROPOSAL]` 0、未検証 `[ASSUMPTION]` 0
@@ -210,9 +210,10 @@ P0 core の出口は `post-P0 D4待ち`。post-P0 D4 合格と B1 昇格まで�
 - test / evidence / pass-fail rule が未割当の Work Package 0（製品テスト実行は W0 以降）
 - Human owner 不明 0
 - Build／Test／Serve コマンド確定
-- B0→post-P0 candidate の3系統差分D4がすべて合格し、そのcandidateと同一file-set hashのB1が成立
+- B0→post-P0 candidate の3系統同一mode D4（delta、該当時full escalation）がすべて合格し、そのcandidateと同一file-set hashのB1が成立
 - Release／Rollback 確定
-- 最初の Work Package が即開始可能
+- 最初の Work Package が新しい製品・契約判断なしに W0 へ引き渡せる
+- P0 actual-event transition proofがB0開始状態からsnapshot-only P0-CAND/B1まで、全書込み、snapshot全file、P0-start/P0-contract、post-freeze record、canonical apply、final sealの順序を外部authorityで証明済み
 
 ### プロジェクト側 gate registry
 
@@ -224,11 +225,11 @@ P0 core の出口は `post-P0 D4待ち`。post-P0 D4 合格と B1 昇格まで�
 
 ユーザーへ、B0→`P0-CAND-n` 差分監査の合格 candidate から同一 hash で昇格した **B1**、生成ファイル・主要判断・P0 結果・残る Human Actions・最初の Work Package を提示し、**人間本人から直接の明示承認**を得る。委任 AI の `[AI-APPROVED]`、過去の包括委任、無応答は D5 を満たさない。
 
-直接承認を得た**同じ変更単位で**、対象 formal document の `Status: Approved`・`Last approved`・change history・`DECISIONS.md` を同期し、docs index／manifest を再生成する。手順は `templates/d5_approval_handoff.md`。B1→B2 は許可済み metadata・承認記録・最初の WP authorization だけの差分でなければならない。**この D5 遷移より前に formal document を Approved へ昇格させない。**
+operator-pinned external authorityの監視をD5 presentation前に開始し、canonical source-baseline projection/file-setがB1と一致すること、canonical-project／private-staging／result-artifactsの3対象のinclude set上actual before-stateと全in-scope sync scopeを固定する。直接承認のexternal verification完了後だけ、**同じ変更単位で**対象 formal document の `Status: Approved`・`Last approved`・change history・`DECISIONS.md` を同期し、docs index／manifest を再生成する。GDDはGate1が承認したB1 Draft bytesからfixed metadataだけを変え、normalized body digestを維持する。手順は `templates/d5_approval_handoff.md`。B1→B2 は許可済み metadata・承認記録・最初の WP authorization だけの差分でなければならない。同期、allowed-diff/post-sync生成、B2 snapshot全file copyを全てmonitor内で記録し、B2 manifestをfinal sealとして1回だけ作る。同期後はB2外のlifecycle transition attestation／外部provenanceで全in-scope actual event・未記録書込み0・許可差分・snapshot完全性・seal後書込み0・B2結果を証明する。**この D5 verification より前に formal document を Approved へ昇格させない。外部operation proofが無ければW0へ進まない。**
 
 ## 10. D6 — 実装 Bootstrap と継続同期
 
-承認後、ユーザーが実装開始を依頼した場合のみ実行する。実装そのものは `claude-roblox-mvp-buildout`（通し実装）または `claude-roblox-development-delivery`（単発 WP）が担う。
+承認後、ユーザーが実装開始を依頼した場合のみ受領 skill を起動する。実装そのものは `claude-roblox-mvp-buildout`（通し実装）または `claude-roblox-development-delivery`（単発 WP）が担う。受領側はoperator外部authorityがprocess生成前から監視するPREPAREの署名proofとprelaunch assertionを検証してからだけVALIDATEを行い、W0 packageの全provenanceをoffline pinned-signature modeで検証する。query-mode/network adapterは送信権限取得前なのでSTOP。同じrunのsigned postexecution後もproject/source/temp lockを解放せず、current B2/package/WP、machine-derived frozen/disjoint write paths、receiver Skill tree、expected process closure、worker、transfer、operation、denial、expiryをexact提示した人間run authorizationをoperator-external証拠として作る。pre-ADMIT signed admissionはexpected factsとactive enforcementだけを束縛する。2回目のsemantic validator PASS後、authorityがtokenを期限内に原子的消費してworkerをsuspended/pre-entry起動し、actual closure一致・zero effect・continuous lock・未使用の短期worker-ready capabilityをsigned receiptへ束縛する。bootstrapがreceipt/signatureを検証してPASSし、authorityがcapabilityを最初のeffect直前に原子的消費するまでside effectを始めない。
 
 1. 一度に1 Work Package だけ着手する
 2. 変更前に対象ファイルと禁止範囲を再確認する

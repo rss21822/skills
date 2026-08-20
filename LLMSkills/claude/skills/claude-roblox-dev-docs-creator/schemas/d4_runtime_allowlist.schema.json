@@ -1,0 +1,131 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/roblox-ai-development-os/d4-runtime-allowlist.schema.json",
+  "title": "D4 Read-Only Runtime Allowlist",
+  "description": "Closed execution boundary. Auditors read sanitizedRoot plus operator-pinned Python full-runtime trees, optional pinned Git, and the exact external verifier config/adapter closure needed to freshly authenticate post-P0 transition provenance. Python executable, DLL/shared-library dependencies, encodings, and stdlib are all manifested; executable lies inside a root. No PATH/current-directory/project DLL discovery. Installed skill is exposed only through rehashed _policy_runtime copies.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion", "id", "createdAt", "operatorRuntimePinId", "pythonExecutable", "gitExecutable", "provenanceVerifierConfig", "readOnlyLibraryRoots",
+    "policyRuntimeRoot", "policyRuntimeFiles", "digestSha256"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "1.0.0" },
+    "id": { "type": "string", "pattern": "^D4-RUNTIME-[A-Z0-9][A-Z0-9._-]*$" },
+    "createdAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" },
+    "operatorRuntimePinId": {
+      "type": "string",
+      "minLength": 1,
+      "description": "ID of a d4RuntimePins entry in the separately supplied operator config. Receiver exact-compares and rehashes that external entry; this local ID/path set is not trusted by itself."
+    },
+    "pythonExecutable": { "$ref": "#/$defs/pythonPin" },
+    "gitExecutable": {
+      "oneOf": [
+        { "$ref": "#/$defs/filePin" },
+        { "type": "null" }
+      ],
+      "description": "Must exact-match the named external d4RuntimePins entry. Null requires git-current-facts disabled in the sanitized P0 config. If enabled, this is non-null and compiled argv uses this absolute pin, never PATH."
+    },
+    "provenanceVerifierConfig": {
+      "$ref": "#/$defs/externalConfigReference",
+      "description": "Exact operator-managed provenance verifier config outside project/skill. It transitively pins adapter/signature executable, adapter/support artifacts, trust anchor, and library roots. Post-P0 validation reads only this file and that closure; project config, PATH lookup, sibling imports, and unpinned environment are forbidden."
+    },
+    "readOnlyLibraryRoots": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/libraryRoot" },
+      "description": "Must exactly equal the named external d4RuntimePins complete Python runtime roots. At least one contains pythonExecutable. Only receiver-defined OS trust-root dependencies may load outside; any other unpinned library/module lookup fails."
+    },
+    "policyRuntimeRoot": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Project-relative immutable path equal to sanitizedRoot/_policy_runtime."
+    },
+    "policyRuntimeFiles": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/runtimeFile" },
+      "description": "Exact transitive closure of required validator and d4_preflight entrypoints, local imports, schemas, and configs. capsulePath bytes/hash must equal installed sourcePath bytes/hash."
+    },
+    "digestSha256": {
+      "$ref": "#/$defs/sha256",
+      "description": "SHA-256 of UTF-8 json.dumps({operatorRuntimePinId, pythonExecutable, gitExecutable, provenanceVerifierConfig, readOnlyLibraryRoots sorted by path, policyRuntimeRoot, policyRuntimeFiles sorted by capsulePath}, ensure_ascii=False, sort_keys=True, separators=(',', ':'))."
+    }
+  },
+  "$defs": {
+    "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "filePin": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "bytes", "sha256"],
+      "properties": {
+        "path": { "type": "string", "minLength": 1 },
+        "bytes": { "type": "integer", "minimum": 1 },
+        "sha256": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "externalConfigReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "bytes", "sha256"],
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^(?:[A-Za-z]:[\\\\/]|/)",
+          "description": "Absolute operator-controlled path outside project, capsule, and installed skill."
+        },
+        "bytes": { "type": "integer", "minimum": 1 },
+        "sha256": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "pythonPin": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "bytes", "sha256", "version", "fixedArgs"],
+      "properties": {
+        "path": { "type": "string", "minLength": 1 },
+        "bytes": { "type": "integer", "minimum": 1 },
+        "sha256": { "$ref": "#/$defs/sha256" },
+        "version": { "type": "string", "minLength": 1 },
+        "fixedArgs": { "const": ["-B", "-S", "-E", "-X", "utf8"] }
+      },
+      "description": "Externally pinned Python binary/version. -B prevents pycache writes, -S disables site packages, -E ignores PYTHON* environment variables, and -X utf8 fixes text encoding."
+    },
+    "libraryRoot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "manifestFormat", "manifestPath", "manifestSha256", "treeSha256"],
+      "properties": {
+        "path": { "type": "string", "minLength": 1 },
+        "manifestFormat": { "const": "canonical-library-tree-v1" },
+        "manifestPath": { "type": "string", "minLength": 1 },
+        "manifestSha256": { "$ref": "#/$defs/sha256" },
+        "treeSha256": { "$ref": "#/$defs/sha256" }
+      },
+      "description": "Exact external config match. Manifest is canonical UTF-8 {files:[sorted unique closed {path,bytes,sha256}]} outside libraryRoot/project/skill; paths are relative regular files and symlink/junction/reparse/special/escape entries fail. Receiver rehashes manifest and full tree before use."
+    },
+    "runtimeFile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sourcePath", "capsulePath", "bytes", "sha256", "role"],
+      "properties": {
+        "sourcePath": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Path relative to the installed skill root."
+        },
+        "capsulePath": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Project-relative immutable copy below policyRuntimeRoot."
+        },
+        "bytes": { "type": "integer", "minimum": 0 },
+        "sha256": { "$ref": "#/$defs/sha256" },
+        "role": { "enum": ["entrypoint", "local-import", "schema", "config"] }
+      }
+    }
+  }
+}

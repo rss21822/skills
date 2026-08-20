@@ -35,6 +35,7 @@ Use this section for the D4 Roblox-readiness lane. It checks contracts, not none
 ### Operations
 - [ ] analytics instance, alert/dashboard owners, emergency disable, release/rollback procedures, and Human Actions are defined
 - [ ] Initial D4 has no unresolved item outside `PROGRESS.md` § Proposed P0 closure inventory and no item whose closure depends on W0 implementation; post-P0 D4 has blocking OQ/proposal/unverified assumption 0 and independently verifies each B0 inventory ID's Completed evidence and affected-document hashes
+- [ ] Post-P0 D4 only: operator-pinned external provenance verifies the P0 transition's B0 start state, full monitored mutation scope, approval-ordered complete write log, snapshot full-file freeze, post-freeze record, one atomic apply per changed canonical path, final seal, zero unlogged/post-seal writes, and exact P0-CAND result
 
 Pass: Critical 0 / Major 0.
 

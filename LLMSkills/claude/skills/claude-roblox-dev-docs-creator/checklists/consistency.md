@@ -1,6 +1,6 @@
 # Consistency Audit Checklist
 
-Scope: D4 candidate documents and machine-readable instances. Formal documents are normally `Draft` until D5; do not require `Approved` headers here.
+Scope: D4 candidate documents and machine-readable instances. Formal documents, including the Gate1-approved GDD, remain `Draft` through B1; D5 alone applies fixed approval metadata.
 
 ## Canonicality
 
@@ -16,6 +16,8 @@ Scope: D4 candidate documents and machine-readable instances. Formal documents a
 - [ ] Every D-n has a corresponding F-n where risk warrants it
 - [ ] Fallbacks have measurable switch conditions and approver
 - [ ] Initial D4: every proposal, blocking open, or unverified assumption is uniquely registered in `PROGRESS.md` § Proposed P0 closure inventory with source ID/path, an exactly bounded closure question/scope, owner, closure evidence/pass rule, and affected documents; post-P0 D4: all three counts are 0 and every B0 historical inventory ID maps one-to-one to a Completed record, actual evidence, and affected-document post-change hashes
+- [ ] Post-P0 D4 only: the capsule binds the outer P0 lifecycle transition attestation, complete write log, and external provenance; fixed policy validation proves B0 start state/full target scope, approval chronology, exact allowed writes, zero unlogged writes, and the candidate result before B1 promotion
+- [ ] No P0 inventory row or P0 candidate changes the Gate 1-approved intake, rederived required specs, GDD bytes/path/revision, or Gate 1 chain; any required change restarted at D0/D1 with a unique new Gate 1 and new initial D4/B0
 
 ## Cross-document links
 
@@ -30,7 +32,7 @@ Scope: D4 candidate documents and machine-readable instances. Formal documents a
 
 ## Revision control
 
-- [ ] Every formal document has version/status/change history; Gate 1-approved GDD remains `Draft` until D5
+- [ ] Every formal document has version/status/change history; the Gate1-approved exact Draft GDD remains byte-identical through B1, and D5 changes only its fixed formal metadata while preserving normalized body content
 - [ ] Superseded documents point to replacements
 - [ ] CHANGELOG and DECISIONS include major changes
 - [ ] Impact table completed for changed facts

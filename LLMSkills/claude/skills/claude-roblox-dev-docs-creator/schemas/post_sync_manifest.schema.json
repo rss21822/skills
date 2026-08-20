@@ -9,7 +9,7 @@
     "schemaVersion": { "const": "1.0.0" },
     "transactionId": { "type": "string", "minLength": 1 },
     "baselineId": { "type": "string", "pattern": "^B2-[A-Z0-9][A-Z0-9._-]*$" },
-    "generatedAt": { "type": "string", "format": "date-time" },
+    "generatedAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" },
     "selfIncluded": { "const": false },
     "files": {
       "type": "array",

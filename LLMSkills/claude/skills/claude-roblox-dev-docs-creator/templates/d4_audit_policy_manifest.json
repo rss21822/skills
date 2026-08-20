@@ -1,0 +1,317 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "D4-POLICY-{{PREFIX}}-{{CANDIDATE_ID}}-R{{ROUND}}",
+  "policyVersion": "d4-audit-policy-v1",
+  "createdAt": "{{ISO_8601_WITH_TIMEZONE}}",
+  "installedSkillRoot": "{{ABSOLUTE_INSTALLED_SKILL_ROOT_INFORMATIONAL_ONLY}}",
+  "sourceComponents": [
+    { "role": "skill-d4", "auditTrack": null, "path": "SKILL.md", "sha256": "{{INSTALLED_SKILL_MD_SHA256}}" },
+    { "role": "policy-checklist", "auditTrack": "clean-room", "path": "checklists/clean_room.md", "sha256": "{{INSTALLED_CLEAN_ROOM_CHECKLIST_SHA256}}" },
+    { "role": "policy-checklist", "auditTrack": null, "path": "checklists/completion.md", "sha256": "{{INSTALLED_COMPLETION_CHECKLIST_SHA256}}" },
+    { "role": "policy-checklist", "auditTrack": "consistency", "path": "checklists/consistency.md", "sha256": "{{INSTALLED_CONSISTENCY_CHECKLIST_SHA256}}" },
+    { "role": "policy-checklist", "auditTrack": "roblox-readiness", "path": "checklists/production_readiness.md", "sha256": "{{INSTALLED_PRODUCTION_READINESS_CHECKLIST_SHA256}}" },
+    { "role": "policy-checklist", "auditTrack": null, "path": "checklists/security.md", "sha256": "{{INSTALLED_SECURITY_CHECKLIST_SHA256}}" },
+    { "role": "policy-reference", "auditTrack": null, "path": "references/absolute-rules.md", "sha256": "{{INSTALLED_ABSOLUTE_RULES_SHA256}}" },
+    { "role": "policy-reference", "auditTrack": null, "path": "references/audit-d4.md", "sha256": "{{INSTALLED_AUDIT_D4_SHA256}}" },
+    { "role": "policy-reference", "auditTrack": null, "path": "references/audit-dimensions.md", "sha256": "{{INSTALLED_AUDIT_DIMENSIONS_SHA256}}" },
+    { "role": "policy-reference", "auditTrack": null, "path": "references/autonomous-execution.md", "sha256": "{{INSTALLED_AUTONOMOUS_EXECUTION_SHA256}}" },
+    { "role": "policy-reference", "auditTrack": null, "path": "references/config-example.md", "sha256": "{{INSTALLED_CONFIG_EXAMPLE_SHA256}}" },
+    { "role": "policy-reference", "auditTrack": null, "path": "references/defect-catalog.md", "sha256": "{{INSTALLED_DEFECT_CATALOG_SHA256}}" },
+    { "role": "policy-reference", "auditTrack": null, "path": "references/document-system.md", "sha256": "{{INSTALLED_DOCUMENT_SYSTEM_SHA256}}" },
+    { "role": "policy-reference", "auditTrack": null, "path": "references/execution-envelope.md", "sha256": "{{INSTALLED_EXECUTION_ENVELOPE_SHA256}}" },
+    { "role": "policy-reference", "auditTrack": null, "path": "references/findings-report.md", "sha256": "{{INSTALLED_FINDINGS_REPORT_SHA256}}" },
+    { "role": "policy-reference", "auditTrack": null, "path": "references/gdd-and-intake.md", "sha256": "{{INSTALLED_GDD_AND_INTAKE_SHA256}}" },
+    { "role": "policy-reference", "auditTrack": null, "path": "references/orchestration.md", "sha256": "{{INSTALLED_ORCHESTRATION_SHA256}}" },
+    { "role": "policy-reference", "auditTrack": null, "path": "references/ordering.md", "sha256": "{{INSTALLED_ORDERING_SHA256}}" },
+    { "role": "policy-reference", "auditTrack": null, "path": "references/output-layout.md", "sha256": "{{INSTALLED_OUTPUT_LAYOUT_SHA256}}" },
+    { "role": "policy-reference", "auditTrack": null, "path": "references/p0-approval-and-state.md", "sha256": "{{INSTALLED_P0_APPROVAL_AND_STATE_SHA256}}" },
+    { "role": "policy-reference", "auditTrack": null, "path": "references/p0-gate-design.md", "sha256": "{{INSTALLED_P0_GATE_DESIGN_SHA256}}" },
+    { "role": "policy-reference", "auditTrack": null, "path": "references/p0-rework-catalog.md", "sha256": "{{INSTALLED_P0_REWORK_CATALOG_SHA256}}" },
+    { "role": "policy-reference", "auditTrack": null, "path": "references/p0-work-units.md", "sha256": "{{INSTALLED_P0_WORK_UNITS_SHA256}}" },
+    { "role": "policy-reference", "auditTrack": null, "path": "references/phase-definitions.md", "sha256": "{{INSTALLED_PHASE_DEFINITIONS_SHA256}}" },
+    { "role": "policy-reference", "auditTrack": null, "path": "references/quality-gates.md", "sha256": "{{INSTALLED_QUALITY_GATES_SHA256}}" },
+    { "role": "policy-reference", "auditTrack": null, "path": "references/repository-audit.md", "sha256": "{{INSTALLED_REPOSITORY_AUDIT_SHA256}}" },
+    { "role": "policy-reference", "auditTrack": null, "path": "references/review-protocol.md", "sha256": "{{INSTALLED_REVIEW_PROTOCOL_SHA256}}" },
+    { "role": "policy-reference", "auditTrack": null, "path": "references/roblox-readiness.md", "sha256": "{{INSTALLED_ROBLOX_READINESS_SHA256}}" },
+    { "role": "policy-reference", "auditTrack": null, "path": "references/trigger-matrix.md", "sha256": "{{INSTALLED_TRIGGER_MATRIX_SHA256}}" },
+    { "role": "policy-reference", "auditTrack": null, "path": "references/worker-registry.md", "sha256": "{{INSTALLED_WORKER_REGISTRY_SHA256}}" },
+    { "role": "validator", "auditTrack": null, "path": "scripts/validate_d5_acceptance.py", "sha256": "{{INSTALLED_D4_ACCEPTANCE_VALIDATOR_SHA256}}" },
+    { "role": "validator", "auditTrack": null, "path": "scripts/validate_lifecycle_transition.py", "sha256": "{{INSTALLED_LIFECYCLE_TRANSITION_VALIDATOR_SHA256}}" },
+    { "role": "findings-template", "auditTrack": null, "path": "templates/d4_findings.md", "sha256": "{{INSTALLED_D4_FINDINGS_TEMPLATE_SHA256}}" }
+  ],
+  "promptCompilation": {
+    "kind": "d4-full-provider-prompt-v1",
+    "encoding": "utf-8",
+    "lineEndings": "lf",
+    "requestProjection": "canonical-request-core-v1",
+    "orderedSections": [
+      "fixed-safety-contract",
+      "policy-document-closure",
+      "findings-template",
+      "canonical-request-core"
+    ],
+    "sectionSeparator": "\n\n---\n\n",
+    "terminalNewline": true
+  },
+  "sourceTreePolicy": {
+    "kind": "target-revision-complete-tree-v1",
+    "pathEncoding": "utf-8-posix-relative",
+    "sort": "unicode-codepoint-by-path",
+    "entryFields": ["path", "bytes", "sha256"],
+    "exclusions": [],
+    "symlinks": "reject",
+    "hardlinks": "reject-link-count-not-1-or-duplicate-os-identity",
+    "specialFiles": "reject"
+  },
+  "preflightCommands": [
+    {
+      "checkId": "D4-PREFLIGHT-SOURCE-STATE-001",
+      "argv": [
+        "{{ABSOLUTE_PINNED_PYTHON_EXE}}", "-B", "-S", "-E", "-X", "utf8",
+        "{{ABSOLUTE_POLICY_RUNTIME_ROOT}}/scripts/d4_preflight.py", "--operation", "source-state",
+        "--source-root", "{{ABSOLUTE_TARGET_REVISION_SOURCE_ROOT}}", "--candidate-manifest", "{{ABSOLUTE_CANDIDATE_MANIFEST}}",
+        "--git-executable", "{{ABSOLUTE_PINNED_GIT_OR_LITERAL_NONE}}"
+      ],
+      "cwd": "{{ABSOLUTE_SANITIZED_ROOT}}",
+      "expectedExitCode": 0
+    },
+    {
+      "checkId": "D4-PREFLIGHT-REVISION-001",
+      "argv": [
+        "{{ABSOLUTE_PINNED_PYTHON_EXE}}", "-B", "-S", "-E", "-X", "utf8",
+        "{{ABSOLUTE_POLICY_RUNTIME_ROOT}}/scripts/d4_preflight.py", "--operation", "revision",
+        "--source-root", "{{ABSOLUTE_TARGET_REVISION_SOURCE_ROOT}}", "--candidate-manifest", "{{ABSOLUTE_CANDIDATE_MANIFEST}}",
+        "--git-executable", "{{ABSOLUTE_PINNED_GIT_OR_LITERAL_NONE}}"
+      ],
+      "cwd": "{{ABSOLUTE_SANITIZED_ROOT}}",
+      "expectedExitCode": 0
+    },
+    {
+      "checkId": "D4-PREFLIGHT-TREE-001",
+      "argv": [
+        "{{ABSOLUTE_PINNED_PYTHON_EXE}}", "-B", "-S", "-E", "-X", "utf8",
+        "{{ABSOLUTE_POLICY_RUNTIME_ROOT}}/scripts/d4_preflight.py", "--operation", "tree",
+        "--source-root", "{{ABSOLUTE_TARGET_REVISION_SOURCE_ROOT}}", "--candidate-manifest", "{{ABSOLUTE_CANDIDATE_MANIFEST}}",
+        "--git-executable", "{{ABSOLUTE_PINNED_GIT_OR_LITERAL_NONE}}"
+      ],
+      "cwd": "{{ABSOLUTE_SANITIZED_ROOT}}",
+      "expectedExitCode": 0
+    }
+  ],
+  "lanePolicies": [
+    {
+      "auditTrack": "consistency",
+      "checklist": { "path": "checklists/consistency.md", "sha256": "{{INSTALLED_CONSISTENCY_CHECKLIST_SHA256}}" },
+      "requiredCheckIds": [
+        "CONSISTENCY-LINT-001",
+        "CONSISTENCY-DOCS-D3-001",
+        "CONSISTENCY-TRACE-D3-001",
+        "CONSISTENCY-P0-STRICT-001",
+        "CONSISTENCY-P0-LIFECYCLE-001"
+      ],
+      "requiredCommands": [
+        {
+          "checkId": "CONSISTENCY-LINT-001",
+          "applicability": "all",
+          "argv": [
+            "{{ABSOLUTE_PINNED_PYTHON_EXE}}", "-B", "-S", "-E", "-X", "utf8", "{{ABSOLUTE_POLICY_RUNTIME_ROOT}}/scripts/lint_docs.py",
+            "--project-root", "{{ABSOLUTE_SANITIZED_ROOT}}", "--config",
+            "{{ABSOLUTE_SANITIZED_ROOT}}/.claude/doc-lint.json", "--json"
+          ],
+          "cwd": "{{ABSOLUTE_SANITIZED_ROOT}}",
+          "expectedExitCode": 0
+        },
+        {
+          "checkId": "CONSISTENCY-DOCS-D3-001",
+          "applicability": "all",
+          "argv": [
+            "{{ABSOLUTE_PINNED_PYTHON_EXE}}", "-B", "-S", "-E", "-X", "utf8", "{{ABSOLUTE_POLICY_RUNTIME_ROOT}}/scripts/validate_docs.py",
+            "--project-root", "{{ABSOLUTE_SANITIZED_ROOT}}", "--prefix", "{{PREFIX}}",
+            "--gate", "D3", "--json"
+          ],
+          "cwd": "{{ABSOLUTE_SANITIZED_ROOT}}",
+          "expectedExitCode": 0
+        },
+        {
+          "checkId": "CONSISTENCY-TRACE-D3-001",
+          "applicability": "all",
+          "argv": [
+            "{{ABSOLUTE_PINNED_PYTHON_EXE}}", "-B", "-S", "-E", "-X", "utf8", "{{ABSOLUTE_POLICY_RUNTIME_ROOT}}/scripts/validate_traceability.py",
+            "{{ABSOLUTE_SANITIZED_ROOT}}/docs/traceability/{{PREFIX}}_requirements.csv",
+            "--gate", "D3", "--json"
+          ],
+          "cwd": "{{ABSOLUTE_SANITIZED_ROOT}}",
+          "expectedExitCode": 0
+        },
+        {
+          "checkId": "CONSISTENCY-P0-STRICT-001",
+          "applicability": "post-p0",
+          "argv": [
+            "{{ABSOLUTE_PINNED_PYTHON_EXE}}", "-B", "-S", "-E", "-X", "utf8", "{{ABSOLUTE_POLICY_RUNTIME_ROOT}}/scripts/check_p0_state.py",
+            "--project-root", "{{ABSOLUTE_SANITIZED_ROOT}}", "--prefix", "{{PREFIX}}",
+            "--config", "{{ABSOLUTE_SANITIZED_ROOT}}/.claude/p0-check.json", "--strict", "--json"
+          ],
+          "cwd": "{{ABSOLUTE_SANITIZED_ROOT}}",
+          "expectedExitCode": 0
+        },
+        {
+          "checkId": "CONSISTENCY-P0-LIFECYCLE-001",
+          "applicability": "post-p0",
+          "argv": [
+            "{{ABSOLUTE_PINNED_PYTHON_EXE}}", "-B", "-S", "-E", "-X", "utf8", "{{ABSOLUTE_POLICY_RUNTIME_ROOT}}/scripts/validate_lifecycle_transition.py",
+            "--project-root", "{{ABSOLUTE_SANITIZED_ROOT}}", "--capsule", "{{ABSOLUTE_D4_CAPSULE_PATH}}", "--transition-type", "p0",
+            "--provenance-config", "{{ABSOLUTE_OPERATOR_PROVENANCE_CONFIG}}", "--fresh-authenticate", "--json"
+          ],
+          "cwd": "{{ABSOLUTE_SANITIZED_ROOT}}",
+          "expectedExitCode": 0
+        }
+      ]
+    },
+    {
+      "auditTrack": "roblox-readiness",
+      "checklist": { "path": "checklists/production_readiness.md", "sha256": "{{INSTALLED_ROBLOX_READINESS_CHECKLIST_SHA256}}" },
+      "requiredCheckIds": [
+        "ROBLOX-READINESS-LINT-001",
+        "ROBLOX-READINESS-DOCS-D3-001",
+        "ROBLOX-READINESS-TRACE-D3-001",
+        "ROBLOX-READINESS-P0-STRICT-001",
+        "ROBLOX-READINESS-P0-LIFECYCLE-001"
+      ],
+      "requiredCommands": [
+        {
+          "checkId": "ROBLOX-READINESS-LINT-001",
+          "applicability": "all",
+          "argv": [
+            "{{ABSOLUTE_PINNED_PYTHON_EXE}}", "-B", "-S", "-E", "-X", "utf8", "{{ABSOLUTE_POLICY_RUNTIME_ROOT}}/scripts/lint_docs.py",
+            "--project-root", "{{ABSOLUTE_SANITIZED_ROOT}}", "--config",
+            "{{ABSOLUTE_SANITIZED_ROOT}}/.claude/doc-lint.json", "--json"
+          ],
+          "cwd": "{{ABSOLUTE_SANITIZED_ROOT}}",
+          "expectedExitCode": 0
+        },
+        {
+          "checkId": "ROBLOX-READINESS-DOCS-D3-001",
+          "applicability": "all",
+          "argv": [
+            "{{ABSOLUTE_PINNED_PYTHON_EXE}}", "-B", "-S", "-E", "-X", "utf8", "{{ABSOLUTE_POLICY_RUNTIME_ROOT}}/scripts/validate_docs.py",
+            "--project-root", "{{ABSOLUTE_SANITIZED_ROOT}}", "--prefix", "{{PREFIX}}",
+            "--gate", "D3", "--json"
+          ],
+          "cwd": "{{ABSOLUTE_SANITIZED_ROOT}}",
+          "expectedExitCode": 0
+        },
+        {
+          "checkId": "ROBLOX-READINESS-TRACE-D3-001",
+          "applicability": "all",
+          "argv": [
+            "{{ABSOLUTE_PINNED_PYTHON_EXE}}", "-B", "-S", "-E", "-X", "utf8", "{{ABSOLUTE_POLICY_RUNTIME_ROOT}}/scripts/validate_traceability.py",
+            "{{ABSOLUTE_SANITIZED_ROOT}}/docs/traceability/{{PREFIX}}_requirements.csv",
+            "--gate", "D3", "--json"
+          ],
+          "cwd": "{{ABSOLUTE_SANITIZED_ROOT}}",
+          "expectedExitCode": 0
+        },
+        {
+          "checkId": "ROBLOX-READINESS-P0-STRICT-001",
+          "applicability": "post-p0",
+          "argv": [
+            "{{ABSOLUTE_PINNED_PYTHON_EXE}}", "-B", "-S", "-E", "-X", "utf8", "{{ABSOLUTE_POLICY_RUNTIME_ROOT}}/scripts/check_p0_state.py",
+            "--project-root", "{{ABSOLUTE_SANITIZED_ROOT}}", "--prefix", "{{PREFIX}}",
+            "--config", "{{ABSOLUTE_SANITIZED_ROOT}}/.claude/p0-check.json", "--strict", "--json"
+          ],
+          "cwd": "{{ABSOLUTE_SANITIZED_ROOT}}",
+          "expectedExitCode": 0
+        },
+        {
+          "checkId": "ROBLOX-READINESS-P0-LIFECYCLE-001",
+          "applicability": "post-p0",
+          "argv": [
+            "{{ABSOLUTE_PINNED_PYTHON_EXE}}", "-B", "-S", "-E", "-X", "utf8", "{{ABSOLUTE_POLICY_RUNTIME_ROOT}}/scripts/validate_lifecycle_transition.py",
+            "--project-root", "{{ABSOLUTE_SANITIZED_ROOT}}", "--capsule", "{{ABSOLUTE_D4_CAPSULE_PATH}}", "--transition-type", "p0",
+            "--provenance-config", "{{ABSOLUTE_OPERATOR_PROVENANCE_CONFIG}}", "--fresh-authenticate", "--json"
+          ],
+          "cwd": "{{ABSOLUTE_SANITIZED_ROOT}}",
+          "expectedExitCode": 0
+        }
+      ]
+    },
+    {
+      "auditTrack": "clean-room",
+      "checklist": { "path": "checklists/clean_room.md", "sha256": "{{INSTALLED_CLEAN_ROOM_CHECKLIST_SHA256}}" },
+      "requiredCheckIds": [
+        "CLEAN-ROOM-LINT-001",
+        "CLEAN-ROOM-DOCS-D3-001",
+        "CLEAN-ROOM-TRACE-D3-001",
+        "CLEAN-ROOM-P0-STRICT-001",
+        "CLEAN-ROOM-P0-LIFECYCLE-001"
+      ],
+      "requiredCommands": [
+        {
+          "checkId": "CLEAN-ROOM-LINT-001",
+          "applicability": "all",
+          "argv": [
+            "{{ABSOLUTE_PINNED_PYTHON_EXE}}", "-B", "-S", "-E", "-X", "utf8", "{{ABSOLUTE_POLICY_RUNTIME_ROOT}}/scripts/lint_docs.py",
+            "--project-root", "{{ABSOLUTE_SANITIZED_ROOT}}", "--config",
+            "{{ABSOLUTE_SANITIZED_ROOT}}/.claude/doc-lint.json", "--json"
+          ],
+          "cwd": "{{ABSOLUTE_SANITIZED_ROOT}}",
+          "expectedExitCode": 0
+        },
+        {
+          "checkId": "CLEAN-ROOM-DOCS-D3-001",
+          "applicability": "all",
+          "argv": [
+            "{{ABSOLUTE_PINNED_PYTHON_EXE}}", "-B", "-S", "-E", "-X", "utf8", "{{ABSOLUTE_POLICY_RUNTIME_ROOT}}/scripts/validate_docs.py",
+            "--project-root", "{{ABSOLUTE_SANITIZED_ROOT}}", "--prefix", "{{PREFIX}}",
+            "--gate", "D3", "--json"
+          ],
+          "cwd": "{{ABSOLUTE_SANITIZED_ROOT}}",
+          "expectedExitCode": 0
+        },
+        {
+          "checkId": "CLEAN-ROOM-TRACE-D3-001",
+          "applicability": "all",
+          "argv": [
+            "{{ABSOLUTE_PINNED_PYTHON_EXE}}", "-B", "-S", "-E", "-X", "utf8", "{{ABSOLUTE_POLICY_RUNTIME_ROOT}}/scripts/validate_traceability.py",
+            "{{ABSOLUTE_SANITIZED_ROOT}}/docs/traceability/{{PREFIX}}_requirements.csv",
+            "--gate", "D3", "--json"
+          ],
+          "cwd": "{{ABSOLUTE_SANITIZED_ROOT}}",
+          "expectedExitCode": 0
+        },
+        {
+          "checkId": "CLEAN-ROOM-P0-STRICT-001",
+          "applicability": "post-p0",
+          "argv": [
+            "{{ABSOLUTE_PINNED_PYTHON_EXE}}", "-B", "-S", "-E", "-X", "utf8", "{{ABSOLUTE_POLICY_RUNTIME_ROOT}}/scripts/check_p0_state.py",
+            "--project-root", "{{ABSOLUTE_SANITIZED_ROOT}}", "--prefix", "{{PREFIX}}",
+            "--config", "{{ABSOLUTE_SANITIZED_ROOT}}/.claude/p0-check.json", "--strict", "--json"
+          ],
+          "cwd": "{{ABSOLUTE_SANITIZED_ROOT}}",
+          "expectedExitCode": 0
+        },
+        {
+          "checkId": "CLEAN-ROOM-P0-LIFECYCLE-001",
+          "applicability": "post-p0",
+          "argv": [
+            "{{ABSOLUTE_PINNED_PYTHON_EXE}}", "-B", "-S", "-E", "-X", "utf8", "{{ABSOLUTE_POLICY_RUNTIME_ROOT}}/scripts/validate_lifecycle_transition.py",
+            "--project-root", "{{ABSOLUTE_SANITIZED_ROOT}}", "--capsule", "{{ABSOLUTE_D4_CAPSULE_PATH}}", "--transition-type", "p0",
+            "--provenance-config", "{{ABSOLUTE_OPERATOR_PROVENANCE_CONFIG}}", "--fresh-authenticate", "--json"
+          ],
+          "cwd": "{{ABSOLUTE_SANITIZED_ROOT}}",
+          "expectedExitCode": 0
+        }
+      ]
+    }
+  ],
+  "denyCategories": [
+    "conversation-history",
+    "worker-identity",
+    "prior-findings",
+    "expected-verdict",
+    "e0-capability-probe",
+    "handoff-conversation",
+    "self-evaluation"
+  ],
+  "compiledPolicySha256": "{{CANONICAL_COMPILED_POLICY_SHA256}}"
+}

@@ -1,0 +1,395 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/roblox-ai-development-os/provenance-verifier-config.schema.json",
+  "title": "Operator-Pinned Provenance Verifier Configuration",
+  "description": "Operator-managed external trust configuration. It remains outside the project, candidate, capsule, baseline, and W0 package and is never scaffolded into a project. Validators trust only this separately supplied config after rehashing every executable, adapter, support artifact, runtime root, validator, and trust anchor. Runners execute shell=false in a receiver-created empty temporary directory; artifact-local verifier strings are informational.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "d4RuntimePins", "w0ValidatorRuntime", "trustedRuntimeAdapters", "signatureVerifiers"],
+  "properties": {
+    "schemaVersion": { "const": "1.0.0" },
+    "d4RuntimePins": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/d4RuntimePin" },
+      "description": "External D4 execution pins. A project runtime allowlist must name one entry and exact-match its Python and library-root fields."
+    },
+    "w0ValidatorRuntime": { "$ref": "#/$defs/w0ValidatorRuntime" },
+    "trustedRuntimeAdapters": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/runtimeAdapter" }
+    },
+    "signatureVerifiers": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/signatureVerifier" }
+    }
+  },
+  "anyOf": [
+    { "properties": { "trustedRuntimeAdapters": { "minItems": 1 } } },
+    { "properties": { "signatureVerifiers": { "minItems": 1 } } }
+  ],
+  "$defs": {
+    "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "absolutePath": { "type": "string", "pattern": "^[A-Za-z]:[\\\\/].+", "description": "W0 lifecycle v1 operator path. The native receiver is Windows-only and requires a local-drive absolute path; POSIX, UNC, device, ADS, and relative paths are invalid." },
+    "filePin": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256"],
+      "properties": {
+        "path": {
+          "$ref": "#/$defs/absolutePath",
+          "description": "Absolute path resolved and rehashed by the receiver."
+        },
+        "sha256": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "binaryPin": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "bytes", "sha256"],
+      "properties": {
+        "path": {
+          "$ref": "#/$defs/absolutePath",
+          "description": "Absolute operator-controlled path; receiver resolves, counts, and rehashes the bytes."
+        },
+        "bytes": { "type": "integer", "minimum": 1 },
+        "sha256": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "copyArtifactPin": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256", "copyPath"],
+      "properties": {
+        "path": {
+          "$ref": "#/$defs/absolutePath",
+          "description": "Absolute operator-controlled source path rehashed before copying."
+        },
+        "sha256": { "$ref": "#/$defs/sha256" },
+        "copyPath": {
+          "type": "string",
+          "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.?($|/))(?!.*\\\\)(?!.*//)[A-Za-z0-9._-]+(?:/[A-Za-z0-9._-]+)*$",
+          "description": "Safe relative POSIX destination below a fresh empty receiver-created temp root. Absolute paths, drive prefixes, backslashes, empty/dot/parent segments, and destination collisions are invalid."
+        }
+      }
+    },
+    "pythonPin": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "bytes", "sha256", "version", "fixedArgs"],
+      "properties": {
+        "path": { "$ref": "#/$defs/absolutePath" },
+        "bytes": { "type": "integer", "minimum": 1 },
+        "sha256": { "$ref": "#/$defs/sha256" },
+        "version": { "type": "string", "minLength": 1 },
+        "fixedArgs": { "const": ["-B", "-S", "-E", "-X", "utf8"] }
+      },
+      "description": "Pinned Python binary. Its resolved path must be inside at least one matching readOnlyLibraryRoots full-runtime tree. fixedArgs isolate site/user/environment and suppress bytecode writes."
+    },
+    "d4RuntimePin": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "pythonExecutable", "readOnlyLibraryRoots", "gitExecutable", "gitRuntimeRoots"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "pythonExecutable": { "$ref": "#/$defs/pythonPin" },
+        "readOnlyLibraryRoots": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/libraryRootPin" },
+          "description": "Complete isolated Python runtime trees, not stdlib-only: executable, DLL/shared-library dependencies, encodings, and stdlib are all manifested. pythonExecutable must resolve inside at least one root. Only explicitly defined OS trust-root libraries may load outside these pins; ambient PATH/current-directory/project/skill DLL search is forbidden."
+        },
+        "gitExecutable": {
+          "oneOf": [
+            { "$ref": "#/$defs/binaryPin" },
+            { "type": "null" }
+          ],
+          "description": "Null when git-current-facts is disabled. When any sanitized D4 config enables that rule, this must be a rehashed external Git pin and compiled argv uses its exact absolute path; an unpinned PATH lookup is invalid."
+        },
+        "gitRuntimeRoots": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/libraryRootPin" },
+          "description": "Complete manifested Git executable/DLL/helper/runtime closure. Empty exactly when gitExecutable is null; non-empty otherwise, with the executable inside one root. A lone binary hash is insufficient."
+        }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "gitExecutable": { "type": "null" } }, "required": ["gitExecutable"] },
+          "then": { "properties": { "gitRuntimeRoots": { "maxItems": 0 } } },
+          "else": { "properties": { "gitRuntimeRoots": { "minItems": 1 } } }
+        }
+      ]
+    },
+    "w0ValidatorRuntime": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id", "installedSkillRoot", "installedSkillReadClosure", "pythonExecutable", "validatorEntrypoint", "supportArtifacts",
+        "readOnlyLibraryRoots", "gitExecutable", "gitRuntimeRoots", "receiverBootstrap", "immutableRuntimeAuthority"
+      ],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "installedSkillRoot": {
+          "$ref": "#/$defs/absolutePath",
+          "description": "Explicit absolute installed claude-roblox-dev-docs-creator root passed to the validator. Receiver resolves it independently; the string is not trusted without rehashing the fixed policy closure and runtime pins."
+        },
+        "installedSkillReadClosure": {
+          "$ref": "#/$defs/libraryRootPin",
+          "description": "Full installed Skill read closure. path must resolve exactly to installedSkillRoot. Its external manifest exact-covers every regular file below that root with no exclusions; symlink, junction, reparse, mount, special-file, missing, extra, or hash-different entries fail. This pin prevents altered schemas/templates/policy from redefining validator PASS while entrypoint hashes remain unchanged."
+        },
+        "pythonExecutable": { "$ref": "#/$defs/pythonPin" },
+        "validatorEntrypoint": {
+          "allOf": [
+            { "$ref": "#/$defs/copyArtifactPin" },
+            {
+              "properties": {
+                "copyPath": { "const": "scripts/validate_d5_acceptance.py" }
+              }
+            }
+          ],
+          "description": "Source path must resolve to installedSkillRoot/scripts/validate_d5_acceptance.py and rehash to the installed bytes."
+        },
+        "supportArtifacts": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 3,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/copyArtifactPin" },
+          "allOf": [
+            {
+              "contains": { "properties": { "copyPath": { "const": "scripts/gen_index.py" } }, "required": ["copyPath"] },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": { "properties": { "copyPath": { "const": "scripts/state_readiness.py" } }, "required": ["copyPath"] },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": { "properties": { "copyPath": { "const": "scripts/strict_json.py" } }, "required": ["copyPath"] },
+              "minContains": 1,
+              "maxContains": 1
+            }
+          ],
+          "description": "Exact installed local-import closure: installedSkillRoot/scripts/gen_index.py, state_readiness.py, and strict_json.py copied to the three fixed unique copyPaths. Missing, extra, colliding, preexisting, or __pycache__ files fail."
+        },
+        "readOnlyLibraryRoots": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/libraryRootPin" },
+          "description": "Complete isolated Python runtime dependency trees. pythonExecutable lies inside one root; unpinned DLL/module discovery outside the roots is forbidden except receiver-defined OS trust roots."
+        },
+        "gitExecutable": {
+          "type": "null",
+          "description": "Lifecycle v1 W0 acceptance is snapshot-only, so this is always null. Any commit baseline is STOP; a future authenticated VCS lifecycle requires a new schema version."
+        },
+        "gitRuntimeRoots": {
+          "type": "array",
+          "maxItems": 0,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/libraryRootPin" },
+          "description": "Lifecycle v1 W0 acceptance is snapshot-only, so this is the exact empty array. Commit mode is STOP."
+        },
+        "receiverBootstrap": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["script", "hostExecutable", "hostVersion", "hostFixedArgs", "hostRuntimeRoots", "trustBoundary", "threePhaseProtocol", "phaseFlag", "phaseValues", "phaseInvocationProtocol", "phaseArgvTailGrammar"],
+          "properties": {
+            "script": {
+              "$ref": "#/$defs/filePin",
+              "description": "Must resolve exactly to installedSkillRoot/scripts/w0_receiver_bootstrap.ps1. This individually pinned bootstrap is the only code allowed to prepare or launch W0 validation."
+            },
+            "hostExecutable": { "$ref": "#/$defs/binaryPin" },
+            "hostVersion": { "type": "string", "minLength": 1, "description": "Exact pinned PowerShell 7.5+ host version whose ConvertFrom-Json supports -DateKind String. Bootstrap v1 rejects a host without that capability so ISO timestamp strings cannot be silently converted before fixed-byte signature checks." },
+            "hostFixedArgs": { "const": ["-NoLogo", "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-File"] },
+            "hostRuntimeRoots": {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": { "$ref": "#/$defs/libraryRootPin" },
+              "description": "Full PowerShell/OS-host executable, DLL, module, and helper closure; hostExecutable.path lies in exactly one rehashed root. Ambient PATH/modules/profile/current-directory loading is forbidden."
+            },
+            "trustBoundary": { "const": "operator-pinned-powershell-os-host-and-bootstrap-v1" },
+            "threePhaseProtocol": { "const": "prepare-validate-admit-continuous-lock-v1" },
+            "phaseFlag": { "const": "-Phase" },
+            "phaseValues": { "const": ["PREPARE", "VALIDATE", "ADMIT"] },
+            "phaseInvocationProtocol": { "const": "host-fixed-args-script-phase-first-absolute-named-paths-v1" },
+            "phaseArgvTailGrammar": {
+              "const": {
+                "PREPARE": ["-ConfigPath", "<ABS>", "-ExpectedConfigSha256", "<LOWER64HEX>", "-PackagePath", "<ABS>", "-ProjectRoot", "<ABS>", "-LaunchChallengeOutputPath", "<ABS>", "-AuthorizationEvidenceRoot", "<ABS>"],
+                "VALIDATE": ["-ConfigPath", "<ABS>", "-ExpectedConfigSha256", "<LOWER64HEX>", "-PackagePath", "<ABS>", "-ProjectRoot", "<ABS>", "-LaunchChallengePath", "<ABS>", "-PrepareAttestationPath", "<ABS>", "-PrepareSignaturePath", "<ABS>", "-PrelaunchAssertionPath", "<ABS>", "-PrelaunchSignaturePath", "<ABS>", "-PostexecutionAttestationPath", "<ABS>", "-PostexecutionSignaturePath", "<ABS>"],
+                "ADMIT": ["-ConfigPath", "<ABS>", "-ExpectedConfigSha256", "<LOWER64HEX>", "-PackagePath", "<ABS>", "-ProjectRoot", "<ABS>", "-LaunchChallengePath", "<ABS>", "-PresentationPath", "<ABS>", "-HumanChallengePath", "<ABS>", "-TranscriptPath", "<ABS>", "-StatementPath", "<ABS>", "-CapturePath", "<ABS>", "-CaptureProvenancePath", "<ABS>", "-RunAuthorizationPath", "<ABS>", "-RunAdmissionAttestationPath", "<ABS>", "-RunAdmissionSignaturePath", "<ABS>", "-AdmitExecutionAttestationPath", "<ABS>", "-AdmitExecutionSignaturePath", "<ABS>"]
+              },
+              "description": "Literal argv tail after [host,*hostFixedArgs,script,-Phase,<phase>]. <ABS> slots are distinct predeclared absolute operator inputs. The signed host argvSha256 is never taken from Environment.GetCommandLineArgs (which reports pwsh.dll on the pinned Windows host): it is SHA-256 over the one canonical protocol vector [pinned hostExecutable.path,*hostFixedArgs,pinned script.path,*this ordered tail], after every path element is independently identity-resolved to uppercase-drive, forward-slash form. The authority signs argvMatchesProtocol only after observing that the actual OS invocation resolves to that same vector. <LOWER64HEX> is the SHA-256 of the exact raw config bytes, authorized and supplied out-of-band by the operator authority/user before reading ConfigPath; it cannot be learned from the config, project, package, environment, or another assertion. Every phase rehashes ConfigPath before parsing and rejects inequality. No positional, omitted, repeated, reordered, redirected, or extra argument is valid."
+            }
+          },
+          "description": "Exactly three pinned-host invocations are valid, each argv beginning [hostExecutable.path,*hostFixedArgs,script.path,-Phase,<PREPARE|VALIDATE|ADMIT>] followed only by phase-defined named absolute-path arguments; cwd is a fresh authority-selected external directory and env is closed. PREPARE monitoring/enforcement starts before host process creation; raw PowerShell invocation is forbidden. It copies/rechecks sources, emits the external launch challenge, and exits before Python. VALIDATE verifies signed PREPARE+prelaunch, runs the pinned validator once, verifies postexecution PASS, retains the temp tree and continuous project/source lock, and emits no project write. ADMIT extends the locked read-input set with the complete operator-external human authorization chain and signed expected-only admission, revalidates current project/B2/package/WP and all digests with a second pinned Python process, then waits. After semantic PASS the authority atomically consumes the admission token, launches the assigned worker suspended/pre-entry under enforcement, observes actual closure, and writes/signs only the two predeclared receipt outputs. Bootstrap verifies that signed receipt before emitting PASS; only then may authority consume the fresh worker-ready capability immediately before one scoped first effect. Cleanup is allowed only after this receipt-gated worker-ready state, or after a fail-closed abort that grants no capability."
+        },
+        "immutableRuntimeAuthority": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "authority", "verificationMode", "keyId", "trustAnchor", "trustAnchorFormat",
+            "prepareExecutionSchemaId", "prelaunchSchemaId", "postexecutionSchemaId", "runAuthorizationSchemaId", "runAdmissionSchemaId", "admitExecutionSchemaId", "detachedSignatureProtocol",
+            "signedBytesSerialization", "signatureEncoding", "rsaPssSaltLength",
+            "argvDigestProtocol", "cwdDigestProtocol", "envDigestProtocol", "projectTreeDigestProtocol", "readInputDigestProtocol", "readInputIdentityDigestProtocol",
+            "assertionInputs", "maxPrelaunchAgeSeconds", "maxAdmissionLifetimeSeconds", "maxWorkerReadyLifetimeSeconds", "maxClockSkewSeconds"
+          ],
+          "properties": {
+            "authority": { "type": "string", "minLength": 1 },
+            "verificationMode": { "const": "receiver-native-rsa-pss-sha256" },
+            "keyId": { "type": "string", "minLength": 1 },
+            "trustAnchor": { "$ref": "#/$defs/filePin" },
+            "trustAnchorFormat": { "const": "x509-der" },
+            "prepareExecutionSchemaId": { "const": "https://example.invalid/roblox-ai-development-os/w0-runtime-prepare-execution-attestation.schema.json" },
+            "prelaunchSchemaId": { "const": "https://example.invalid/roblox-ai-development-os/w0-runtime-prelaunch-assertion.schema.json" },
+            "postexecutionSchemaId": { "const": "https://example.invalid/roblox-ai-development-os/w0-runtime-postexecution-attestation.schema.json" },
+            "runAuthorizationSchemaId": { "const": "https://example.invalid/roblox-ai-development-os/w0-run-authorization.schema.json" },
+            "runAdmissionSchemaId": { "const": "https://example.invalid/roblox-ai-development-os/w0-run-admission-attestation.schema.json" },
+            "admitExecutionSchemaId": { "const": "https://example.invalid/roblox-ai-development-os/w0-runtime-admit-execution-attestation.schema.json" },
+            "detachedSignatureProtocol": { "const": "raw-fixed-order-json-detached-rsa-pss-sha256-v1" },
+            "signedBytesSerialization": { "const": "fixed-property-order-minified-utf8-no-bom-no-newline-v1" },
+            "signatureEncoding": { "const": "base64-text-no-whitespace" },
+            "rsaPssSaltLength": { "const": "hash-length" },
+            "argvDigestProtocol": { "const": "utf8-nul-joined-no-trailing-nul-v1" },
+            "cwdDigestProtocol": { "const": "normalized-absolute-path-utf8-v1" },
+            "envDigestProtocol": { "const": "ordinal-name-equals-value-utf8-nul-joined-no-trailing-nul-v1" },
+            "projectTreeDigestProtocol": { "const": "all-regular-project-files-canonical-json-v1" },
+            "readInputDigestProtocol": { "const": "sorted-read-input-records-canonical-json-v1" },
+            "readInputIdentityDigestProtocol": { "const": "authority-observed-read-input-identities-canonical-json-v1" },
+            "assertionInputs": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["pathSource", "expectedConfigHashSource", "challengeSource", "challengeInputs", "prepareExecutionAvailability", "prelaunchAvailability", "postexecutionAvailability", "runAuthorizationAvailability", "runAdmissionAvailability", "admitExecutionAvailability", "admitPathSet"],
+              "properties": {
+                "pathSource": { "const": "validate-challenge-plus-six-and-admit-external-input-set-absolute-cli-paths-only" },
+                "expectedConfigHashSource": { "const": "operator-authority-or-user-out-of-band-lower64hex-never-config-project-package" },
+                "challengeSource": { "const": "pinned-bootstrap-cryptographic-rng-before-authority-issuance" },
+                "challengeInputs": { "const": "schema-valid-launch-challenge-with-run-id-nonce-temp-and-digests" },
+                "prepareExecutionAvailability": { "const": "prepare-attestation-and-signature-created-by-authority-after-monitored-prepare-before-prelaunch" },
+                "prelaunchAvailability": { "const": "assertion-and-signature-exist-before-launch-and-remain-byte-identical" },
+                "postexecutionAvailability": { "const": "attestation-and-signature-absent-before-validate-created-by-authority-after-validator-exit" },
+                "runAuthorizationAvailability": { "const": "external-human-chain-and-authorization-created-after-post-pass-under-continuous-lock-before-admit" },
+                "runAdmissionAvailability": { "const": "admission-attestation-and-signature-created-after-run-authorization-before-admit-invocation" },
+                "admitExecutionAvailability": { "const": "receipt-and-signature-paths-predeclared-and-absent-before-admit-created-by-authority-after-semantic-pass-token-consumption-and-suspended-worker-observation" },
+                "admitPathSet": { "const": ["presentation", "challenge", "transcript", "statement", "capture", "capture-provenance", "run-authorization", "run-admission-attestation", "run-admission-signature", "admit-execution-attestation", "admit-execution-signature"] }
+              },
+              "description": "Before config parsing in every phase, the operator launcher supplies a previously authorized expected config SHA-256 and the bootstrap rehashes raw ConfigPath bytes; mismatch is STOP before trusting the config's key/adapter pins. Authority monitor launches PREPARE, which emits one launch-challenge path and stops. Authority then emits signed PREPARE execution attestation, followed by locked-source prelaunch assertion. VALIDATE receives the unchanged challenge plus six absolute paths. After post PASS, the unchanged authority session fixes exactly these eleven distinct ADMIT paths in order: presentation, challenge, transcript, statement, capture, capture-provenance, run-authorization, run-admission-attestation, run-admission-signature, absent admit-execution-attestation output, absent admit-execution-signature output. ADMIT rehashes all transitively referenced existing artifacts and verifies signed admission, runs semantic validation, then waits while the authority consumes the token and observes a suspended/pre-entry worker. Only a schema-valid, receiver-native signature-verified receipt at the two reserved paths permits bootstrap PASS and later first-effect capability consumption. Project, package, config itself, environment, validator output, human content, or receipt content cannot supply the expected config hash or redirect paths."
+            },
+            "maxPrelaunchAgeSeconds": { "type": "integer", "minimum": 1, "maximum": 300 },
+            "maxAdmissionLifetimeSeconds": { "type": "integer", "minimum": 1, "maximum": 60 },
+            "maxWorkerReadyLifetimeSeconds": { "type": "integer", "minimum": 1, "maximum": 60 },
+            "maxClockSkewSeconds": { "type": "integer", "minimum": 0, "maximum": 30 }
+          },
+          "description": "Receiver-native verifier trust root for signed PREPARE, prelaunch, postexecution, run-admission, and admit-execution records. Its root starts with an operator-authorized expected config SHA-256 supplied separately on every phase argv; config bytes cannot self-authorize their own trust anchor. Actual configSha256 and operatorExpectedConfigSha256 must equal that scalar throughout challenge and every signed record. It verifies exact raw assertion bytes and detached RSA-PSS-SHA256 against the now-authenticated config pins. argv/cwd/env/project/read-set/identity digests follow the fixed protocols; ADMIT adds the exact external authorization set without changing the locked project. No lock gap or project write is permitted through semantic PASS, token consumption, suspended worker observation, receipt verification, bootstrap PASS, and first-effect capability consumption."
+        }
+      },
+      "description": "The pinned bootstrap plus operator-external monitored launcher is the minimal W0 receiver trust root. PREPARE establishes protected source/temp state and signed proof; VALIDATE verifies PREPARE/prelaunch, invokes pinned Python once, verifies postexecution PASS, and retains lock/temp; ADMIT validates the external authorization extension and signed expected-only admission with a second pinned Python process, then waits for an authority-signed execution/worker-ready receipt. Admission token consumption and suspended/pre-entry worker observation occur only after semantic PASS; bootstrap PASS and later first-effect capability consumption occur only after receipt verification. Python never runs during PREPARE, no project artifact is created during authorization, and direct worker/bootstrap invocation is invalid."
+    },
+    "commonRunner": {
+      "type": "object",
+      "required": [
+        "id", "authority", "launchMode", "executable", "adapterArtifact", "supportArtifacts",
+        "runtimeLibraryRoots", "staticArgs", "inputProtocol", "allowedEnvNames",
+        "timeoutSeconds", "maxOutputBytes"
+      ],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "authority": { "type": "string", "minLength": 1 },
+        "launchMode": { "enum": ["host-with-adapter-arg", "adapter-is-executable"] },
+        "executable": { "$ref": "#/$defs/filePin" },
+        "adapterArtifact": { "$ref": "#/$defs/copyArtifactPin" },
+        "supportArtifacts": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/copyArtifactPin" },
+          "description": "Complete sibling/local import closure copied and rehashed into unique safe destinations in a fresh empty execution directory."
+        },
+        "runtimeLibraryRoots": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/libraryRootPin" },
+          "description": "Complete host/adapter executable, module, DLL/shared-library, and helper closure. executable.path must resolve inside one exact root and match its manifest entry. Launcher authority must attest the actual loaded closure; configured hashes alone are insufficient."
+        },
+        "staticArgs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "not": { "pattern": "(?:\\{\\{|\\$\\{|%[A-Za-z_][A-Za-z0-9_]*%)" }
+          },
+          "description": "Literal argv only; no shell, interpolation, environment expansion, path substitution, or project-supplied arguments. host-with-adapter-arg launches [executable.path, *staticArgs, temp/adapterArtifact.copyPath]. adapter-is-executable requires executable.sha256 == adapterArtifact.sha256 and launches [temp/adapterArtifact.copyPath, *staticArgs]. cwd is exactly the fresh temp root."
+        },
+        "inputProtocol": { "const": "json-stdin-v1" },
+        "allowedEnvNames": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Za-z_][A-Za-z0-9_]*$",
+            "not": { "pattern": "^(?:PATH|Path|path|PATHEXT|Pathext|pathext|PYTHON.*|Python.*|python.*|LD_.*|ld_.*|DYLD_.*|dyld_.*)$" }
+          },
+          "description": "Loader/interpreter-affecting environment names are forbidden, including PATH, PATHEXT, PYTHON*, LD_*, and DYLD_* variants. The launcher passes only this closed set and its signed postexecution attestation binds the actual environment digest."
+        },
+        "timeoutSeconds": { "type": "integer", "minimum": 1, "maximum": 600 },
+        "maxOutputBytes": { "type": "integer", "minimum": 1, "maximum": 104857600 }
+      }
+    },
+    "libraryRootPin": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "manifestFormat", "manifestPath", "manifestSha256", "treeSha256"],
+      "properties": {
+        "path": {
+          "$ref": "#/$defs/absolutePath",
+          "description": "Absolute read-only library root. Every resolved entry must remain below it; symlink, junction, reparse-point, mount, and special-file escapes are rejected."
+        },
+        "manifestFormat": { "const": "canonical-library-tree-v1" },
+        "manifestPath": {
+          "$ref": "#/$defs/absolutePath",
+          "description": "Absolute operator path outside the library root, project, and installed skill to avoid self-reference and candidate influence."
+        },
+        "manifestSha256": { "$ref": "#/$defs/sha256" },
+        "treeSha256": { "$ref": "#/$defs/sha256" }
+      },
+      "description": "Manifest bytes are exactly UTF-8 json.dumps({files:[...]}, ensure_ascii=False, sort_keys=True, separators=(',', ':')) with no BOM/newline. files is a non-empty Unicode-path-sorted unique array of closed {path,bytes,sha256}; path is relative POSIX, regular-file-only, and cannot be absolute/dot/parent/backslash. manifestSha256 hashes those bytes; treeSha256 hashes canonical JSON of files. Receiver rehashes every file before launching anything."
+    },
+    "runtimeAdapter": {
+      "allOf": [
+        { "$ref": "#/$defs/commonRunner" },
+        {
+          "type": "object",
+          "required": ["adapter", "adapterVersion"],
+          "properties": {
+            "adapter": { "type": "string", "minLength": 1 },
+            "adapterVersion": { "type": "string", "minLength": 1 }
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "signatureVerifier": {
+      "allOf": [
+        { "$ref": "#/$defs/commonRunner" },
+        {
+          "type": "object",
+          "required": ["keyId", "algorithm", "trustAnchor"],
+          "properties": {
+            "keyId": { "type": "string", "minLength": 1 },
+            "algorithm": { "enum": ["ed25519", "ecdsa-p256-sha256", "rsa-pss-sha256"] },
+            "trustAnchor": { "$ref": "#/$defs/copyArtifactPin" }
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    }
+  }
+}

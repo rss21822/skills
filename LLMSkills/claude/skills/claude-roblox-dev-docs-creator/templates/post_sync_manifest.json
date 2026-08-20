@@ -4,5 +4,11 @@
   "baselineId": "{{B2_ID}}",
   "generatedAt": "{{ISO_8601_WITH_TIMEZONE}}",
   "selfIncluded": false,
-  "files": []
+  "files": [
+    {
+      "path": "{{FIRST_B2_PROJECT_RELATIVE_PATH}}",
+      "bytes": 1,
+      "sha256": "{{FIRST_B2_FILE_SHA256}}"
+    }
+  ]
 }

@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/roblox-ai-development-os/w0-runtime-launch-challenge.schema.json",
+  "title": "W0 Runtime Launch Challenge",
+  "description": "Closed output of the pinned bootstrap PREPARE phase in PREPARE→VALIDATE→ADMIT. PREPARE verifies all pins, creates and rehashes the fresh temp validator closure, derives exact source+temp/invocation digests, predeclares the separate operator-external authorization evidence root, generates runId plus at least 256-bit nonce, writes this record, and exits with pythonStarted=false. The authority observes/locks exact identities before prelaunch. VALIDATE accepts this byte-identical challenge plus signed PREPARE/pre/post paths; ADMIT accepts it plus the complete external authorization/admission set. Direct invocation or cleanup before valid ADMIT is invalid.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion", "kind", "id", "runId", "receiverNonce", "preparedAt", "expiresAt",
+    "resolvedLaunchChallengePath", "resolvedAuthorizationEvidenceRoot", "authorizationEvidenceRootIdentity", "operatorExpectedConfigSha256", "configSha256", "packageSha256", "resolvedProjectRoot", "projectRootIdentity",
+    "resolvedTempRoot", "tempRootIdentity", "installedSkillReadClosureTreeSha256",
+    "pythonExecutableSha256", "validatorEntrypointSha256", "supportArtifactSetSha256",
+    "projectInputTreeSha256", "tempCopySetSha256", "readInputSetSha256",
+    "expectedArgvSha256", "expectedCwdSha256", "expectedEnvSha256",
+    "bootstrapScriptSha256", "bootstrapHostSha256", "status", "pythonStarted"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "1.0.0" },
+    "kind": { "const": "w0-runtime-launch-challenge-v1" },
+    "id": { "type": "string", "pattern": "^W0-RUNTIME-CHALLENGE-[A-Z0-9][A-Z0-9._-]*$" },
+    "runId": { "type": "string", "minLength": 16 },
+    "receiverNonce": { "type": "string", "minLength": 32 },
+    "preparedAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" },
+    "expiresAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" },
+    "resolvedLaunchChallengePath": { "$ref": "#/$defs/operatorExternalAbsolutePath", "description": "PREPARE writes this record here as its final operation and exits. The challenge cannot include its own hash or file identity." },
+    "resolvedAuthorizationEvidenceRoot": { "$ref": "#/$defs/operatorExternalAbsolutePath", "description": "Predeclared operator-external directory, disjoint from every protected project/package/baseline/Skill/temp path, where VALIDATE/ADMIT may create only the exact run-authorization evidence set." },
+    "authorizationEvidenceRootIdentity": { "type": "string", "minLength": 1 },
+    "operatorExpectedConfigSha256": { "$ref": "#/$defs/sha256", "description": "Out-of-band operator-authorized CLI scalar captured before ConfigPath is read. It exact-matches configSha256 and every downstream signed record." },
+    "configSha256": { "$ref": "#/$defs/sha256", "description": "Locally recomputed raw ConfigPath hash; must equal operatorExpectedConfigSha256 before config parsing." },
+    "packageSha256": { "$ref": "#/$defs/sha256" },
+    "resolvedProjectRoot": { "$ref": "#/$defs/absolutePath" },
+    "projectRootIdentity": { "type": "string", "minLength": 1 },
+    "resolvedTempRoot": { "$ref": "#/$defs/absolutePath" },
+    "tempRootIdentity": { "type": "string", "minLength": 1 },
+    "installedSkillReadClosureTreeSha256": { "$ref": "#/$defs/sha256" },
+    "pythonExecutableSha256": { "$ref": "#/$defs/sha256" },
+    "validatorEntrypointSha256": { "$ref": "#/$defs/sha256" },
+    "supportArtifactSetSha256": {
+      "$ref": "#/$defs/sha256",
+      "description": "Canonical digest of the exact three ordinal-copyPath-sorted closed {copyPath,bytes,sha256} records for gen_index.py, state_readiness.py, and strict_json.py in the prepared temp root."
+    },
+    "projectInputTreeSha256": { "$ref": "#/$defs/sha256" },
+    "tempCopySetSha256": {
+      "$ref": "#/$defs/sha256",
+      "description": "Canonical digest of every regular file below resolvedTempRoot after PREPARE, sorted by relative POSIX path as closed {path,bytes,sha256}. It includes exactly validator entrypoint plus three support files and nothing else."
+    },
+    "readInputSetSha256": { "$ref": "#/$defs/sha256" },
+    "expectedArgvSha256": { "$ref": "#/$defs/sha256" },
+    "expectedCwdSha256": { "$ref": "#/$defs/sha256" },
+    "expectedEnvSha256": { "$ref": "#/$defs/sha256" },
+    "bootstrapScriptSha256": { "$ref": "#/$defs/sha256" },
+    "bootstrapHostSha256": { "$ref": "#/$defs/sha256" },
+    "status": { "const": "prepared-awaiting-authority" },
+    "pythonStarted": { "const": false }
+  },
+  "$defs": {
+    "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "absolutePath": { "type": "string", "pattern": "^[A-Za-z]:[\\\\/].+", "description": "Windows local-drive absolute path for W0 lifecycle v1. POSIX, UNC, device, ADS, and relative paths are invalid." },
+    "operatorExternalAbsolutePath": { "$ref": "#/$defs/absolutePath" }
+  },
+  "$comment": "Cycle boundary: this challenge file is excluded from projectInputTreeSha256, tempCopySetSha256, and readInputSetSha256 because it contains those digests. It is not an unprotected omission: prelaunch/postexecution bind its resolved path, raw launchChallengeSha256, and authority-observed challengeFileIdentity as a distinct proof-sealing external challenge."
+}

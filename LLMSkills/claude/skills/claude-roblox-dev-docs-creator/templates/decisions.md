@@ -2,7 +2,7 @@
 
 ## Decision template
 
-`[DECISION]` は人間本人が直接承認した記録だけに使う。委任範囲内のAI承認は `[AI-APPROVED]` とし、委任元の人間 `[DECISION]`、適用範囲、根拠を参照する。`[AI-APPROVED]` はGate 1、D5、formal documentのApproved昇格を満たさない。
+`[DECISION]` は人間本人が直接承認した記録だけに使う。委任範囲内のAI承認は `[AI-APPROVED]`。これはGate 1、P0 start、P0 contract、D5、formal Approved昇格を満たさない。4 gateはunique presentation/challenge/capture/two-message/statement/provenance chainと`approvalKind:human-direct`必須。
 
 ### D-{NNN}: {Title}
 
@@ -32,6 +32,7 @@
 - Approver:
 - Approved at: {ISO-8601 with timezone}
 - Approval record:
+- Human approval challenge / capture: `{challenge ID/path/hash}` / `{capture ID/path/hash}`
 - Machine approval record: `{path}`（outer SHA-256は後続transition/W0 packageに記録。承認対象baselineが本記録を含む場合、循環参照になるため本行へrecord hashを埋め込まない）
 - Approved revision:
 - Worker execution attestation:
@@ -48,7 +49,7 @@
 - Evidence:
 - Exercised by:
 - Affected P0/stage artifacts:
-- Explicitly not authorized: Gate 1 / D5 / formal document promotion / human-only or external-state action
+- Explicitly not authorized: Gate 1 / P0 start / final P0 contract / D5 / formal document promotion / human-only or external-state action
 
 ### F-{NNN}: {Fallback}
 

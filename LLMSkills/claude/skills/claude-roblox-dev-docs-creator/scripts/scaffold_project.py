@@ -16,11 +16,61 @@ from pathlib import Path
 from typing import Any
 
 from detect_triggers import detect, validate_intake
+from strict_json import loads as strict_json_loads
 
 SKILL_DIR = Path(__file__).resolve().parent.parent
 TEMPLATES = SKILL_DIR / "templates"
 SCHEMAS = SKILL_DIR / "schemas"
 MANIFEST_VERSION = "1.0.0"
+
+SCHEMA_PHASES = {
+    "intake.schema.json": "D0",
+    "remote_contract.schema.json": "D2",
+    "save_schema.schema.json": "D2",
+    "analytics_event.schema.json": "D2",
+    "asset_ledger.schema.json": "D2",
+    "commerce_ledger.schema.json": "D2",
+    "work_package.schema.json": "D3",
+    "docs_manifest.schema.json": "D3",
+    "baseline_manifest.schema.json": "D4",
+    "d4_audit_capsule.schema.json": "D4",
+    "d4_capsule_assembly_attestation.schema.json": "D4",
+    "d4_audit_policy_manifest.schema.json": "D4",
+    "d4_runtime_allowlist.schema.json": "D4",
+    "d4_audit_request.schema.json": "D4",
+    "d4_auditor_attestation.schema.json": "D4",
+    "gate_approval_record.schema.json": "D1",
+    "human_approval_capture.schema.json": "D1",
+    "human_approval_challenge.schema.json": "D1",
+    "human_approval_presentation.schema.json": "D1",
+    "human_interaction_transcript.schema.json": "D1",
+    "pinned_signature_evidence.schema.json": "D1",
+    "provenance_verification.schema.json": "D1",
+    "trusted_runtime_query_result.schema.json": "D1",
+    "d15_measurement_evidence.schema.json": "D1.5",
+    "required_specs.schema.json": "D1.5",
+    "lifecycle_transition_attestation.schema.json": "P0",
+    "lifecycle_write_log.schema.json": "P0",
+    "post_sync_manifest.schema.json": "D5",
+    "w0_handoff_package.schema.json": "D5",
+    "w0_run_authorization.schema.json": "W0",
+    "w0_run_admission_attestation.schema.json": "W0",
+}
+OPERATOR_ONLY_SCHEMAS = {
+    "provenance_verifier_config.schema.json",
+    "w0_runtime_launch_challenge.schema.json",
+    "w0_runtime_prelaunch_assertion.schema.json",
+    "w0_runtime_prepare_execution_attestation.schema.json",
+    "w0_runtime_postexecution_attestation.schema.json",
+    "w0_runtime_admit_execution_attestation.schema.json",
+}
+INSTANCE_PHASES = {
+    "remote_contracts.json": "D2",
+    "save_schema.json": "D2",
+    "analytics_events.json": "D2",
+    "asset_ledger.json": "D2",
+    "commerce_ledger.json": "D2",
+}
 
 CORE_DOCS = [
     ("docs_index.md", "docs/{P}_docs_index.md", "navigation and canonical boundaries"),
@@ -158,14 +208,14 @@ def atomic_write_many(writes: dict[Path, str]) -> None:
 
 def read_json(path: Path, label: str) -> Any:
     try:
-        return json.loads(path.read_text(encoding="utf-8-sig"))
+        return strict_json_loads(path.read_text(encoding="utf-8-sig"))
     except (OSError, json.JSONDecodeError) as exc:
         raise ValueError(f"cannot read {label} {path}: {exc}") from exc
 
 
 def generated_intake(project: str, prefix: str) -> dict[str, Any]:
     text = replace_tokens((TEMPLATES / "intake.json").read_text(encoding="utf-8"), project, prefix)
-    return json.loads(text)
+    return strict_json_loads(text)
 
 
 def can_replace_intake_placeholder(path: Path, project: str, prefix: str) -> bool:
@@ -298,7 +348,7 @@ def reconcile_p0_config(
     config keys.
     """
     template_path = TEMPLATES / "p0-check.json"
-    template = json.loads(replace_tokens(
+    template = strict_json_loads(replace_tokens(
         template_path.read_text(encoding="utf-8"), project, prefix))
     if not isinstance(template, dict):
         raise ValueError("bundled p0-check.json root must be an object")
@@ -385,7 +435,9 @@ def main() -> int:
     triggered = detect(intake_data) if intake_data is not None else []
     source_paths = [TEMPLATES / name for name, _, _ in CORE_DOCS]
     source_paths.extend(TEMPLATES / name for name, _ in ROOT_DOCS)
-    source_paths.extend(SCHEMAS.iterdir())
+    source_paths.extend(
+        source for source in SCHEMAS.iterdir()
+        if source.name not in OPERATOR_ONLY_SCHEMAS)
     source_paths.extend(TEMPLATES / item["template"] for item in triggered)
     for source in source_paths:
         if not source.is_file():
@@ -439,7 +491,7 @@ def main() -> int:
     safe_write(project_root / trace_rel, (SCHEMAS / "requirements.csv").read_text(encoding="utf-8"),
                args.force, created, skipped)
     manifest_docs.append(document_entry(
-        trace_rel, "requirements traceability", phase="D2",
+        trace_rel, "requirements traceability", phase="D3",
         doc_id=f"{args.prefix}-TRACEABILITY"))
 
     # Discover bundled schemas and initial instances.  New artifacts are picked
@@ -447,14 +499,22 @@ def main() -> int:
     for source in sorted(SCHEMAS.iterdir()):
         if not source.is_file() or source.name == "requirements.csv":
             continue
+        if source.name in OPERATOR_ONLY_SCHEMAS:
+            continue
         if source.name.endswith(".schema.json"):
+            if source.name not in SCHEMA_PHASES:
+                parser.error(
+                    f"bundled schema has no explicit lifecycle phase: {source.name}")
             rel = f"docs/schemas/{source.name}"
             domain = "machine-readable schema"
-            phase = "D2"
+            phase = SCHEMA_PHASES[source.name]
         elif source.suffix.lower() == ".json":
+            if source.name not in INSTANCE_PHASES:
+                parser.error(
+                    f"bundled initial instance has no explicit lifecycle phase: {source.name}")
             rel = f"docs/schemas/{args.prefix}_{source.name}"
             domain = "machine-readable initial instance"
-            phase = "D2"
+            phase = INSTANCE_PHASES[source.name]
         else:
             continue
         text = replace_tokens(source.read_text(encoding="utf-8"), args.project_name, args.prefix)
@@ -491,7 +551,7 @@ def main() -> int:
         residual_rel, "legacy-term denylist", phase="D0",
         doc_id=f"{args.prefix}-RESIDUAL-TERMS"))
 
-    required_specs: list[dict[str, str]] = triggered
+    required_specs: list[dict[str, Any]] = triggered
     if intake_data is not None:
         for item in required_specs:
             spec_id = item["id"]
@@ -504,9 +564,12 @@ def main() -> int:
 
     req_specs_rel = f"docs/{args.prefix}_required_specs.json"
     manifest_docs.append(document_entry(
-        req_specs_rel, "trigger-derived required specifications", phase="D0",
+        req_specs_rel, "trigger-derived required specifications", phase="D1.5",
         status="approved" if intake_data is not None else "draft",
         doc_id=f"{args.prefix}-REQUIRED-SPECS"))
+    manifest_docs.append(document_entry(
+        manifest_rel, "machine-readable document inventory", phase="D3",
+        doc_id=f"{args.prefix}-DOCS-MANIFEST"))
 
     manifest_docs = [refresh_entry_from_disk(project_root, item) for item in manifest_docs]
     try:
@@ -516,7 +579,7 @@ def main() -> int:
         parser.error(str(exc))
 
     required_specs_text = json.dumps(
-        {"project": args.project_name, "prefix": args.prefix,
+        {"schemaVersion": "1.0.0", "project": args.project_name, "prefix": args.prefix,
          "required_specs": required_specs}, ensure_ascii=False, indent=2) + "\n"
     req_specs_path = project_root / req_specs_rel
     transaction = {manifest_path: json.dumps(manifest, ensure_ascii=False, indent=2) + "\n"}

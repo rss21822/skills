@@ -21,6 +21,8 @@ Apply every row whose condition is true. Multiple rows may trigger together.
 | Existing repository | Repository Audit | actual state, trust/confidence, gap map, migration and isolation plan |
 | High-risk unproven mechanic | Feasibility Report | hypothesis, minimum prototype, evidence, result, D/F impact |
 
+Machine routing for the last row is limited to the five approved-intake technical flags named in `phase-definitions.md` D1.5. Free-form `product.top_risks` remains a D3/D4 risk-registry input; D0 must map any measurable mechanic risk to the matching technical flag before Gate 1.
+
 ## Baseline requirements even without a separate spec
 
 Every Roblox project still requires:

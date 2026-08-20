@@ -32,7 +32,7 @@
 4. **既存決定との衝突確認**: 各案が承認済み `[DECISION]` に触れるかを確認する。触れるなら「選択するには追加設計が必要」と書き、**何を決めれば選択可能になるか**を列挙する
 5. **影響 inventory**: 改訂対象の文書・WP・**欄**を列挙する。closure evidence が要求する欄（`Create` だけでなく `Objective`／`Public interfaces`／`Automatic tests`）を漏らさない
 6. **closure 経路**: 承認 → 実改訂 → 一致確認 → closure、の時点と条件。**承認だけでは closure しない**ことを明記
-7. **Approval gate**: `[OPEN blocking: yes]`。人間本人の直接承認は `[DECISION]`。{委任決定 ID}の範囲内でAIが行使する場合は `[AI-APPROVED]`。後者はD5・formal document昇格・`[HUMAN]` 作業の代替ではない
+7. **Approval gate**: `[OPEN blocking: yes]`。人間本人の直接承認は `[DECISION]`。{委任決定 ID}の範囲内でAIが行使する場合は `[AI-APPROVED]`。後者はGate 1・P0 start・最終P0 contract・D5・formal document昇格・`[HUMAN]` 作業の代替ではない
 
 ## 3. 制約
 

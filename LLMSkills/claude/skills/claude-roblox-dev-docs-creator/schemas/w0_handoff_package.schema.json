@@ -1,12 +1,13 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://example.invalid/roblox-ai-development-os/w0-handoff-package.schema.json",
-  "title": "W0 Implementation Handoff Package",
+  "title": "W0 Receiver Handoff Package",
+  "description": "Snapshot-only lifecycle v1 handoff. The package itself is not a validator-runtime trust root. Receiver acceptance uses the operator-pinned PREPARE→VALIDATE→ADMIT bootstrap with signed PREPARE/prelaunch/postexecution records, continuous project/source/temp lock, an operator-external human run-authorization chain, an expected-only signed run admission, and a separately signed post-semantic ADMIT execution/worker-ready receipt before bootstrap PASS or the first effect. Any project-local run-auth evidence, commit baseline, missing full snapshot-copy proof, lock gap, runtime swap/add, early worker launch, stale/replayed capability, or unverified loaded closure is STOP/HUMAN.",
   "type": "object",
   "additionalProperties": false,
   "required": [
-    "schemaVersion", "packageId", "project", "prefix", "createdAt",
-    "d5Approval", "p0", "baselines", "postSyncManifest",
+    "schemaVersion", "packageId", "project", "prefix", "createdAt", "acceptanceProvenanceMode",
+    "gddGate1", "gddD5Transformation", "d15Measurements", "d5Approval", "p0", "approvalCaptures", "approvalVerifications", "lifecycleTransitions", "baselines", "postSyncManifest",
     "firstAuthorizedWp", "postP0D4Records"
   ],
   "properties": {
@@ -14,14 +15,49 @@
     "packageId": { "type": "string", "minLength": 1 },
     "project": { "type": "string", "minLength": 1 },
     "prefix": { "type": "string", "pattern": "^[A-Z0-9]{2,6}$" },
-    "createdAt": { "type": "string", "format": "date-time" },
+    "createdAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" },
+    "acceptanceProvenanceMode": {
+      "const": "offline-pinned-signature-only-v1",
+      "description": "Every approval, D1.5, D4 capsule/lane, and lifecycle provenance_verification reachable from this package must have verificationMode pinned-signature and rehashable signed evidence. Each signed final PV must exist before the first immutable candidate/baseline/audit record binds its hash. trusted-runtime-query is never executed by the W0 receiver and cannot be converted or replaced at packaging time; a bound query-mode PV requires rebuilding from its owning stage/new candidate."
+    },
+    "gddGate1": {
+      "allOf": [
+        { "$ref": "#/$defs/approvalRecordReference" },
+        { "description": "The original gdd-gate1 machine record; targetArtifact fixes the exact Draft GDD revision/bytes through B1 and its closed scope fixes approvedIntake and requiredSpecs path/hash bindings. The record remains unchanged. B1→B2 may alter only the separately verified fixed D5 formal metadata; receiver normalizes that metadata and requires identical GDD body digest." }
+      ]
+    },
+    "gddD5Transformation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path", "gate1DraftSha256", "b1Sha256", "b2Sha256",
+        "normalizedBodySha256", "rule", "d5ApprovalId", "d5ApprovedAt"
+      ],
+      "properties": {
+        "path": { "type": "string", "minLength": 1 },
+        "gate1DraftSha256": { "$ref": "#/$defs/sha256" },
+        "b1Sha256": { "$ref": "#/$defs/sha256" },
+        "b2Sha256": { "$ref": "#/$defs/sha256" },
+        "normalizedBodySha256": { "$ref": "#/$defs/sha256" },
+        "rule": { "const": "d5-formal-metadata-only-v1" },
+        "d5ApprovalId": { "type": "string", "pattern": "^D5-[A-Z0-9][A-Z0-9._-]*$" },
+        "d5ApprovedAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" }
+      },
+      "description": "Receiver requires gate1DraftSha256 == b1Sha256 at the Gate1 target path. The exact forward transform changes the unique '| Status | Draft |' row to Approved, changes the unique '| Last approved | — |' row to d5ApprovedAt, and appends exactly one change-history row '| {unchanged B1 Version} | {d5ApprovedAt} | D5 metadata promotion {d5ApprovalId} | {d5Approval.approver} |'; every other UTF-8 byte is unchanged. Inverse-transforming B2 must reproduce raw B1 bytes exactly. normalizedBodySha256 is SHA-256 of those inverse-transformed raw bytes and therefore equals b1Sha256; it is not a placeholder-normalized serialization. d5ApprovalId/time/approver exact-match the D5 gate and fixed transition event."
+    },
+    "d15Measurements": {
+      "type": "array",
+      "maxItems": 1,
+      "items": { "$ref": "#/$defs/d15MeasurementBinding" },
+      "description": "Exactly zero or one schema-valid combined-suite D1.5 pass record with external provenance. required_specs without feasibility_report requires zero; feasibility_report requires one feasibility_report-combined-v1 record. E0 is never evidence."
+    },
     "d5Approval": {
       "type": "object",
       "additionalProperties": false,
       "required": ["id", "approvedAt", "approver", "recordPath", "recordSha256"],
       "properties": {
         "id": { "type": "string", "minLength": 1 },
-        "approvedAt": { "type": "string", "format": "date-time" },
+        "approvedAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" },
         "approver": { "type": "string", "minLength": 1 },
         "recordPath": { "type": "string", "minLength": 1 },
         "recordSha256": { "$ref": "#/$defs/sha256" }
@@ -43,6 +79,40 @@
         "contractApprovalRecordSha256": { "$ref": "#/$defs/sha256" }
       }
     },
+    "approvalCaptures": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["gddGate1", "p0Start", "p0Contract", "d5"],
+      "properties": {
+        "gddGate1": { "$ref": "#/$defs/approvalCaptureReference" },
+        "p0Start": { "$ref": "#/$defs/approvalCaptureReference" },
+        "p0Contract": { "$ref": "#/$defs/approvalCaptureReference" },
+        "d5": { "$ref": "#/$defs/approvalCaptureReference" }
+      },
+      "description": "Four distinct, non-reusable human approval captures. Receiver traverses each challengeArtifact to one presentationArtifact and revalidates distinct presentation/challenge/capture IDs/paths/hashes, presentation and human message IDs, statement artifacts, chronology, typed target/scope, and gate-record sourceEvidence. Gate 1 scope includes immutable approvedIntake and requiredSpecs refs."
+    },
+    "approvalVerifications": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["gddGate1", "p0Start", "p0Contract", "d5"],
+      "properties": {
+        "gddGate1": { "$ref": "#/$defs/pinnedSignatureProvenanceReference" },
+        "p0Start": { "$ref": "#/$defs/pinnedSignatureProvenanceReference" },
+        "p0Contract": { "$ref": "#/$defs/pinnedSignatureProvenanceReference" },
+        "d5": { "$ref": "#/$defs/pinnedSignatureProvenanceReference" }
+      },
+      "description": "Outer provenance_verification records for the four captures. Under operator-external pinned config, receiver offline-verifies provider signatures over presentation and human response roles/times/content plus actor/channel/target and issued <= presentation < response <= capture <= verification. Runtime query, network send, local transcript/hash alone, or an unsigned creation-time query result is invalid at W0."
+    },
+    "lifecycleTransitions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["p0", "d5"],
+      "properties": {
+        "p0": { "$ref": "#/$defs/p0TransitionProofReference" },
+        "d5": { "$ref": "#/$defs/d5TransitionProofReference" }
+      },
+      "description": "Distinct cycle-free P0 and D5 transition attestation/provenance/write-log chains. Receiver parses both closed logs, exact-covers every source→snapshot file copy and source→canonical publication event, recomputes count/set/sequence/copy-map hashes, exact-compares attestation and outer claims, and offline-verifies pinned signatures from the actual-operation authority. P0 proof is created after snapshot freeze/apply/seal and gates post-P0 D4/B1; D5 proof is created after complete B2 snapshot/seal and is carried only outside B2 here. Runtime query, hidden VCS writes, commit revisions, local logs, or self-attestation alone are invalid."
+    },
     "baselines": {
       "type": "object",
       "additionalProperties": false,
@@ -51,7 +121,8 @@
         "b0": { "$ref": "#/$defs/b0Reference" },
         "b1": { "$ref": "#/$defs/b1Reference" },
         "b2": { "$ref": "#/$defs/b2Reference" }
-      }
+      },
+      "description": "All three referenced manifests must be schema-valid snapshot revisions with immutable snapshotRoot bytes. B0/B1 retain the exact Gate1-approved Draft GDD; B2 may differ only by the fixed D5 formal metadata transform and must preserve the normalized body digest."
     },
     "postSyncManifest": {
       "allOf": [
@@ -63,6 +134,7 @@
       "type": "object",
       "additionalProperties": false,
       "required": ["id", "path", "sha256"],
+      "description": "Historical field name: selects the first W0 handoff-target WP only. sha256 is current post-sync WP bytes covered by B2, never the B1 transaction input. After VALIDATE signed PASS, while the same project/source/temp lock remains active, receiver obtains the standard pre-response human chain and offline-signed w0-run-authorization-v1 entirely at operator-external paths. ADMIT verifies that chain plus expected-only signed w0-run-admission-v1, re-observes this WP/B2/package, and runs semantic validation without launching the worker. Only after semantic PASS may authority atomically consume the unexpired admission token, launch the assigned worker suspended/pre-entry, compare its actual Skill tree/process closure with the approved expected digests, and sign the ADMIT execution/worker-ready receipt. Bootstrap verifies that receipt before PASS; authority consumes the fresh global-nonreuse worker-ready capability immediately before the one scoped first effect. No assigned-worker launch or project/Studio/network implementation side effect may precede semantic PASS, and no product effect may precede receipt verification and capability consumption; exact authority-monitored bootstrap temp/challenge/proof operations are separate and grant no product authority.",
       "properties": {
         "id": { "type": "string", "minLength": 1 },
         "path": { "type": "string", "minLength": 1 },
@@ -95,6 +167,102 @@
   },
   "$defs": {
     "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "approvalRecordReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "recordPath", "recordSha256"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "recordPath": { "type": "string", "minLength": 1 },
+        "recordSha256": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "approvalCaptureReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "path", "sha256"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^HAC-[A-Z0-9][A-Z0-9._-]*$" },
+        "path": { "type": "string", "minLength": 1 },
+        "sha256": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "transitionProofReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["transitionType", "attestation", "provenanceVerification", "writeLog"],
+      "properties": {
+        "transitionType": { "enum": ["p0", "d5"] },
+        "attestation": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["id", "path", "sha256"],
+          "properties": {
+            "id": { "type": "string", "pattern": "^LTA-(?:P0|D5)-[A-Z0-9][A-Z0-9._-]*$" },
+            "path": { "type": "string", "minLength": 1 },
+            "sha256": { "$ref": "#/$defs/sha256" }
+          }
+        },
+        "provenanceVerification": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["id", "path", "sha256", "verificationMode"],
+          "properties": {
+            "id": { "type": "string", "pattern": "^PV-(?:P0|D5)-TRANSITION-[A-Z0-9][A-Z0-9._-]*$" },
+            "path": { "type": "string", "minLength": 1 },
+            "sha256": { "$ref": "#/$defs/sha256" },
+            "verificationMode": { "const": "pinned-signature" }
+          }
+        },
+        "writeLog": { "$ref": "#/$defs/artifactReference" }
+      }
+    },
+    "p0TransitionProofReference": {
+      "allOf": [
+        { "$ref": "#/$defs/transitionProofReference" },
+        {
+          "properties": {
+            "transitionType": { "const": "p0" },
+            "attestation": { "properties": { "id": { "pattern": "^LTA-P0-" } } },
+            "provenanceVerification": { "properties": { "id": { "pattern": "^PV-P0-TRANSITION-" } } }
+          }
+        }
+      ]
+    },
+    "d5TransitionProofReference": {
+      "allOf": [
+        { "$ref": "#/$defs/transitionProofReference" },
+        {
+          "properties": {
+            "transitionType": { "const": "d5" },
+            "attestation": { "properties": { "id": { "pattern": "^LTA-D5-" } } },
+            "provenanceVerification": { "properties": { "id": { "pattern": "^PV-D5-TRANSITION-" } } }
+          }
+        }
+      ]
+    },
+    "d15MeasurementBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["triggerId", "experimentId", "evidence", "provenanceVerification", "result"],
+      "properties": {
+        "triggerId": { "const": "feasibility_report" },
+        "experimentId": { "const": "feasibility_report-combined-v1" },
+        "evidence": { "$ref": "#/$defs/evidenceReference" },
+        "provenanceVerification": { "$ref": "#/$defs/pinnedSignatureProvenanceReference" },
+        "result": { "const": "pass" }
+      }
+    },
+    "evidenceReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "path", "sha256"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "path": { "type": "string", "minLength": 1 },
+        "sha256": { "$ref": "#/$defs/sha256" }
+      }
+    },
     "artifactReference": {
       "type": "object",
       "additionalProperties": false,
@@ -102,6 +270,16 @@
       "properties": {
         "path": { "type": "string", "minLength": 1 },
         "sha256": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "pinnedSignatureProvenanceReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256", "verificationMode"],
+      "properties": {
+        "path": { "type": "string", "minLength": 1 },
+        "sha256": { "$ref": "#/$defs/sha256" },
+        "verificationMode": { "const": "pinned-signature" }
       }
     },
     "baselineReference": {
@@ -137,7 +315,7 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "id", "auditTrack", "path", "sha256", "candidateBaseline",
+        "id", "auditTrack", "path", "sha256", "auditCapsule", "auditRequest", "auditorAttestation", "provenanceVerification", "candidateBaseline",
         "criticalCount", "majorCount", "verdict"
       ],
       "properties": {
@@ -145,6 +323,15 @@
         "auditTrack": { "enum": ["consistency", "roblox-readiness", "clean-room"] },
         "path": { "type": "string", "minLength": 1 },
         "sha256": { "$ref": "#/$defs/sha256" },
+        "auditCapsule": {
+          "allOf": [
+            { "$ref": "#/$defs/artifactReference" },
+            { "description": "Shared capsule contains assemblyAttestation and capsuleAssemblyProvenance refs. Receiver revalidates installed fixed preflight policy, complete target-revision tree, actual argv/exits/raw outputs, and commit/snapshot source rules." }
+          ]
+        },
+        "auditRequest": { "$ref": "#/$defs/artifactReference" },
+        "auditorAttestation": { "$ref": "#/$defs/artifactReference" },
+        "provenanceVerification": { "$ref": "#/$defs/pinnedSignatureProvenanceReference" },
         "candidateBaseline": {
           "type": "object",
           "additionalProperties": false,

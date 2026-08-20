@@ -48,7 +48,7 @@ A/B に割ると、B が「書いてあるだけで効力がない」状態に�
 
 ### 粒度過大の症状
 
-確定できるものと計測待ちのものが同じ `[OPEN]` に入っていると、**確定済みの分も閉じられない**。
+確定できるものと計測待ちのものが同じ open record に入っていると、**確定済みの分も閉じられない**。
 
 実例: 4つの entry file を1つの open にまとめた。うち2つは W0 用で確定可能、2つは Lobby／Match 用で配信方式の実測待ちだった。結果、W0 側だけを割り当てても closure に到達できず、W0 範囲の契約承認が実測待ちに巻き込まれた。
 
@@ -59,14 +59,20 @@ A/B に割ると、B が「書いてあるだけで効力がない」状態に�
 open を立てる時点で、対象ごとに「これは何を待っているか」を書く。待ち先が違えば分ける。
 
 ```
-悪い: [OPEN] entry file 4件の担当 WP が未定
+悪い: [OPEN blocking: yes] entry file 4件の担当 WP が未定
+      Reason: 4件を異なる成立条件のまま一括した
+      Owner: project owner
       closure evidence: 4件すべての担当 WP 指定と一致確認
 
-良い: [OPEN] W0 entry 2件の担当 WP が未定
+良い: [OPEN blocking: yes] W0 entry 2件の担当 WP が未定
+      Reason: W0担当WPへの割当が未確定
+      Owner: project owner
       closure evidence: 2件の担当 WP 指定、Work Packages の実改訂、一致確認、承認
       （本 open は配信方式の open にも実測結果にも依存しない）
 
-      [OPEN] Lobby／Match entry 2件の担当 WP が未定
+      [OPEN blocking: yes] Lobby／Match entry 2件の担当 WP が未定
+      Reason: 配信方式の実測待ち
+      Owner: project owner
       closure evidence: 上記に加えて配信方式の確定と実測結果
 ```
 
@@ -140,7 +146,7 @@ open を閉じるとき、open 本文を closure record へ置き換える。rec
 
 ## 5. 判断材料の実測
 
-P0契約承認のgateが「判断材料n点」を定めているなら、**承認する側が自分で再計算する**。人間本人の直接承認だけを `[DECISION]`、委任AIの範囲内行使を `[AI-APPROVED]` と記録する。後者はD5やformal documentのStatus昇格を満たさない。
+P0の個別選択gateが「判断材料n点」を定めているなら、**承認する側が自分で再計算する**。人間本人の直接承認だけを `[DECISION]`、委任AIの範囲内行使を `[AI-APPROVED]` と記録する。ただし最終 `p0-contract` machine gate は個別選択の記録と別で、**human-directだけ**。`[AI-APPROVED]` は最終P0契約承認、D5、formal documentのStatus昇格を満たさない。
 
 実プロジェクトの4点:
 
@@ -149,6 +155,6 @@ P0契約承認のgateが「判断材料n点」を定めているなら、**承�
 3. Work Packages の担当欄との照合（割当数、scope 越境 0）
 4. Rojo 記法の整合（既存 project file との mismatch 0）
 
-**1つでも不成立なら承認せず止まる。** 実測結果は承認記録に残す。「判断材料を確認した」ではなく、**数値**を書く。P0 core完了時の出口は `post-P0 D4待ち`。B0→candidate の3系統差分D4が Critical 0 / Major 0 で B1 に昇格した後だけ `D5提示可能`。実装開始可能とは宣言しない。
+**1つでも不成立なら承認せず止まる。** 実測結果は承認記録に残す。「判断材料を確認した」ではなく、**数値**を書く。P0 core完了時の出口は `post-P0 D4待ち`。B0開始状態・監視対象の全canonical/staging mutation scope・承認前後の全in-scope actual write・未記録書込み0・candidate結果をoperator-pinned authorityで証明したP0 lifecycle transition proofと、B0→candidate の3系統同一mode D4（delta、該当時full escalation）がともに合格して B1 に昇格した後だけ `D5提示可能`。`W0引渡し可能`とは宣言しない。
 
 同じことがP0管理WPのVerified遷移条件にも当てはまる。製品実装WPはD5前に遷移させない。P0管理WPのDone definitionにvalidatorが含まれるなら実際に走らせる。**追跡ファイルを上書きしない一時出力先**を使うこと（Studioが開いているファイルへの上書き事故を避ける）。

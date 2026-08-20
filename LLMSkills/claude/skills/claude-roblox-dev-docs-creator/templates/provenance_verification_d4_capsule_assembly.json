@@ -1,0 +1,104 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "PV-{{PREFIX}}-D4-CAPSULE-ASSEMBLY-{{CANDIDATE_ID}}-R{{ROUND}}",
+  "subjectType": "d4-capsule-assembly-attestation",
+  "subject": {
+    "id": "D4-CAPSULE-ASSEMBLY-{{PREFIX}}-{{CANDIDATE_ID}}-R{{ROUND}}",
+    "path": "{{D4_CAPSULE_ASSEMBLY_ATTESTATION_PATH}}",
+    "sha256": "{{D4_CAPSULE_ASSEMBLY_ATTESTATION_SHA256}}"
+  },
+  "verificationMode": "pinned-signature",
+  "verifier": {
+    "id": "{{EXTERNAL_VERIFIER_ID_INFORMATIONAL}}",
+    "authority": "{{EXTERNALLY_PINNED_AUTHORITY_INFORMATIONAL}}",
+    "adapter": "{{EXTERNALLY_PINNED_ADAPTER_INFORMATIONAL}}",
+    "adapterVersion": "{{EXTERNALLY_PINNED_ADAPTER_VERSION_INFORMATIONAL}}"
+  },
+  "sourceArtifact": { "path": "{{PINNED_SIGNATURE_EVIDENCE_PATH}}", "sha256": "{{PINNED_SIGNATURE_EVIDENCE_SHA256}}" },
+  "verificationContext": {
+    "kind": "pinned-signature-v1",
+    "algorithm": "rsa-pss-sha256",
+    "keyId": "{{PINNED_KEY_ID}}",
+    "trustAnchorSha256": "{{PINNED_TRUST_ANCHOR_SHA256}}"
+  },
+  "verifiedAt": "{{VERIFIED_AT_WITH_TIMEZONE}}",
+  "claims": {
+    "kind": "d4-capsule-assembly-v1",
+    "attestationId": "D4-CAPSULE-ASSEMBLY-{{PREFIX}}-{{CANDIDATE_ID}}-R{{ROUND}}",
+    "candidate": {
+      "id": "{{CANDIDATE_ID}}",
+      "path": "{{CANDIDATE_MANIFEST_PATH}}",
+      "sha256": "{{CANDIDATE_MANIFEST_SHA256}}",
+      "fileSetSha256": "{{CANDIDATE_FILE_SET_SHA256}}",
+      "revision": {
+        "kind": "snapshot",
+        "value": "{{EXACT_CANDIDATE_REVISION}}",
+        "snapshotRoot": "{{IMMUTABLE_SNAPSHOT_ROOT}}",
+        "gitStatusEvidence": "{{GIT_STATUS_EVIDENCE_PATH}}"
+      }
+    },
+    "auditPolicy": {
+      "id": "{{D4_AUDIT_POLICY_ID}}",
+      "path": "{{D4_AUDIT_POLICY_PATH}}",
+      "sha256": "{{D4_AUDIT_POLICY_SHA256}}",
+      "compiledPolicySha256": "{{D4_COMPILED_POLICY_SHA256}}"
+    },
+    "runtimeAllowlist": {
+      "path": "{{D4_RUNTIME_ALLOWLIST_PATH}}",
+      "sha256": "{{D4_RUNTIME_ALLOWLIST_SHA256}}",
+      "digestSha256": "{{D4_RUNTIME_ALLOWLIST_DIGEST_SHA256}}"
+    },
+    "sourceTreePolicySha256": "{{CANONICAL_SOURCE_TREE_POLICY_SHA256}}",
+    "resolvedSource": {
+      "kind": "immutable-snapshot",
+      "path": "{{RESOLVED_IMMUTABLE_SNAPSHOT_ROOT_EXACT}}",
+      "revisionValue": "{{EXACT_CANDIDATE_REVISION}}",
+      "treeEntriesSha256": "{{COMPLETE_TARGET_REVISION_TREE_ENTRIES_SHA256}}"
+    },
+    "sourceStateEvidence": {
+      "path": "{{SOURCE_STATE_OUTPUT_PATH}}",
+      "sha256": "{{SOURCE_STATE_OUTPUT_SHA256}}"
+    },
+    "sourceTree": {
+      "entryCount": 1,
+      "entriesSha256": "{{COMPLETE_TARGET_REVISION_TREE_ENTRIES_SHA256}}",
+      "outputPath": "{{TREE_OUTPUT_PATH}}",
+      "outputSha256": "{{TREE_OUTPUT_SHA256}}"
+    },
+    "inputSetSha256": "{{CANONICAL_CAPSULE_INPUT_SET_SHA256}}",
+    "inputCount": 1,
+    "dependencyClosure": { "path": "{{DEPENDENCY_CLOSURE_PATH}}", "sha256": "{{DEPENDENCY_CLOSURE_SHA256}}" },
+    "preflight": [
+      {
+        "checkId": "D4-PREFLIGHT-SOURCE-STATE-001",
+        "argv": ["{{EXACT_POLICY_COMPILED_SOURCE_STATE_ARGV_ITEM}}"],
+        "cwd": "{{ABSOLUTE_SANITIZED_ROOT}}",
+        "expectedExitCode": 0,
+        "actualExitCode": 0,
+        "outputPath": "{{SOURCE_STATE_OUTPUT_PATH}}",
+        "outputSha256": "{{SOURCE_STATE_OUTPUT_SHA256}}"
+      },
+      {
+        "checkId": "D4-PREFLIGHT-REVISION-001",
+        "argv": ["{{EXACT_POLICY_COMPILED_REVISION_ARGV_ITEM}}"],
+        "cwd": "{{ABSOLUTE_SANITIZED_ROOT}}",
+        "expectedExitCode": 0,
+        "actualExitCode": 0,
+        "outputPath": "{{REVISION_OUTPUT_PATH}}",
+        "outputSha256": "{{REVISION_OUTPUT_SHA256}}"
+      },
+      {
+        "checkId": "D4-PREFLIGHT-TREE-001",
+        "argv": ["{{EXACT_POLICY_COMPILED_TREE_ARGV_ITEM}}"],
+        "cwd": "{{ABSOLUTE_SANITIZED_ROOT}}",
+        "expectedExitCode": 0,
+        "actualExitCode": 0,
+        "outputPath": "{{TREE_OUTPUT_PATH}}",
+        "outputSha256": "{{TREE_OUTPUT_SHA256}}"
+      }
+    ],
+    "assembledAt": "{{ASSEMBLED_AT_WITH_TIMEZONE}}"
+  },
+  "claimsSha256": "{{CANONICAL_ASSEMBLY_CLAIMS_SHA256}}",
+  "verdict": "verified"
+}

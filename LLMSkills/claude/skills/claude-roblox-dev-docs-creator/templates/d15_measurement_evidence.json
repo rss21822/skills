@@ -1,0 +1,44 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "D15-EVIDENCE-{{PREFIX}}-FEASIBILITY-COMBINED-V1",
+  "triggerId": "feasibility_report",
+  "experimentId": "feasibility_report-combined-v1",
+  "target": {
+    "studioVersion": "{{ACTUAL_STUDIO_VERSION}}",
+    "universeId": "{{ACTUAL_UNIVERSE_ID}}",
+    "placeId": "{{ACTUAL_PLACE_ID}}",
+    "sessionId": "{{ACTUAL_MEASUREMENT_SESSION_ID}}",
+    "dataModelSha256": "{{ACTUAL_DATAMODEL_SHA256}}"
+  },
+  "requestArtifact": { "path": "{{RAW_REQUEST_PATH}}", "sha256": "{{RAW_REQUEST_SHA256}}" },
+  "commandArtifact": { "path": "{{EXACT_COMMAND_PATH}}", "sha256": "{{EXACT_COMMAND_SHA256}}" },
+  "rawResponseArtifact": { "path": "{{RAW_RESPONSE_PATH}}", "sha256": "{{RAW_RESPONSE_SHA256}}" },
+  "preFixedThresholdArtifact": { "path": "{{PRE_FIXED_THRESHOLD_PATH}}", "sha256": "{{PRE_FIXED_THRESHOLD_SHA256}}" },
+  "combinedSuite": {
+    "kind": "d1.5-combined-suite-v1",
+    "coverage": "all-triggered-high-risk-subchecks",
+    "requiredSubchecksSha256": "{{REQUIRED_SPECS_SORTED_SUBCHECKS_SHA256}}",
+    "subcheckEvidenceSetSha256": "{{CANONICAL_SORTED_SUBCHECK_EVIDENCE_SET_SHA256}}",
+    "overallRule": "all-subchecks-pass",
+    "subchecks": [
+      {
+        "id": "{{PRE_FIXED_HIGH_RISK_SUBCHECK_ID}}",
+        "source": "{{MATCHING_APPROVED_INTAKE_LEAF_PATH}}",
+        "sourceValueSha256": "{{MATCHING_APPROVED_INTAKE_LEAF_VALUE_SHA256}}",
+        "trialArtifact": { "path": "{{SUBCHECK_TRIAL_PATH}}", "sha256": "{{SUBCHECK_TRIAL_SHA256}}" },
+        "thresholdArtifact": { "path": "{{SUBCHECK_THRESHOLD_PATH}}", "sha256": "{{SUBCHECK_THRESHOLD_SHA256}}" },
+        "rawOutputArtifact": { "path": "{{SUBCHECK_RAW_OUTPUT_PATH}}", "sha256": "{{SUBCHECK_RAW_OUTPUT_SHA256}}" },
+        "result": "{{pass|fail|inconclusive}}",
+        "subcheckEvidenceSha256": "{{CANONICAL_SUBCHECK_EVIDENCE_SHA256}}"
+      }
+    ]
+  },
+  "result": "{{pass|fail|inconclusive}}",
+  "runtime": {
+    "runtimeId": "{{ACTUAL_RUNTIME_ID}}",
+    "toolId": "{{ACTUAL_TOOL_ID}}",
+    "toolVersion": "{{ACTUAL_TOOL_VERSION}}"
+  },
+  "startedAt": "{{STARTED_AT_WITH_TIMEZONE}}",
+  "completedAt": "{{COMPLETED_AT_WITH_TIMEZONE}}"
+}

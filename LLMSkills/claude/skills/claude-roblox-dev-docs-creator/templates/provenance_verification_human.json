@@ -1,0 +1,51 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "PV-{{PREFIX}}-{{GATE_TYPE}}-{{SEQUENCE}}",
+  "subjectType": "human-approval-capture",
+  "subject": {
+    "id": "{{HUMAN_APPROVAL_CAPTURE_ID}}",
+    "path": "{{HUMAN_APPROVAL_CAPTURE_PATH}}",
+    "sha256": "{{HUMAN_APPROVAL_CAPTURE_SHA256}}"
+  },
+  "verificationMode": "pinned-signature",
+  "verifier": {
+    "id": "{{VERIFIER_ID}}",
+    "authority": "{{TRUSTED_CHANNEL_AUTHORITY}}",
+    "adapter": "{{EXTERNALLY_PINNED_ADAPTER}}",
+    "adapterVersion": "{{EXTERNALLY_PINNED_ADAPTER_VERSION}}"
+  },
+  "sourceArtifact": {
+    "path": "{{PINNED_SIGNATURE_EVIDENCE_PATH}}",
+    "sha256": "{{PINNED_SIGNATURE_EVIDENCE_SHA256}}"
+  },
+  "verificationContext": {
+    "kind": "pinned-signature-v1",
+    "algorithm": "rsa-pss-sha256",
+    "keyId": "{{PINNED_KEY_ID}}",
+    "trustAnchorSha256": "{{PINNED_TRUST_ANCHOR_SHA256}}"
+  },
+  "verifiedAt": "{{ISO_8601_WITH_TIMEZONE}}",
+  "claims": {
+    "kind": "human-approval-v1",
+    "captureId": "{{HUMAN_APPROVAL_CAPTURE_ID}}",
+    "gateType": "{{GATE_TYPE}}",
+    "approver": "{{APPROVER}}",
+    "challengeId": "{{HUMAN_APPROVAL_CHALLENGE_ID}}",
+    "challengeIssuedAt": "{{CHALLENGE_ISSUED_AT_WITH_TIMEZONE}}",
+    "targetScopeSha256": "{{TARGET_SCOPE_SHA256}}",
+    "channel": "{{TRUSTED_CHANNEL}}",
+    "interactionId": "{{STABLE_INTERACTION_ID}}",
+    "presentationMessageId": "{{STABLE_PRESENTATION_MESSAGE_ID}}",
+    "presentationRole": "assistant",
+    "presentationSentAt": "{{PROVIDER_PRESENTATION_TIME_WITH_TIMEZONE}}",
+    "presentationContentSha256": "{{HUMAN_APPROVAL_PRESENTATION_SHA256}}",
+    "messageId": "{{STABLE_MESSAGE_ID}}",
+    "messageRole": "human",
+    "actorId": "{{PROVIDER_ACTOR_ID}}",
+    "sentAt": "{{PROVIDER_MESSAGE_TIME_WITH_TIMEZONE}}",
+    "messageContentSha256": "{{EXACT_MESSAGE_CONTENT_SHA256}}",
+    "statementSha256": "{{EXACT_MESSAGE_CONTENT_SHA256}}"
+  },
+  "claimsSha256": "{{CANONICAL_CLAIMS_SHA256}}",
+  "verdict": "verified"
+}

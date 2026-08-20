@@ -11,13 +11,14 @@ from pathlib import Path
 from urllib.parse import unquote
 
 from detect_triggers import detect, validate_intake
+from state_readiness import scan_readiness_text
+from strict_json import loads as strict_json_loads
 
 ROOT_REQUIRED = [
     "CLAUDE.md", "PROGRESS.md", "ASSET_TODO.md", "HUMAN_ACTIONS.md",
     "AI_ACTIONS.md", "CHANGELOG.md", "DECISIONS.md",
 ]
 LINK_RE = re.compile(r"\[[^\]]+\]\(([^)]+)\)")
-PLACEHOLDER_RE = re.compile(r"\{\{[^}]+\}\}|TODO-UNRESOLVED")
 SKILL_SCHEMAS = Path(__file__).resolve().parent.parent / "schemas"
 MACHINE_CONTRACTS = {
     "remote_contracts.json": ("remote_contract.schema.json", "network_security", "contracts"),
@@ -140,7 +141,7 @@ def validate_d2_machine_contracts(
     intake_path = root / "docs" / f"{prefix}_intake.json"
     required_specs_path = root / "docs" / f"{prefix}_required_specs.json"
     try:
-        intake = json.loads(intake_path.read_text(encoding="utf-8-sig"))
+        intake = strict_json_loads(intake_path.read_text(encoding="utf-8-sig"))
     except (OSError, json.JSONDecodeError) as exc:
         errors.append(f"cannot read approved intake for D2 contracts: {exc}")
         return
@@ -149,7 +150,7 @@ def validate_d2_machine_contracts(
         expected_prefix=prefix, require_approved=True)
     errors.extend(f"intake: {message}" for message in intake_errors)
     try:
-        declared = json.loads(required_specs_path.read_text(encoding="utf-8-sig"))
+        declared = strict_json_loads(required_specs_path.read_text(encoding="utf-8-sig"))
     except (OSError, json.JSONDecodeError) as exc:
         errors.append(f"cannot read required specs for D2 contracts: {exc}")
         return
@@ -187,8 +188,9 @@ def validate_d2_machine_contracts(
             continue
         checked.append(rel)
         try:
-            data = json.loads(path.read_text(encoding="utf-8-sig"))
-            schema = json.loads((SKILL_SCHEMAS / schema_name).read_text(encoding="utf-8"))
+            data = strict_json_loads(path.read_text(encoding="utf-8-sig"))
+            schema = strict_json_loads(
+                (SKILL_SCHEMAS / schema_name).read_text(encoding="utf-8"))
         except (OSError, json.JSONDecodeError) as exc:
             errors.append(f"invalid machine-readable contract {rel}: {exc}")
             continue
@@ -253,7 +255,7 @@ def main() -> int:
     checked: list[str] = []
 
     try:
-        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        manifest = strict_json_loads(manifest_path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as exc:
         manifest = {"documents": []}
         errors.append(f"cannot read manifest {manifest_path}: {exc}")
@@ -281,7 +283,7 @@ def main() -> int:
         elif suffix == ".json":
             text = path.read_text(encoding="utf-8", errors="ignore")
             try:
-                json.loads(text)
+                strict_json_loads(text)
             except json.JSONDecodeError as exc:
                 errors.append(f"invalid JSON {rel}: {exc}")
         elif suffix in {".csv", ".txt", ".yaml", ".yml"}:
@@ -289,15 +291,9 @@ def main() -> int:
         else:
             text = ""
         if args.gate == "D5" and text:
-            for token, label in (
-                ("[PROPOSAL]", "unapproved proposal"),
-                ("[ASSUMPTION]", "unverified assumption"),
-                ("[OPEN blocking: yes]", "blocking open question"),
-            ):
-                if token in text:
-                    errors.append(f"{rel}: contains {label} {token}")
-            if PLACEHOLDER_RE.search(text):
-                errors.append(f"{rel}: contains unresolved template placeholder")
+            for issue in scan_readiness_text(text, suffix):
+                errors.append(
+                    f"{rel}:{issue['line']}: contains {issue['label']} {issue['token']}")
 
     if args.gate in ("D2", "D3", "D5") and isinstance(manifest, dict):
         validate_d2_machine_contracts(

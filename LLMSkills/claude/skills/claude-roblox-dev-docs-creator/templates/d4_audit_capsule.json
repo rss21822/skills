@@ -1,0 +1,120 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "D4-CAPSULE-{{PREFIX}}-{{CANDIDATE_ID}}-R{{ROUND}}",
+  "candidate": {
+    "id": "{{CANDIDATE_ID}}",
+    "path": "{{CANDIDATE_MANIFEST_PATH}}",
+    "sha256": "{{CANDIDATE_MANIFEST_SHA256}}",
+    "fileSetSha256": "{{CANDIDATE_FILE_SET_SHA256}}",
+    "revision": {
+      "kind": "snapshot",
+      "value": "{{EXACT_CANDIDATE_REVISION}}",
+      "snapshotRoot": "{{IMMUTABLE_SNAPSHOT_ROOT}}",
+      "gitStatusEvidence": "{{GIT_STATUS_EVIDENCE_PATH}}"
+    }
+  },
+  "auditScope": {
+    "kind": "initial-d4-v1",
+    "mode": "full",
+    "sourceBaseline": null,
+    "machineDiff": null,
+    "dependencyClosure": {
+      "path": "{{DEPENDENCY_CLOSURE_MANIFEST_PATH}}",
+      "sha256": "{{DEPENDENCY_CLOSURE_MANIFEST_SHA256}}"
+    }
+  },
+  "auditPolicy": {
+    "id": "{{D4_AUDIT_POLICY_ID}}",
+    "path": "{{D4_AUDIT_POLICY_PATH}}",
+    "sha256": "{{D4_AUDIT_POLICY_SHA256}}",
+    "compiledPolicySha256": "{{D4_COMPILED_POLICY_SHA256}}"
+  },
+  "runtimeAllowlist": {
+    "path": "{{D4_RUNTIME_ALLOWLIST_PATH}}",
+    "sha256": "{{D4_RUNTIME_ALLOWLIST_SHA256}}",
+    "digestSha256": "{{D4_RUNTIME_ALLOWLIST_DIGEST_SHA256}}"
+  },
+  "assemblyAttestation": {
+    "id": "D4-CAPSULE-ASSEMBLY-{{PREFIX}}-{{CANDIDATE_ID}}-R{{ROUND}}",
+    "path": "{{D4_CAPSULE_ASSEMBLY_ATTESTATION_PATH}}",
+    "sha256": "{{D4_CAPSULE_ASSEMBLY_ATTESTATION_SHA256}}"
+  },
+  "capsuleAssemblyProvenance": {
+    "path": "{{D4_CAPSULE_ASSEMBLY_PROVENANCE_PATH}}",
+    "sha256": "{{D4_CAPSULE_ASSEMBLY_PROVENANCE_SHA256}}"
+  },
+  "p0LifecycleTransition": null,
+  "createdAt": "{{ISO_8601_WITH_TIMEZONE}}",
+  "sanitizedRoot": "{{PROJECT_RELATIVE_SANITIZED_ROOT}}",
+  "inputs": [
+    {
+      "sourcePath": "{{SOURCE_PATH}}",
+      "capsulePath": "{{SANITIZED_CAPSULE_COPY_PATH}}",
+      "bytes": 0,
+      "sha256": "{{INPUT_SHA256}}",
+      "role": "canonical"
+    }
+  ],
+  "inputSetSha256": "{{CANONICAL_INPUT_SET_SHA256}}",
+  "preflight": [
+    {
+      "checkId": "D4-PREFLIGHT-SOURCE-STATE-001",
+      "argv": ["{{EXACT_POLICY_COMPILED_SOURCE_STATE_ARGV_ITEM}}"],
+      "cwd": "{{PROJECT_RELATIVE_CWD}}",
+      "expectedExitCode": 0,
+      "actualExitCode": 0,
+      "outputPath": "{{SOURCE_STATE_OUTPUT_PATH}}",
+      "outputSha256": "{{SOURCE_STATE_OUTPUT_SHA256}}"
+    },
+    {
+      "checkId": "D4-PREFLIGHT-REVISION-001",
+      "argv": ["{{EXACT_POLICY_COMPILED_REVISION_ARGV_ITEM}}"],
+      "cwd": "{{PROJECT_RELATIVE_CWD}}",
+      "expectedExitCode": 0,
+      "actualExitCode": 0,
+      "outputPath": "{{LOG_OUTPUT_PATH}}",
+      "outputSha256": "{{LOG_OUTPUT_SHA256}}"
+    },
+    {
+      "checkId": "D4-PREFLIGHT-TREE-001",
+      "argv": ["{{EXACT_POLICY_COMPILED_TREE_ARGV_ITEM}}"],
+      "cwd": "{{PROJECT_RELATIVE_CWD}}",
+      "expectedExitCode": 0,
+      "actualExitCode": 0,
+      "outputPath": "{{TREE_OUTPUT_PATH}}",
+      "outputSha256": "{{TREE_OUTPUT_SHA256}}"
+    }
+  ],
+  "requiredAuditCommands": [
+    {
+      "auditTrack": "consistency",
+      "checkId": "CONSISTENCY-001",
+      "argv": ["{{EXACT_CONSISTENCY_ARGV_ITEM}}"],
+      "cwd": "{{SANITIZED_ROOT_RELATIVE_CWD}}",
+      "expectedExitCode": 0
+    },
+    {
+      "auditTrack": "roblox-readiness",
+      "checkId": "ROBLOX-READINESS-001",
+      "argv": ["{{EXACT_ROBLOX_READINESS_ARGV_ITEM}}"],
+      "cwd": "{{SANITIZED_ROOT_RELATIVE_CWD}}",
+      "expectedExitCode": 0
+    },
+    {
+      "auditTrack": "clean-room",
+      "checkId": "CLEAN-ROOM-001",
+      "argv": ["{{EXACT_CLEAN_ROOM_ARGV_ITEM}}"],
+      "cwd": "{{SANITIZED_ROOT_RELATIVE_CWD}}",
+      "expectedExitCode": 0
+    }
+  ],
+  "denyCategories": [
+    "conversation-history",
+    "worker-identity",
+    "prior-findings",
+    "expected-verdict",
+    "e0-capability-probe",
+    "handoff-conversation",
+    "self-evaluation"
+  ]
+}

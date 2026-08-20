@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/roblox-ai-development-os/pinned-signature-evidence.schema.json",
+  "title": "Pinned Signature Evidence",
+  "description": "Cryptographic evidence for a provenance claims payload (D4 runtime/assembly, human approval, D1.5 measurement, P0/D5 lifecycle transition, or W0 run authorization). The receiver must verify signedPayloadArtifact and signatureArtifact using an externally pinned trust anchor; matching local hashes or record-local key strings without signature verification are insufficient.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion", "id", "authority", "algorithm", "keyId", "verifiedAt",
+    "claimsSha256", "trustAnchorArtifact", "signedPayloadArtifact", "signatureArtifact"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "1.0.0" },
+    "id": { "type": "string", "pattern": "^PSE-[A-Z0-9][A-Z0-9._-]*$" },
+    "authority": { "type": "string", "minLength": 1 },
+    "algorithm": { "enum": ["ed25519", "ecdsa-p256-sha256", "rsa-pss-sha256"] },
+    "keyId": { "type": "string", "minLength": 1 },
+    "verifiedAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" },
+    "claimsSha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "trustAnchorArtifact": { "$ref": "#/$defs/artifactReference" },
+    "signedPayloadArtifact": { "$ref": "#/$defs/artifactReference" },
+    "signatureArtifact": { "$ref": "#/$defs/artifactReference" }
+  },
+  "$defs": {
+    "artifactReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256"],
+      "properties": {
+        "path": { "type": "string", "minLength": 1 },
+        "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+      }
+    }
+  }
+}

@@ -6,17 +6,55 @@
   "additionalProperties": false,
   "required": [
     "schemaVersion", "id", "type", "approvalKind", "approver", "approvedAt",
-    "scope", "baseline", "firstAuthorizedWpId", "sourceEvidence"
+    "scope", "firstAuthorizedWpId", "sourceEvidence", "sourceVerification"
   ],
   "properties": {
     "schemaVersion": { "const": "1.0.0" },
     "id": { "type": "string", "minLength": 1 },
-    "type": { "enum": ["p0-start", "p0-contract", "d5"] },
-    "approvalKind": { "enum": ["human-direct", "delegated-process"] },
+    "type": { "enum": ["gdd-gate1", "p0-start", "p0-contract", "d5"] },
+    "approvalKind": { "const": "human-direct" },
     "approver": { "type": "string", "minLength": 1 },
-    "approvedAt": { "type": "string", "format": "date-time" },
-    "scope": { "type": "string", "minLength": 1 },
-    "baseline": {
+    "approvedAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" },
+    "scope": {
+      "oneOf": [
+        { "$ref": "#/$defs/gddGate1Scope" },
+        { "$ref": "#/$defs/p0StartScope" },
+        { "$ref": "#/$defs/p0ContractScope" },
+        { "$ref": "#/$defs/d5Scope" }
+      ]
+    },
+    "baseline": { "$ref": "#/$defs/baselineReference" },
+    "targetArtifact": { "$ref": "#/$defs/targetArtifact" },
+    "firstAuthorizedWpId": { "type": ["string", "null"] },
+    "sourceEvidence": {
+      "allOf": [
+        { "$ref": "#/$defs/artifactReference" },
+        {
+          "description": "Must reference a schema-valid human_approval_capture.json. Gate type, approver, time, target, scope, exact statement bytes, and trusted interaction identifiers must match this record."
+        }
+      ]
+    },
+    "sourceVerification": {
+      "allOf": [
+        { "$ref": "#/$defs/artifactReference" },
+        {
+          "description": "Outer provenance_verification for sourceEvidence. It must verify the exact capture through an externally pinned trusted provider adapter query or provider signature/trust anchor; unavailable verification means STOP/HUMAN."
+        }
+      ]
+    }
+  },
+  "$defs": {
+    "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "artifactReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256"],
+      "properties": {
+        "path": { "type": "string", "minLength": 1 },
+        "sha256": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "baselineReference": {
       "type": "object",
       "additionalProperties": false,
       "required": ["id", "path", "sha256", "fileSetSha256", "revision"],
@@ -28,27 +66,135 @@
         "revision": { "type": "string", "minLength": 1 }
       }
     },
-    "firstAuthorizedWpId": { "type": ["string", "null"] },
-    "sourceEvidence": {
+    "targetArtifact": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["path", "sha256"],
+      "required": ["path", "sha256", "revision"],
       "properties": {
         "path": { "type": "string", "minLength": 1 },
-        "sha256": { "$ref": "#/$defs/sha256" }
+        "sha256": { "$ref": "#/$defs/sha256" },
+        "revision": { "type": "string", "minLength": 1 }
+      }
+    },
+    "inventoryReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "section", "fileSha256", "inventoryId", "sourceItemIds"],
+      "properties": {
+        "path": { "const": "PROGRESS.md" },
+        "section": { "const": "Proposed P0 closure inventory" },
+        "fileSha256": { "$ref": "#/$defs/sha256" },
+        "inventoryId": { "type": "string", "minLength": 1 },
+        "sourceItemIds": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "managementWp": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "path"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^WP-[A-Z0-9]+-[A-Z0-9][A-Z0-9._-]*$" },
+        "path": { "type": "string", "pattern": "^docs/[A-Za-z0-9._-]+_work_packages\\.md$" }
+      }
+    },
+    "gddGate1Scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "decision", "approvedIntake", "requiredSpecs", "additionalScope"],
+      "properties": {
+        "kind": { "const": "gdd-gate1-v1" },
+        "decision": { "const": "approve-gdd-for-d1.5-and-d2" },
+        "approvedIntake": { "$ref": "#/$defs/artifactReference" },
+        "requiredSpecs": { "$ref": "#/$defs/artifactReference" },
+        "additionalScope": { "const": false }
+      },
+      "description": "Gate 1 approves the target GDD together with the exact approved intake and detect_triggers required_specs projection. All three path/hash bindings are immutable through B0/B1/B2."
+    },
+    "p0StartScope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind", "inventory", "p0ManagementWp", "productContentMutation", "fixedProcedure", "additionalScope"
+      ],
+      "properties": {
+        "kind": { "const": "p0-start-v1" },
+        "inventory": { "$ref": "#/$defs/inventoryReference" },
+        "p0ManagementWp": { "$ref": "#/$defs/managementWp" },
+        "productContentMutation": { "const": "inventory-rows-only" },
+        "fixedProcedure": { "const": "p0-standard-six-step-v1" },
+        "additionalScope": { "const": false }
+      }
+    },
+    "p0ContractScope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind", "p0StartApprovalId", "inventoryId", "closedSourceItemIds",
+        "p0ManagementWp", "approvalOutcome", "additionalScope"
+      ],
+      "properties": {
+        "kind": { "const": "p0-contract-v1" },
+        "p0StartApprovalId": { "type": "string", "minLength": 1 },
+        "inventoryId": { "type": "string", "minLength": 1 },
+        "closedSourceItemIds": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "p0ManagementWp": { "$ref": "#/$defs/managementWp" },
+        "approvalOutcome": { "const": "contract-approved" },
+        "additionalScope": { "const": false }
+      }
+    },
+    "d5Scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "firstWp", "authorization", "additionalScope"],
+      "properties": {
+        "kind": { "const": "d5-v1" },
+        "firstWp": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["id", "path"],
+          "properties": {
+            "id": { "type": "string", "minLength": 1 },
+            "path": { "type": "string", "minLength": 1 }
+          }
+        },
+        "authorization": { "const": "w0-handoff-only" },
+        "additionalScope": { "const": false }
       }
     }
   },
-  "$defs": {
-    "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
-  },
   "allOf": [
+    {
+      "if": { "properties": { "type": { "const": "gdd-gate1" } }, "required": ["type"] },
+      "then": {
+        "required": ["targetArtifact"],
+        "properties": {
+          "baseline": false,
+          "scope": { "$ref": "#/$defs/gddGate1Scope" },
+          "firstAuthorizedWpId": { "type": "null" }
+        }
+      }
+    },
     {
       "if": { "properties": { "type": { "const": "p0-start" } }, "required": ["type"] },
       "then": {
+        "required": ["baseline"],
         "properties": {
-          "approvalKind": { "const": "human-direct" },
-          "baseline": { "properties": { "id": { "pattern": "^B0-[A-Z0-9][A-Z0-9._-]*$" } } },
+          "targetArtifact": false,
+          "baseline": {
+            "allOf": [
+              { "$ref": "#/$defs/baselineReference" },
+              { "properties": { "id": { "pattern": "^B0-[A-Z0-9][A-Z0-9._-]*$" } } }
+            ]
+          },
+          "scope": { "$ref": "#/$defs/p0StartScope" },
           "firstAuthorizedWpId": { "type": "null" }
         }
       }
@@ -56,8 +202,16 @@
     {
       "if": { "properties": { "type": { "const": "p0-contract" } }, "required": ["type"] },
       "then": {
+        "required": ["baseline"],
         "properties": {
-          "baseline": { "properties": { "id": { "pattern": "^P0-CAND-[A-Z0-9][A-Z0-9._-]*$" } } },
+          "targetArtifact": false,
+          "baseline": {
+            "allOf": [
+              { "$ref": "#/$defs/baselineReference" },
+              { "properties": { "id": { "pattern": "^P0-CAND-[A-Z0-9][A-Z0-9._-]*$" } } }
+            ]
+          },
+          "scope": { "$ref": "#/$defs/p0ContractScope" },
           "firstAuthorizedWpId": { "type": "null" }
         }
       }
@@ -65,9 +219,16 @@
     {
       "if": { "properties": { "type": { "const": "d5" } }, "required": ["type"] },
       "then": {
+        "required": ["baseline"],
         "properties": {
-          "approvalKind": { "const": "human-direct" },
-          "baseline": { "properties": { "id": { "pattern": "^B1-[A-Z0-9][A-Z0-9._-]*$" } } },
+          "targetArtifact": false,
+          "baseline": {
+            "allOf": [
+              { "$ref": "#/$defs/baselineReference" },
+              { "properties": { "id": { "pattern": "^B1-[A-Z0-9][A-Z0-9._-]*$" } } }
+            ]
+          },
+          "scope": { "$ref": "#/$defs/d5Scope" },
           "firstAuthorizedWpId": { "type": "string", "minLength": 1 }
         }
       }

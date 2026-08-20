@@ -1,0 +1,58 @@
+{
+  "schemaVersion": "1.0.0",
+  "kind": "w0-run-admission-v1",
+  "id": "W0-RUN-ADMISSION-{{RUN_AUTH_ID}}",
+  "authoritySessionId": "{{TRUSTED_RUNTIME_AUTHORITY_SESSION_ID}}",
+  "monitorSessionId": "{{PREPARE_MONITOR_SESSION_ID}}",
+  "w0RunId": "{{W0_BOOTSTRAP_RUN_ID}}",
+  "operatorExpectedConfigSha256": "{{OUT_OF_BAND_OPERATOR_EXPECTED_CONFIG_SHA256}}",
+  "configSha256": "{{OPERATOR_CONFIG_SHA256}}",
+  "prelaunchAssertionSha256": "{{W0_PRELAUNCH_ASSERTION_SHA256}}",
+  "postexecutionAttestationSha256": "{{W0_POSTEXECUTION_ATTESTATION_SHA256}}",
+  "lock": { "noGapFrom": "prelaunch", "through": "run-admission-and-first-effect-consumption", "enforcementSessionId": "{{CONTINUOUS_ENFORCEMENT_SESSION_ID}}", "enforcementActive": true },
+  "authorizationInputExtension": {
+    "resolvedRoot": "{{ABSOLUTE_OPERATOR_EXTERNAL_RUN_AUTHORIZATION_ROOT}}",
+    "rootIdentity": "{{AUTHORITY_OBSERVED_RUN_AUTHORIZATION_ROOT_IDENTITY}}",
+    "artifactSetSha256": "{{AUTHORITY_OBSERVED_RUN_AUTHORIZATION_INPUT_SET_SHA256}}",
+    "artifactIdentitySetSha256": "{{AUTHORITY_OBSERVED_RUN_AUTHORIZATION_INPUT_IDENTITY_SET_SHA256}}",
+    "proofSealingExclusions": ["w0-run-admission-attestation", "w0-run-admission-detached-signature", "w0-runtime-admit-execution-attestation", "w0-runtime-admit-execution-detached-signature"]
+  },
+  "currentState": {
+    "resolvedProjectRoot": "{{ABSOLUTE_RECEIVER_RESOLVED_PROJECT_ROOT}}", "projectRootIdentity": "{{AUTHORITY_OBSERVED_PROJECT_ROOT_IDENTITY}}", "projectInputTreeSha256": "{{CURRENT_PROJECT_INPUT_TREE_SHA256}}",
+    "b2": { "id": "{{B2_ID}}", "path": "{{B2_MANIFEST_PATH}}", "sha256": "{{B2_MANIFEST_SHA256}}", "fileSetSha256": "{{B2_FILE_SET_SHA256}}", "fileIdentity": "{{B2_FILE_IDENTITY}}" },
+    "w0Package": { "id": "{{W0_PACKAGE_ID}}", "path": "{{W0_PACKAGE_PATH}}", "sha256": "{{W0_PACKAGE_SHA256}}", "fileIdentity": "{{W0_PACKAGE_FILE_IDENTITY}}" },
+    "firstWp": { "id": "{{FIRST_WP_ID}}", "path": "docs/{{PREFIX}}_work_packages.md", "sha256": "{{FIRST_WP_POST_SYNC_SHA256}}", "fileIdentity": "{{FIRST_WP_FILE_IDENTITY}}" }
+  },
+  "runAuthorization": {
+    "id": "W0-RUN-AUTH-{{RUN_AUTH_ID}}", "path": "{{ABSOLUTE_OPERATOR_EXTERNAL_RUN_AUTHORIZATION_PATH}}", "sha256": "{{RUN_AUTHORIZATION_SHA256}}", "fileIdentity": "{{RUN_AUTHORIZATION_FILE_IDENTITY}}", "scopeCoreSha256": "{{RUN_AUTHORIZATION_SCOPE_CORE_SHA256}}",
+    "humanChain": {
+      "presentation": { "path": "{{ABSOLUTE_OPERATOR_EXTERNAL_RUN_AUTH_PRESENTATION_PATH}}", "sha256": "{{RUN_AUTH_PRESENTATION_SHA256}}", "fileIdentity": "{{RUN_AUTH_PRESENTATION_FILE_IDENTITY}}" },
+      "challenge": { "path": "{{ABSOLUTE_OPERATOR_EXTERNAL_RUN_AUTH_CHALLENGE_PATH}}", "sha256": "{{RUN_AUTH_CHALLENGE_SHA256}}", "fileIdentity": "{{RUN_AUTH_CHALLENGE_FILE_IDENTITY}}" },
+      "transcript": { "path": "{{ABSOLUTE_OPERATOR_EXTERNAL_RUN_AUTH_TRANSCRIPT_PATH}}", "sha256": "{{RUN_AUTH_TRANSCRIPT_SHA256}}", "fileIdentity": "{{RUN_AUTH_TRANSCRIPT_FILE_IDENTITY}}" },
+      "statement": { "path": "{{ABSOLUTE_OPERATOR_EXTERNAL_RUN_AUTH_STATEMENT_PATH}}", "sha256": "{{RUN_AUTH_STATEMENT_SHA256}}", "fileIdentity": "{{RUN_AUTH_STATEMENT_FILE_IDENTITY}}" }
+    },
+    "capture": { "id": "HAC-W0-RUN-{{RUN_AUTH_ID}}", "path": "{{ABSOLUTE_OPERATOR_EXTERNAL_RUN_AUTH_CAPTURE_PATH}}", "sha256": "{{RUN_AUTH_CAPTURE_SHA256}}", "fileIdentity": "{{RUN_AUTH_CAPTURE_FILE_IDENTITY}}" },
+    "provenanceVerification": { "id": "PV-W0-RUN-AUTH-{{RUN_AUTH_ID}}", "path": "{{ABSOLUTE_OPERATOR_EXTERNAL_RUN_AUTH_PROVENANCE_PATH}}", "sha256": "{{RUN_AUTH_PROVENANCE_SHA256}}", "fileIdentity": "{{RUN_AUTH_PROVENANCE_FILE_IDENTITY}}" }
+  },
+  "receiver": {
+    "skillId": "{{RECEIVER_SKILL_ID}}", "skillVersion": "{{RECEIVER_SKILL_VERSION}}", "skillPath": "{{ABSOLUTE_INSTALLED_RECEIVER_SKILL_ENTRYPOINT_PATH}}", "skillSha256": "{{RECEIVER_SKILL_SHA256}}",
+    "receiverSkillTreeSha256": "{{RECEIVER_SKILL_TREE_SHA256}}",
+    "workerId": "{{ASSIGNED_WORKER_ID}}", "requestedModel": "{{REQUESTED_MODEL}}", "resolvedModel": "{{RESOLVED_MODEL}}", "provider": "{{RESOLVED_PROVIDER}}", "account": "{{RESOLVED_ACCOUNT}}", "tool": "{{RESOLVED_TOOL}}",
+    "expectedLoadedProcessClosureSha256": "{{EXPECTED_LOADED_PROCESS_CLOSURE_SHA256}}", "envelopeSha256": "{{RECEIVER_ENVELOPE_SHA256}}",
+    "authorityEnforcementReady": true, "workerLaunchPolicy": "after-admit-semantic-pass-suspended-pre-entry-under-scope-enforcement-v1"
+  },
+  "authorizationChronology": { "authorizedAt": "{{HUMAN_AUTHORIZED_AT}}", "admittedAt": "{{AUTHORITY_ADMITTED_AT}}", "authorizationExpiresAt": "{{RUN_AUTHORIZATION_EXPIRES_AT}}" },
+  "sideEffectsStarted": false,
+  "oneTimeAdmission": { "registryAuthority": "{{TRUSTED_ADMISSION_REGISTRY_AUTHORITY}}", "registryId": "{{ADMISSION_REGISTRY_ID}}", "eventId": "{{UNIQUE_ADMISSION_EVENT_ID}}", "nonce": "{{UNIQUE_ONE_TIME_ADMISSION_NONCE}}", "tokenSha256": "{{ONE_TIME_ADMISSION_TOKEN_SHA256}}", "consumed": false, "consumptionPolicy": "authority-atomic-consume-after-admit-semantic-pass-before-suspended-worker-launch-v1" },
+  "admitExecutionReceiptOutputs": { "attestationPath": "{{ABSOLUTE_OPERATOR_EXTERNAL_ADMIT_EXECUTION_ATTESTATION_PATH}}", "detachedSignaturePath": "{{ABSOLUTE_OPERATOR_EXTERNAL_ADMIT_EXECUTION_SIGNATURE_PATH}}" },
+  "enforcement": {
+    "pathScopeSha256": "{{PATH_SCOPE_SHA256}}", "operationScopeSha256": "{{OPERATION_SCOPE_SHA256}}", "transferScopeSha256": "{{TRANSFER_SCOPE_SHA256}}",
+    "exactAllowedReadPaths": ["docs/{{PREFIX}}_work_packages.md"], "exactAllowedWritePaths": ["src/{{FIRST_AUTHORIZED_SOURCE_PATH}}"],
+    "exactFrozenPaths": ["{{B0_MANIFEST_PATH}}", "{{MACHINE_DERIVED_B0_SNAPSHOT_MEMBER_PHYSICAL_PATH_0001}}", "{{B1_MANIFEST_PATH}}", "{{MACHINE_DERIVED_B1_SNAPSHOT_MEMBER_PHYSICAL_PATH_0001}}", "{{B2_MANIFEST_PATH}}", "{{MACHINE_DERIVED_B2_SNAPSHOT_MEMBER_PHYSICAL_PATH_0001}}", "{{W0_PACKAGE_PATH}}", "{{MACHINE_DERIVED_PROJECT_LOCAL_HANDOFF_OR_PROOF_PATH_0001}}"],
+    "exactOperations": { "code": ["read-authorized-files", "write-authorized-files", "run-authorized-tests"], "studio": ["none"], "os": ["read-authorized-files", "write-authorized-files", "spawn-authorized-local-tools"], "network": ["none"] },
+    "exactDeniedOperations": ["unlisted-path-write", "frozen-path-write", "scope-expansion", "subdelegation", "commit", "push", "production-publish", "public-activation", "production-datastore-write", "commerce-production-change", "credential-secret-or-permission-change", "external-network-outside-allowlist"], "active": true
+  },
+  "admissionLifetimeSeconds": 30,
+  "admissionExpiresAt": "{{SHORT_ADMISSION_EXPIRES_AT}}",
+  "verdict": "ready-for-admit-semantic-pass-and-receipt"
+}

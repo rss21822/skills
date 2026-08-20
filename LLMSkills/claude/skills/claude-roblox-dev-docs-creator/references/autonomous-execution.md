@@ -59,16 +59,18 @@
 5. http_get でCreator Docsの既知.md URLを取得
 6. browserが必要なら現行tool一覧からnavigate/read schemaを確認して最小閲覧
 7. approved-transfer取得後、project内容なしの固定worker probe
+8. operator管理の外部configへpinされたruntime query adapter／署名trust anchorを、既知test claimとfresh nonceで検証。D5→W0 full routeを選ぶ場合は、W0-bound proofを発行できるoffline pinned-signature authority／anchorを必ず別途実probeする
 ```
 
 `preview_start`はdev serverを`name`指定で起動するtool。URL閲覧に使わない。worker probeの外部送信契約は`execution-envelope.md`に従う。
 
-結果を `docs/handoffs/out/E0_capability_probe.md` へ保存する。**E0 は D0 より前の preflight であり、project 内容なしの固定 worker probe を D0 worker 起動として数えない。** 各段の記録には実際の出力を貼る（「疎通した」という要約ではなく、返ってきた studio_id と state）。プローブ後、使用者へ執筆役・照合役と到達点を確認する（`worker-registry.md` §6、`orchestration.md` §2）。
+結果を `docs/handoffs/out/E0_capability_probe.md` へ保存する。**E0 は D0 より前の preflight であり、project 内容なしの固定 worker probe を D0 worker 起動として数えない。** 各段の記録には実際の出力を貼る（「疎通した」という要約ではなく、返ってきた studio_id と state）。provenance testは能力確認だけで、後続gateへ再利用しない。D4/human gateごとにfresh proofを検証する。project内の自己申告adapter/keyをtrust rootにしない。full routeでは、各W0-bound proofを生成時点からoffline `pinned-signature` modeで固定できるauthority／anchorが必須で、query-only proofを後から変換・再解釈しない。signature probe不能ならD0前にD5/W0到達を外すかfail-closedで停止する。プローブ後、使用者へ執筆役・照合役と到達点を確認する（`worker-registry.md` §6、`orchestration.md` §2）。
 
 ### 使えない実行面があった場合
 
 - **Studio MCP が無い**: Roblox Studio を起動する（Computer Use の `open_application` で `Roblox Studio`）。それでも MCP が繋がらないなら、D1.5 の実測が不可能になる。**この事実を運行計画の先頭に書き、trigger 該当機能を `[OPEN blocking: yes]` として登録する。** 実測できないまま PASS 判定を書かない
 - **ブラウザが無い**: Studio MCP の `http_get` が Creator Docs を取れる。調査対象が Roblox 公式ドキュメントに限られるなら代替になる
+- **W0用offline signature authority／provenance verifier が無い**: locally authored ID/hashを真正性証明として扱わない。query-only adapterしか無い場合もfull routeを開始せず、Draft等の限定到達点へ変更するか、W0でoffline検証できるpinned signature authority／trust anchorを使用者が用意するまで停止する
 - **Computer Use の許可が下りない**: Studio 操作は MCP で大半が届く。届かない設定パネルに触る必要が出たら、`AI_ACTIONS.md`へ`exec: blocked-permission`として送り、必要権限と再開条件を記録する。tool自体が無い場合だけ`blocked-capability`にする（安全境界による`blocked-safety`とは別。§7）
 
 ---
@@ -106,9 +108,9 @@
 
 ## 4. D1.5 Feasibility を実測する
 
-**自律モードで最も価値が上がる箇所。** 人間承認モードでは、実測に人・端末・期間の制約があるため「未計測のまま下流へ進む」逸脱が実際に起きた（実プロジェクトでは3つの FR のうち2つが未計測のまま実装開始ゲートを止めた）。Studio MCP があれば、その制約の大半が消える。
+**自律モードで最も価値が上がる箇所。** 人間承認モードでは、実測に人・端末・期間の制約があるため「未計測のまま下流へ進む」逸脱が実際に起きた（実プロジェクトでは3つの FR のうち2つが未計測のままD5のW0引渡しゲートを止めた）。Studio MCP があれば、その制約の大半が消える。D5自体は実装side effectの開始承認ではない。
 
-**D1.5 は GDD の人間承認後、D2 の前に行う。** trigger を踏んだら計測する。計測できない事情があるなら、それは `[OPEN blocking: yes]` として登録し、下流を書かない。D1.5 を Gate 1 の前提にして循環させない。
+**D1.5 は GDD の人間承認後、D2 の前に行う。** machine-generated required specsの`feasibility_report` triggerを踏んだら、approved intakeから導出した全required subcheck ID/hashを、現schema versionでは1つの`feasibility_report-combined-v1` suiteへ束ねて計測する。計測できない事情がある、suiteがexpected ID setをexact-coverしない、またはtarget/runtime/request/output/threshold/resultを外部runtime queryかpinned signatureの`provenance_verification`へ束縛できないなら、それは `[OPEN blocking: yes]` として登録し、下流を書かない。local Markdown・ID・hashだけで実測真正性を主張しない。D1.5 を Gate 1 の前提にして循環させない。
 
 ### 手順
 
@@ -151,7 +153,7 @@
 
 - 再実験の上限回数を、閾値と同時に固定する（例: 2回）
 - 上限に達しても INCONCLUSIVE なら、**計測条件の問題ではなく設計の問題**として扱い、GDD の改訂（機能の縮小・代替手段）へ倒す
-- 「条件を変えたらもう1回」は条件変更の理由を書いた場合に限り、変更後の計測は**別の実験として採番する**（前の結果を上書きしない）
+- 「条件を変えたらもう1回」は条件変更の理由を書いた場合に限り、旧attemptを上書きせずsuite内で別attemptとして採番する。D1.5 gate bindingは、全必須subcheckを含む最終combined suite 1件だけを指す
 
 ### 記録
 
@@ -182,7 +184,7 @@ evidence は `docs/evidence/` 配下へ、計測ごとに1ディレクトリ。�
 3. `[PROPOSAL]` 残数 0。各 `[DECISION]` に出所（§3 の4分類）が付いている
 4. architect の該当 gate が要求する条件を、条件文ごとに充足を確認した記録がある
 
-Gate 1 の承認後も GDD formal header は `Status: Draft` のまま。該当する D1.5 を実測する。D1.5 FAIL は GDD 改訂と人間の再承認へ戻し、PASS のみ D2 へ進める。
+Gate 1 の承認後もGDD formal headerはB1まで `Status: Draft` のままexact bytesを維持する。該当する D1.5 を実測する。D1.5 FAIL はGDD改訂と新しい人間承認へ戻し、PASSのみD2へ進める。`Approved`化はD5 external verification後のfixed metadata-only transformationで行う。
 
 ### `DECISIONS.md` の記入形式
 
@@ -196,7 +198,7 @@ Gate 1 の承認後も GDD formal header は `Status: Draft` のまま。該当�
 - 承認記録: {明示承認が含まれる会話・記録への参照}
 - 機械検査: lint {規則数} PASS / validator {gate} PASS / sha256 `{実測値}`
 - 独立照合: `docs/handoffs/out/{id}_review{N}.md`（{N}巡・Critical 0 / Major 0）
-- formal header: `Status: Draft`（D5まで維持）
+- formal header: `Status: Draft`（B1まで維持。D5 external verification後だけfixed metadataを同期）
 - PROPOSAL 残数: 0
 - 実測依存: {FR-n の evidence パス、または「なし」}
 - 出所内訳: U {n} / W {n} / M {n} / J {n}

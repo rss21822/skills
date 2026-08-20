@@ -1,13 +1,13 @@
 ---
 name: claude-roblox-dev-docs-creator
 description: >
-  Roblox 開発を**企画から実装開始承認まで一本で通す** skill。体系定義（何を作るか）と運行規約（どう作れば手戻りが出ないか）の両方を持つ。
-  E0 能力・権限プリフライト → D0 聞き取り → D1 GDD → D1.5 Feasibility 実測 → D2 設計・仕様 → D3 実装計画・テスト・運用文書 → **D4 3系統受入監査** → **P0 契約確定** → **P0 後 D4 差分再監査** → **D5 人間承認と Status 同期**まで。
+  Roblox 開発を**企画からW0引渡し承認まで一本で通す** skill。体系定義（何を作るか）と運行規約（どう作れば手戻りが出ないか）の両方を持つ。
+  E0 能力・権限プリフライト → D0 聞き取り → D1 GDD → D1.5 Feasibility 実測 → D2 設計・仕様 → D3 実装計画・テスト・運用文書 → **D4 3系統受入監査** → **P0 契約確定** → **P0 後 D4（delta／必要時full）** → **D5 人間承認と Status 同期**まで。
   文書テンプレート、JSON schema、監査 checklist、validator、lint を同梱する。製品実装（W0 以降）だけ `claude-roblox-mvp-buildout`、単発 WP は `claude-roblox-development-delivery` へ渡す。
   「ゲームを作りたい」「企画から開発ドキュメントを作って」「GDD を書いて」「開発ドキュメント群を作成」「設計書・仕様書を書いて」「D2 を進めて」「文書から実装まで通して」のほか、
   「設計書レビューして」「この文書で実装できる？」「実装前チェック」「文書整えて」「引き継いだ文書が使えるか見て」（→ D4 監査）、
   「P0 を進めて」「Change Request を起草／承認」「open を閉じて」「契約を確定して」「Verified へ遷移」（→ P0）、
-  「D5 承認」「実装開始していい？」（→ D5）でも使う。
+  「D5 承認」「実装契約を承認して W0 へ渡していい？」（→ D5）でも使う。実 side effect の開始可否は受領側 W0 gate。
   Roblox プロジェクトで企画書・GDD・下流仕様を新規作成／改訂するとき、二重正本・陳腐化参照・タグ不整合・決定 ID 衝突を点検するとき、handoff で文書を量産するとき、D1.5 を Studio で実測するときは必ず使う。
   **使用者は E0 で worker 候補と probe の送信先を承認し、probe 後に正本を書く執筆役・照合役を指定する**——Codex CLI / Cursor CLI 経由の Grok・Kimi・GLM・Gemini / Claude サブエージェント / DeepSeek のいずれでも可。
   誤字修正・文言の微修正・単発の質問回答・README 程度の更新には適用しない（重すぎる）。
@@ -38,7 +38,7 @@ description: >
 | 動くゲーム／repo がある | Repository Audit を D1 前に（BROWNFIELD） |
 | **他者作成の文書群がある** | **D4 admission preflight から。執筆せず、既に在る正本を書き換えない** |
 | D4 合格済み、P0 未完了 | P0 開始承認 gate → P0 |
-| P0 完了、P0 後 D4 未実施 | P0 後 D4 差分再監査 |
+| P0 完了、P0 後 D4 未実施 | P0 後 D4（delta／必要時full escalation） |
 | P0 後 D4 合格、D5 未承認 | D5 |
 
 **到達点を着手前に宣言する**（`docs` / `audit` / `contracts` / `ready` / `full`）。未指定なら `audit` を提案する。延ばすときは使用者の指示と変更時点を `DECISIONS.md` へ追加する。黙って延長しない。
@@ -50,12 +50,12 @@ description: >
 1. ユーザー提供資料を一次入力とする。用語・構成・判断を無断で置換しない
 2. 外部知識での拡張・検証は `[EXTERNAL]` または `[PROPOSAL]` と明示する
 3. 同じ事実の二重正本を禁止する（境界は `references/document-system.md`）
-4. `[PROPOSAL]`・未検証 `[ASSUMPTION]`・`[OPEN blocking: yes]` が残る文書を承認済み正本にしない
+4. active な `[PROPOSAL]`・未検証 `[ASSUMPTION]`・`[OPEN blocking: yes]` が残る文書を承認済み正本にしない（active／history の判定は `references/quality-gates.md`）
 5. GDD の人間承認前に下流仕様を確定しない
-6. 高リスク機能は全文書生成前に D1.5 Feasibility Gate を通す
+6. 高リスク機能は全文書生成前に D1.5 Feasibility Gate を通し、triggered raw measurementをoperator-pinned external runtime provenanceへ束縛する
 7. `[HUMAN]` は人間だけが実行する。AI 実行可能な作業は `[AI-ACTION]` として `AI_ACTIONS.md` へ分離する
 8. 既存プロジェクトでは Repository Audit 前に構成を変更しない
-9. **実装開始可能と宣言できるのは D5 の全ゲートに合格した場合だけ**
+9. **W0 引渡し可能と宣言できるのは D5 の全ゲートに合格した場合だけ。実装 side effect は受領側で、外部authorityがprocess生成前から監視したPREPARE、signed prelaunch下のpackage validation、同run signed postexecution、W0 packageから機械導出した全immutable project pathとwrite pathの非交差・receiver Skill全tree・expected loaded process closureを人間へ事前提示したclosed run authorization、expected-only signed ADMITのsemantic PASS、admission token原子的消費、scope enforcement下のsuspended/pre-entry worker launch、actual closure一致を束縛したsigned admit-execution receipt、bootstrap PASS、未使用で短期のworker-ready capabilityをすべて検証し、そのcapabilityを最初のeffect直前に原子的消費した後だけ**
 10. 実装中も文書を凍結しない。WP 完了ごとに D6 同期を行う
 
 ## 2. 三点構造 — 担い手は指定制
@@ -105,17 +105,17 @@ description: >
 | **D4** | 3系統受入監査 | **subagent または新規セッション。同一セッションで実行しない** | 会話履歴・迷った経緯・期待判定を渡さないため |
 | **P0** | 契約確定 | **本 skill 内で実行** | 指示役が体系全体を保持したまま契約を確定する |
 | **D5** | 人間承認 + 状態同期 | **本 skill 内。`templates/d5_approval_handoff.md` を実行** | 承認は人間、同期は機械的 metadata 更新 |
-| W0〜 | 製品実装 | **MVP全体は `claude-roblox-mvp-buildout`、単一WPは `claude-roblox-development-delivery` を `Skill` ツールで呼ぶ** | 別 skill。両方とも W0 package を fail-closed 検証し、worker・送信・OS入力等の権限を開始時に取り直す |
+| W0〜 | 製品実装 | **MVP全体は `claude-roblox-mvp-buildout`、単一WPは `claude-roblox-development-delivery` を `Skill` ツールで呼ぶ** | 別 skill。両方ともPREPARE→VALIDATE→ADMIT→signed receiptをfail-closed実行する。machine-derived frozen path set、disjoint write set、receiver Skill tree、expected loaded process closure、worker・送信・operationをhuman authorizationへ固定し、semantic PASS後だけtoken消費→worker suspended/pre-entry launch→actual closure照合→receipt検証→bootstrap PASSとする。未使用worker-ready capabilityを最初のeffect直前に原子的消費するまでside effectは禁止 |
 
 ### D4 の clean context 要件
 
-指示役が先に project root を read-only 探索し、`git status` / `git log` / actual tree / deleted path / validator 出力を **repository inventory manifest** へ固定する。各入力は path・bytes・sha256・取得 command・cwd・exit codeを持つ。会話情報を混ぜない。
+指示役が先に project root を read-only 探索する。同時に、実際にinstalledされた本skillのD4節・audit手順/観点・3 checklist・findings template・required validator scriptsと全local importsをrehashし、built-in lane command compilerの出力と合わせてschema-valid **D4 audit policy manifest**を固定する。project側policy copyはtrust sourceにしない。実行code/schema/configはsanitized root内`_policy_runtime/`へhash同一copyし、監査者はinstalled skill rootを読まない。外部はoperator-pinned Python executable/stdlibだけをclosed read-only runtime allowlistへ固定する。そのうえで`git status` / `git log` / actual tree / deleted path / validator 出力を schema-valid な **D4 audit capsule** へ固定する。各入力は元の `sourcePath`、sanitized root 内の immutable `capsulePath`、bytes、sha256、role を持ち、preflight は argv・cwd・exit code・生出力 path/hash を持つ。capsuleのpolicy/check/command setはinstalled policyとcandidate stageからexact導出し、会話情報を混ぜない。
 
-監査者へ**渡すもの**: allowlist だけを収めた sanitized audit root / canonical document allowlist / 必要な source allowlist / evidence allowlist / repository inventory manifest / immutable candidate baseline manifest（initial は `D4-CAND-n`、P0 後は `P0-CAND-n`）/ `references/audit-d4.md` の使用指定 / `findings-only, read-only` という目的。Class A 監査者は sanitized root 内で validator と evidence hash を再検査する。
+監査者へ**渡すもの**: allowlist だけを収めた sanitized audit root / installed sourceから再導出したpolicy manifest / `schemas/d4_audit_capsule.schema.json` で検証・hash固定した共通 capsule / lane固有のhash-pinned outer request artifact / immutable candidate baseline manifest（initial は `D4-CAND-n`、P0 後は `P0-CAND-n`）/ `findings-only, read-only` という目的。まずouter wrapperとは独立したclosed `requestCore`をcanonical JSONとして固定する。installed policy/checklistとそのrequestCoreを固定順で結合してskill-controlled submitted prompt bytesを作り、そのhashを最後にouter wrapperの`fullPromptArtifact`へ入れる。promptにouter wrapper/hashを含めずself-referenceしない。Class A監査者は sanitized root 内で validator と evidence hash を再検査する。
 
 **渡さないもの**: 会話履歴 / worker 名 / 迷った経緯 / 期待判定 / `E0_capability_probe.md` / handoff 会話 / 過去の自己評価。
 
-監査者は元 project root を検索しない。追加ファイルが必要なら指示役へ path と理由を返し、指示役が新しい sanitized root / manifest を作る。暗黙に範囲を広げない。返答原文を `docs/audits/<PREFIX>_d4_<lane>_<candidate-id>_r<N>.md` へ**無編集保存**する。
+監査者は元 project root を検索しない。追加ファイルが必要なら指示役へ path と理由を返し、指示役が新しい sanitized root / capsule を作る。暗黙に範囲を広げない。返答原文を `docs/audits/<PREFIX>_d4_<lane>_<candidate-id>_r<N>.md` へ**無編集保存**する。その後だけ指示役が lane ごとの `d4_auditor_attestation.json` を作り、request artifact・raw response の実 hash・共通 capsule・検査入力・commands を束縛する。さらにoperator管理の外部configへpinされたruntime queryまたは署名でexecution/session/model/clean/read-only/input/command/output/timeを `provenance_verification` に束縛する。raw response へ後続artifact hashを後書きしない。外部proofを作れないlaneはD4未実施として停止する。
 
 **Class A の clean context を用意できない場合、D4 未実施として停止する。** Class B で実施済みに見せない。
 
@@ -123,16 +123,16 @@ description: >
 
 | 遷移 | 必要条件 |
 |---|---|
-| D3 → D4 | GDD の人間承認記録 / 該当 D1.5 の PASS / D3 までの正本 / lint・validator・独立照合が warning・note 0 で PASS / `[PROPOSAL]`・未検証 `[ASSUMPTION]`・blocking open の残数記録 / immutable `D4-CAND-n` manifest |
+| D3 → D4 | approved intake＋そこから再導出したrequired specs＋GDD revisionを束縛するGate 1のhuman challenge→trusted presentation/response transcript/statement→capture→external provenance→machine recordと`DECISIONS.md`同一ID記録 / 該当 D1.5 combined suite の PASSとraw evidence/external runtime provenance（trigger 0ならproof 0） / D3 までの正本 / lint・validator・独立照合が warning・note 0 で PASS / 全 `[PROPOSAL]`・未検証 `[ASSUMPTION]`・blocking open を source ID/path で一意に収録した `PROGRESS.md` § Proposed P0 closure inventory / immutable `D4-CAND-n` manifest |
 | AUDIT admission → D4 | 指示役の read-only inventory / sanitized audit root / immutable `D4-CAND-n` manifest。GDD 承認・D1.5・必須文書が無い場合も入場可だが、欠落は findings とし合格条件を緩めない |
-| D4 → P0 | 3系統すべて **Critical 0 かつ Major 0** / 合格した `D4-CAND-n` と同一 file-set hash を `promotedFrom` で結んだ **B0** 固定 / その後に人間本人の **P0 開始承認 ID** を別 gate で取得。Critical/Major があれば候補を履歴保存して執筆役へ `templates/correction_handoff.md` を発行し、全3系統を新しい clean context で全面再監査 |
-| P0 → P0 後 D4 | P0 契約検査が warning・note 0 で PASS / P0 管理 WP の `Verified` 遷移 / P0 契約承認 ID / parent B0 の immutable `P0-CAND-n` manifest |
-| P0 後 D4 → D5 | B0→`P0-CAND-n` の変更と全影響文書を、全3系統の新しい clean context で差分再監査 / Critical 0 かつ Major 0 / 合格候補と同一 file-set hash を `promotedFrom` で結んだ **B1** 固定 / P0 開始承認・P0 契約承認が別 ID |
-| D5 → W0 | B1 を特定した人間本人の D5 明示承認 / crash-safe 状態同期 / **B2** post-sync manifest / 必須 W0 handoff package。詳細は `references/phase-definitions.md` §9 |
+| D4 → P0 | 3系統すべて **Critical 0 かつ Major 0** / 同じ schema-valid capsule、3 raw response、lane別 Class A attestation と外部runtime provenance の実hashを束縛した `auditRecords` / 合格した `D4-CAND-n` と同一 file-set hash を `promotedFrom` で結び、`PROGRESS.md` closure inventory も不変固定した **B0** / external provenance付きhuman captureをsourceとする **P0 開始承認 ID** を別 gate で取得。承認 scope は B0 historical inventory の全行に限定した製品内容 closure と、規定済み P0 検証・記録・管理WP・candidate固定手続だけ。Gate 1承認済みintake／required specs／GDDとGate 1 chainはP0でimmutableで、変更が必要ならD0/D1からunique new Gate 1 routeへ戻る。Critical/Major があれば候補を履歴保存して執筆役へ `templates/correction_handoff.md` を発行し、全3系統を新しい clean context で全面再監査 |
+| P0 → P0 後 D4 | P0 契約検査が warning・note 0 で PASS / P0 管理 WP の `Verified` 遷移 / B0 inventory 全 ID の Completed evidence・影響正本 hash と candidate inventory data row 0 / approved content digestを人間がchallenge responseで直接承認し、外部provenance付きcaptureと固定procedure正規化でcandidateへ結ぶ P0契約record / parent B0 の snapshot-only immutable `P0-CAND-n` manifest / P0-start verification後から pre-approval write、P0-contract verification、固定metadata、全snapshot copy、actual-candidate machine record、exact frozen-byte canonical apply、final sealまでの全in-scope transition mutation eventsをauthority側で証明した外部provenance付き lifecycle transition attestation。0件のinventory mutationも明示し、seal後writeは0 |
+| P0 後 D4 → D5 | B0→`P0-CAND-n` の変更と全影響文書を、全3系統の新しい clean context・同一mode（delta／該当時full）で監査 / Critical 0 かつ Major 0 / 共通 capsule、3 raw response、lane別 attestationと外部runtime provenanceを `auditRecords` へ束縛 / 合格候補と同一 file-set hash を `promotedFrom` で結んだ **B1** 固定 / P0 開始承認・P0 契約承認が別 ID |
+| D5 → W0 | B1とfirst WPをclosed scopeで特定したhuman challenge/capture/external provenance/record / Gate1・P0-start・P0-contract・D5の4鎖が相互distinct / D5 verification完了後のactual sync events、allowed-diff生成、B2 snapshot全file copy、final seal、完全write log・許可差分・B2 hashをauthority側で証明した外部provenance付き lifecycle transition attestation / 全provenanceがW0でoffline検証できる pinned-signature mode / crash-safe 状態同期 / snapshot-only **B2** post-sync manifest / 必須 W0 handoff package。query-modeはW0前の送信権限が無いため不合格。詳細は `references/phase-definitions.md` §9 |
 
 ### stage 遷移の記録
 
-各遷移を `DECISIONS.md` の Stage Transition Record へ**追記**する（上書きしない）。transition ID・source/target stage・entry/exit verdict・B0/B1/B2 の役割と親 baseline・evidence・人間 gate なら承認 ID/承認者/日時/対象 revision・worker 実行 attestation・未完了 Human Actions。
+各遷移を `DECISIONS.md` の Stage Transition Record へ**追記**する（上書きしない）。transition ID・source/target stage・entry/exit verdict・B0/B1/B2 の役割と親 baseline・evidence・人間 gate なら承認 ID/承認者/日時/対象 revisionとchallenge/capture/external provenance/record参照・P0/D5ならcandidate/B2外の lifecycle transition attestationとauthority側actual-event provenance・worker 実行 attestationと外部runtime provenance・未完了 Human Actions。
 
 ### 停止条件
 
@@ -156,13 +156,17 @@ description: >
 worker
 7. 使用者が候補 provider/account/model/cost と固定 probe 送信を承認
 8. project 内容を含まない固定 probe を承認済み候補だけへ送る
+
+provenance
+9. user/operator 管理の外部 verifier config に pin された runtime adapter／署名 trust anchor を、既知test claim・fresh nonceで検証
+10. D5/W0到達を選ぶ場合、3つのD4実行、D1.5、4 human gate、P0/D5 transitionの各proofを**生成時点からoffline pinned-signature mode**で発行でき、W0 receiverが同じ外部trust anchorだけで検証できることを実probeする。query-onlyならfull routeを選ばない
 ```
 
 `preview_start` は `.claude/launch.json` の dev server を `name` で起動する tool。URL 閲覧 probe に使わない。Studio call は実行時 schema を優先し、全 call へ `studio_id`、`execute_luau` へ `datamodel_type`、`screen_capture` へ `capture_id` を付ける。
 
 **worker probe も第三者送信。** provider・account/billing identity・auth channel・model・cost 上限の使用者承認を先に記録する。probe に project 文書・path・secret を含めない。
 
-結果を `docs/handoffs/out/E0_capability_probe.md` へ、**実際の出力を貼って**保存する（「疎通した」という要約ではなく、返ってきた値）。
+結果を `docs/handoffs/out/E0_capability_probe.md` へ、**実際の出力を貼って**保存する（「疎通した」という要約ではなく、返ってきた値）。provenance verifierのpinはproject/candidate内の自己申告設定を信用せず、operator管理の外部configから読む。E0のtest結果を後続artifactへ流用せず、各D4 lane・各human gateでfresh proofを検証する。**D5→W0までを到達点に選ぶなら、後続の全W0-bound provenanceをその場でoffline検証できるpinned-signatureとして発行できるauthority／trust anchorをE0で実probeし、成功しなければD0前に停止する。** query-only adapterはDraft等の限定到達点には使えても、後でbaseline内のimmutable query-mode proofを署名modeへ読み替えられない。必要なsignature authority／anchorが無ければ到達点を限定するか停止して使用者へ報告する。
 
 プローブ後、**使用者へ執筆役・照合役を訊く**。落ちた候補は理由つきで外す。同時に到達点・commit範囲・外部送信範囲を確認する。次を宣言・記録する。
 
@@ -217,7 +221,7 @@ handoff 発行（指示役）
 
 これは **D0〜D3 の1文書サイクル**。D4 gate は別規則で、是正後も全3系統を fresh context で全面再監査する。D4 に残存点限定 review を流用しない。
 
-GDD は**人間承認後に D1.5 実測ゲート**を通す。Gate 1 承認の正本は `DECISIONS.md` の人間承認記録であり、GDD header は D5 まで `Draft` のまま。**照合の「承認可」は品質所見であって人間承認ではない。**
+GDD は**人間承認後に D1.5 実測ゲート**を通す。Gate 1の人間向け意味の正本は`DECISIONS.md`の記録、機械証跡はapproved intake／再導出required specs／exact Draft GDD path/hash/revisionを同じscopeへ入れたchallenge/capture/external provenance/type `gdd-gate1` recordで、同一ID・対象へ解決する。GDD bytesはB1まで不変。D5外部監視下のfixed metadata-only transformationだけがB2で `Approved` / `Last approved` / historyを更新でき、receiverはB1/B2のnormalized body digest一致を再計算する。local transcript/ID/hashだけではhuman-direct証明にならない。**照合の「承認可」は品質所見であって人間承認ではない。**
 
 ## 8. handoff の書き方
 
@@ -288,8 +292,9 @@ $projectRoot = (Get-Location).Path
 & $pythonExe @pythonPrefix (Join-Path $skillDir 'scripts\gen_index.py') --project-root $projectRoot --config '.claude\doc-lint.json' --emit both --output 'docs\<PREFIX>_docs_manifest.json' --index-output 'docs\<PREFIX>_docs_index.md' --index-mode markers --project '<Name>' --prefix '<PREFIX>'
 # D5同期時だけ、B2と人間D5承認IDを明示してnon-formal inventoryも昇格
 & $pythonExe @pythonPrefix (Join-Path $skillDir 'scripts\gen_index.py') --project-root $projectRoot --config '.claude\doc-lint.json' --emit both --output 'docs\<PREFIX>_docs_manifest.json' --index-output 'docs\<PREFIX>_docs_index.md' --index-mode markers --project '<Name>' --prefix '<PREFIX>' --baseline-id '<B2-ID>' --approve-non-formal --d5-approval-id '<D5-ID>'
-# D5後/W0開始前のfail-closed package検査。staging時だけ元projectを --source-project-root へ指定
-& $pythonExe @pythonPrefix (Join-Path $skillDir 'scripts\validate_d5_acceptance.py') --project-root $projectRoot --prefix '<PREFIX>' --package 'docs\evidence\d5\<D5-ID>_w0_handoff_package.json'
+# D5 transaction後のcreator-side package assembly検査。これはreceiver W0 acceptance／side-effect権限ではない
+$provenanceConfig = (Resolve-Path -LiteralPath '<OPERATOR_CONTROLLED_EXTERNAL_PROVENANCE_CONFIG>').Path
+& $pythonExe @pythonPrefix (Join-Path $skillDir 'scripts\validate_d5_acceptance.py') --installed-skill-root $skillDir --project-root $projectRoot --source-project-root $projectRoot --prefix '<PREFIX>' --package 'docs\evidence\d5\<D5-ID>_w0_handoff_package.json' --provenance-config $provenanceConfig --json
 ```
 
 自分でも必ず走らせる検査（**執筆モデルの報告は証拠にならない**）:
@@ -325,7 +330,7 @@ lint と validator が warning・未検査 note なしで通ってから照合�
 
 **収束させる巡では、収束が目的だと書く。** 「指摘を作るために基準を上げない」「承認可と判定できるならそう書く」を明示する。
 
-発散したときの判断基準は `references/review-protocol.md`、D4 での発散対処は `references/audit-d4.md` §6。
+発散したときの判断基準は `references/review-protocol.md`、D4 での発散対処は `references/audit-d4.md` §7。
 
 ## 11. 報告を信用しない — 自分の報告も
 
@@ -344,7 +349,7 @@ lint と validator が warning・未検査 note なしで通ってから照合�
 
 ## 12. commit と baseline
 
-**commit を暗黙の権限にしない。** 開始時に許可範囲を確認して記録する。許可があれば品質合格した作業単位ごとに commit し、溜めない。無ければ commit せず sha256 pin とスナップショットで baseline を固定する。
+**commit を暗黙の権限にしない。** 開始時に許可範囲を確認して記録する。許可があれば品質合格した作業単位ごとに commit し、溜めない。無ければ commit せず sha256 pin とスナップショットで baseline を固定する。これは一般の作業履歴規則であり、D4-CAND/B0/P0-CAND/B1/B2 の W0 handoff lifecycle v1 は、外部VCS operation proofをまだ定義しないため**人間がcommitを許可していても snapshot-only**。`revision.kind: commit` はW0対象にせず停止する。
 
 実プロジェクトでは許可確認を先送りしたまま変更を溜め、最終監査で Last Known Good Commit が空文になった。
 
@@ -353,14 +358,14 @@ lint と validator が warning・未検査 note なしで通ってから照合�
 baseline は lineage を持つ。**同じ ID の bytes を変更しない。**
 
 - **D4-CAND-n**: initial D4 へ渡す候補。失敗候補も immutable 履歴として残し、B0 と呼ばない
-- **B0**: full initial D4 に合格した pre-P0 content baseline。合格候補と同一 file-set hash を持ち、`promotedFrom` で結ぶ
+- **B0**: full initial D4 に合格した pre-P0 content baseline。合格候補と同一 file-set hash を持ち、`promotedFrom` と3件の完全な audit provenance で結ぶ
 - **P0-CAND-n**: P0 改訂後に P0 後 D4 へ渡す候補。parent は B0。失敗候補を B1 と呼ばない
-- **B1**: P0 後の全3系統 D4 に合格し、人間が D5 で承認する content baseline。合格候補と同一 file-set hash、parent は B0
+- **B1**: P0 後の全3系統 D4 に合格し、人間が D5 で承認する content baseline。合格候補と同一 file-set hash、parent は B0、3件の完全な audit provenance を保持
 - **B2**: D5 metadata・記録同期後の W0 引渡し baseline。parent は B1。製品仕様bodyはB1と同一で、差分は formal header/change-history、運行記録の追記、最初のWP authorization、生成物という明示allowlistだけ
 
-P0 では、編集前の B0 と編集後候補をそれぞれ `docs/evidence/baselines/<baseline-id>/` 配下の別 manifest／snapshot rootとして保存する。対象・不変対象の path/version/status/bytes/sha256、`git status --short` の生出力、parent baseline ID を記録する。commit baseline は exact revision blob、snapshot baseline は project-relative `snapshotRoot` 配下のコピーから、W0 側が全bytesを再計算できなければならない。manifest file 自身の SHA-256 は自己参照 field にせず、Stage Transition Record と後続 handoff package から外側で束縛する。P0 後 D4 合格後だけ候補を B1 へ昇格する。
+P0 では、編集前の B0 と編集後候補をそれぞれ `docs/evidence/baselines/<baseline-id>/` 配下の別 manifest／snapshot rootとして保存する。対象・不変対象の path/version/status/bytes/sha256、source snapshot ID、parent baseline ID を記録する。W0 lifecycle v1 の全 candidate/baseline は project-relative `snapshotRoot` 配下の全bytesを receiver が再計算できる snapshot-only 契約とし、commit blobへfallbackしない。snapshot memberは独立fileでなければならず、symlink／junction／reparse point／hardlinkを禁止し、link count 1・snapshot内identity重複0・canonical/staging sourceとのOS file identity交差0を外部claimsとreceiverが検証する。freeze/seal時はsnapshot root全fileのsource/result path・before/after hashをcomplete write logと外部actual-operation claimsがexact-coverする。manifest file 自身の SHA-256 は自己参照 field にせず、Stage Transition Record と後続 handoff package から外側で束縛する。P0 後 D4 合格後だけ候補を B1 へ昇格する。
 
-D5 は B1 全体を rollback可能な immutable snapshot として保持し、全出力を staging で生成・検証してから crash journal 付きで置換する。許可差分は formal header metadata、Stage Transition/approval record の append、first WP の authorization、生成 index/manifest/hash packageだけ。失敗時は B1 へ全件復元し、部分 `Approved` を残さない。成功後 B2 と必須 W0 handoff packageを生成する。
+D5 は B1 全体を rollback可能な immutable snapshot として保持し、全出力を staging で生成・検証してから crash journal 付きで置換する。許可差分は formal header metadata、template が規定する DECISIONS/CHANGELOG の exact sentinel block、PROGRESS の exact current-state replacement＋history block、first WP の exact authorization fields、生成 index/manifest/hash packageだけ。GDDもGate1対象のDraft bytesからfixed metadataだけを更新し、normalized body digestは不変。自由文や同じ block 内の追加 field は不可。失敗時は B1 へ全件復元し、部分 `Approved` を残さない。D5 verification後に全sync write、allowed-diff/post-sync artifact、B2 snapshot全file copyを記録し、B2 manifestを1回sealする。成功後、B2外にD5 lifecycle transition attestationと外部actual-event provenanceを固定し、verification前write 0、event-level allowlist、snapshot完全性、seal後write 0、post-sync/B2 hashを再検証してから必須 W0 handoff packageを生成する。challenge/capture/PVのevidence取得writeはmutation scope外、LTA/writeLog/PV/W0 packageだけがmonitor close後の固定proof-sealing除外であり、他の除外は許さない。外部authorityがactual operation eventsを証明できなければW0へ進まない。
 
 許可済み commit のメッセージには変更内容に加えて**独立照合の結果**（巡数と記録パス）と、人間承認が必要な gate ならその決定 ID を書く。**照合合格だけを「承認済み」と表現しない。**
 
@@ -410,23 +415,23 @@ D5 は B1 全体を rollback可能な immutable snapshot として保持し、�
 
 **運行**: `worker-registry` / `execution-envelope` / `autonomous-execution` / `gdd-and-intake` / `ordering` / `review-protocol` / `defect-catalog` / `config-example`
 
-### templates/
+### templates/（90本）
 
-- **handoff / audit 系**: `handoff.md` / `correction_handoff.md` / `gdd_handoff.md` / `d4_findings.md` / `d5_approval_handoff.md` / `review_round1.md` / `review_roundN.md`
+- **handoff / audit 系**: `handoff.md` / `correction_handoff.md` / `gdd_handoff.md` / `d4_audit_policy_manifest.json` / `d4_runtime_allowlist.json` / `d4_capsule_assembly_attestation.json` / `d4_audit_capsule.json` / `d4_audit_request.json` / `d4_auditor_attestation.json` / `d4_findings.md` / `d5_approval_handoff.md` / `review_round1.md` / `review_roundN.md`
 - **P0 系**: `p0_start_handoff.md` / `cr_draft.md` / `approval_record.md` / `revision_handoff.md` / `contract_approval.md`
 - **文書テンプレート**: `gdd.md` / `detailed_design.md` / `data_definition.md` / `ui_ux_input_spec.md` / `phase_plan.md` / `work_packages.md` / `test_spec.md` / `toolchain_spec.md` / `workflow.md` / `release_rollback_runbook.md` / 各 Spec / 記録類（`decisions.md` / `human_actions.md` / `ai_actions.md` / `progress.md` / `changelog.md` / `asset_todo.md` / `claude_md.md` / `docs_index.md`）
-- **機械運行**: `baseline_manifest.json` / `gate_approval_record.json` / `post_sync_manifest.json` / `w0_handoff_package.json`
+- **機械運行**: `baseline_manifest.json` / `gate_approval_record.json` / 共通 `human_approval_{challenge,presentation,capture}.json`・`human_interaction_transcript.json` / `required_specs.json` / `d15_measurement_evidence.json` / 各 `provenance_verification*.json` / `provenance_verifier_config.json` / `trusted_runtime_query_result.json` / `pinned_signature_evidence.json` / P0・D5の `lifecycle_transition_attestation_*.json`・`lifecycle_write_log_*.json` / `post_sync_manifest.json` / `w0_handoff_package.json` / W0の `w0_runtime_{launch_challenge,prepare_execution_attestation,prelaunch_assertion,postexecution_attestation,admit_execution_attestation}.json` / `w0_run_authorization_{challenge,presentation,capture}.json` / `w0_run_authorization.json` / `w0_run_admission_attestation.json`
 - **設定・intake**: `doc-lint.json` / `p0-check.json` / `intake.json`
 
-### schemas/（18本）
+### schemas/（43ファイル）
 
-`docs_manifest` / `intake` / `work_package`、lifecycle用 `baseline_manifest` / `gate_approval_record` / `post_sync_manifest` / `w0_handoff_package`、D2用 `remote_contract` / `save_schema` / `analytics_event` / `asset_ledger` / `commerce_ledger` の各 schema。D2の5 starter instanceと `requirements.csv` も含む。starterが空の間はD2成果物として合格しない。
+37 schema: `docs_manifest` / `intake` / `required_specs` / `work_package`、baseline／approval／D4 policy・runtime・capsule・request・attestation、D1.5、external provenance／operator config、P0・D5 lifecycle transition／write log、post-sync／W0 package、W0 runtime launch／PREPARE／prelaunch／postexecution／run authorization／run admission／ADMIT execution-worker-ready receipt、D2用 `remote_contract` / `save_schema` / `analytics_event` / `asset_ledger` / `commerce_ledger`。これにD2の5 starter instanceと `requirements.csv` を加えた43ファイル。starterが空の間はD2成果物として合格しない。
 
 ### checklists/（5本）
 
 `consistency` / `production_readiness` / `clean_room` のD4節と `security` のcontract節を3 laneで使う。`completion` は pre-D4、指示役の3 lane集約、P0/D5、W0以降を節分離しており、後工程の証拠をD4合格条件へ逆流させない。
 
-### scripts/（13本）
+### scripts/（18本）
 
 | script | 用途 |
 |---|---|
@@ -436,6 +441,11 @@ D5 は B1 全体を rollback可能な immutable snapshot として保持し、�
 | `validate_traceability.py` | traceability CSV 検査 |
 | `check_p0_state.py` | P0 の跨文書状態検査 |
 | `validate_d5_acceptance.py` | B0/B1/B2・D5承認・許可差分・W0 package のfail-closed検査 |
+| `validate_lifecycle_transition.py` | post-P0 D4用P0 outer transitionの固定検査entrypoint |
+| `state_readiness.py` | active state tag／placeholder の共有fail-closed parser |
+| `strict_json.py` | security-sensitive JSONのduplicate key／NaN／Infinity拒否共有loader |
+| `d4_preflight.py` | D4 capsule用の固定 SOURCE-STATE／REVISION／TREE preflight |
+| `w0_receiver_bootstrap.ps1` | operator外部authority監視下のW0 PREPARE→VALIDATE→ADMIT bootstrap |
 | `scaffold_project.py` | 新規プロジェクトの雛形生成 |
 | `detect_triggers.py` | intake から必須 Spec を判定 |
 | `grep_residuals.py` | 残留プレースホルダの検出 |

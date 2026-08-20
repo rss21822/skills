@@ -29,6 +29,8 @@ import re
 import sys
 from pathlib import Path
 
+from strict_json import loads as strict_json_loads
+
 DEFAULT_CONFIG = {
     "doc_globs": ["docs/**/*.md", "*.md"],
     "exclude_globs": ["docs/handoffs/**", "**/node_modules/**"],
@@ -180,7 +182,7 @@ def load_config(config_path: Path | None, explicit: bool, known_rules=()) -> dic
             raise ConfigError(f"--config で指定された設定が存在しない: {config_path}")
         return cfg
     try:
-        user = json.loads(config_path.read_text(encoding="utf-8"))
+        user = strict_json_loads(config_path.read_text(encoding="utf-8"))
     except json.JSONDecodeError as exc:
         raise ConfigError(f"設定 JSON を解析できない: {config_path}: {exc}")
     validate_keys(user, known_rules)

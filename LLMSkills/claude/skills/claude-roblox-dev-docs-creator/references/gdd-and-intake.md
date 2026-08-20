@@ -55,6 +55,8 @@ GDD は体系の中で唯一、**内容が上流から導出できない**文書
 
 **intake ファイルには出所欄を持たせる。** 回答本文と出所が別ファイルに分かれると、必ず片方だけが更新される。
 
+`product.top_risks` はfree-formの製品risk台帳であり、D1.5のmachine experimentへ自動変換しない。そこにStudioで実測すべきmechanic riskがあるのに、対応する `vehicle_or_custom_physics` / `high_npc_or_fx_load` / `free_text_or_ugc` / `high_frequency_projectiles_or_fast_pvp` / `multi_place` がfalseなら正規化矛盾である。D0独立reviewは承認せず、該当technical flagと回答出所を確認してから `required_specs` を再生成する。
+
 ### 空のリポジトリから始める場合
 
 architect の scaffold で必要な骨組みを作る。ただし scaffold は下流テンプレートも一括生成しうるので、**生成物のうち D0/D1 で扱うのはどれかを handoff の inScope で限定する**。テンプレートが存在することと、それを埋めてよいことは別。
@@ -63,7 +65,7 @@ architect の scaffold で必要な骨組みを作る。ただし scaffold は�
 
 ### 既存 GDD がある場合
 
-ユーザーが GDD を持ってくることがある（本 Skill が最初に使われたプロジェクトがそうだった）。**intake 自体は飛ばさない。既存 GDD に対して intake を当て、答えられない項目を洗い出す。** 埋まっていない箇所が、そのまま下流の `[OPEN]` になる。
+ユーザーが GDD を持ってくることがある（本 Skill が最初に使われたプロジェクトがそうだった）。**intake 自体は飛ばさない。既存 GDD に対して intake を当て、答えられない項目を洗い出す。** 埋まっていない箇所を下流へ送るなら、必ず `[OPEN blocking: yes|no]` として極性・理由・Owner・closure evidence を付ける。
 
 既存 GDD に書かれている内容の出所は原則 `U`（ユーザーが持ち込んだ製品判断）。**既存 GDD の用語・構成・判断を無断で置換しない。** 改善提案は `[PROPOSAL]` として別立てにし、使用者が採用した場合だけ出所 `J` と承認記録を添えて `[DECISION]` にする。
 
@@ -129,7 +131,7 @@ architect skill の D1.5 は、高リスク機能について**設計文書一�
 
 **GDD を書く時点で、どの機能が trigger を踏むかを列挙する。** 後から気づくと、既に書いた下流文書が「検証されていない前提」の上に立っている。
 
-実プロジェクト（人間承認モード）の例: モバイル騎乗操作・サーバー権威の高速 PvP・Multi-Place / Teleport の3つが trigger を踏み、FR-1 / FR-2 / FR-3 として立てられた。**3つのうち PASS したのは1つだけで、残り2つは計測リソースが確保できず未計測のまま実装開始ゲート（D5）を止めた。**
+実プロジェクト（人間承認モード）の例: モバイル騎乗操作・サーバー権威の高速 PvP・Multi-Place / Teleport の3つが trigger を踏み、FR-1 / FR-2 / FR-3 として立てられた。**3つのうち PASS したのは1つだけで、残り2つは計測リソースが確保できず未計測のままD5のW0引渡しゲートを止めた。** D5だけでは実装side effectを許可せず、受領側W0検証とrun固有承認が別途必要である。
 
 **自律モードはこの失敗の直接の対処である。** Studio MCP があれば、計測に必要な人・端末・期間の制約の大半が消える。**したがって「未計測のまま下流へ進む」という選択肢は無い。**
 
@@ -190,7 +192,7 @@ Studio実測、browser調査、許可済みOS操作、承認済みLLM送信は`[
 2. 独立照合（別セッション・読み取り専用）で Critical 0 / Major 0
 3. `[PROPOSAL]` 残数 0。各 `[DECISION]` に出所（§1 の4分類）が付いている
 4. architect の Gate 1 が要求する条件を、条件文ごとに充足を確認した記録がある
-この4条件は人間承認の代替ではない。使用者の明示承認を得て `DECISIONS.md` へ approver・承認対象 revision・日時・証拠を記録する。沈黙、照合の「承認可」、指示役の品質判定を承認に数えない。Gate 1 承認後も GDD formal header は `Status: Draft`。D5 より前に `Approved` / `Last approved` を設定しない。
+この4条件は人間承認の代替ではない。exact Draft GDD path/hash/revisionとclosed scopeからhuman challengeを作り、使用者が返したexact canonical responseをtrusted transcript/statement artifactへ保存する。captureをoperator-pinned external channel queryまたはsignatureの`provenance_verification`へ束縛し、そのproofを参照するtype `gdd-gate1` machine recordを検証して、`DECISIONS.md`へ同じID・approver・対象revision・authority時刻・証拠を記録する。沈黙、照合の「承認可」、指示役の品質判定、局所生成したID/hashだけを承認に数えない。GDD formal headerはB1まで `Status: Draft`。D5 external verification後のfixed metadata-only transformationだけが `Approved` / `Last approved` / historyを設定し、normalized body digestを変えない。
 
 **本 Skill が運行として上乗せするのは1点**——D2/D3 の執筆自体を、Gate 1 の人間承認と必要な D1.5 PASS の後まで待つ。理由は、承認または実測で方針が変わったとき、書いてしまった下流が全部是正対象になるから。
 
@@ -213,7 +215,7 @@ Studio実測、browser調査、許可済みOS操作、承認済みLLM送信は`[
 
 人間承認後、Tier 0 へ進む前に次を済ませる。順序を守ると後の巡数が減る。
 
-1. `DECISIONS.md` に Gate 1 の人間承認を記録。GDD header は `Status: Draft` を維持
+1. Gate 1 challenge/capture/external provenance/machine recordを検証し、`DECISIONS.md`へ同一IDの人間承認を記録。GDD headerは `Status: Draft` を維持し、exact bytesをB1まで変えない
 2. **D1.5 trigger の実測**。該当があれば Feasibility を先に通す（§4）。FAIL で GDD を改訂した場合は再承認を得て、その記録も更新
 3. lint 設定の見直し（`decision_id_home_docs` への GDD 登録は起草の handoff で済んでいるはず。漏れていればここで補う。段階は §9）
 4. `HUMAN_ACTIONS.md`（human-only）と`AI_ACTIONS.md`（機械作業）を更新。approved AI actionだけ実行しevidenceを付ける

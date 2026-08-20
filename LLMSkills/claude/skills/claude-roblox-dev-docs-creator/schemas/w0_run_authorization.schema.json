@@ -1,0 +1,235 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/roblox-ai-development-os/w0-run-authorization.schema.json",
+  "title": "W0 Run Authorization",
+  "description": "Closed run-specific authority obtained during the pinned bootstrap VALIDATE→ADMIT interval, after W0 postexecution PASS and before any assigned-worker/project/Studio/network implementation side effect. Exact authority-monitored external temp, challenge, and proof writes performed by PREPARE/VALIDATE are bootstrap operations, not product authority. The project/package/B2/WP lock remains continuous. This authorization and every presentation/challenge/transcript/statement/capture/PV artifact are written only to predeclared operator-external absolute paths outside the locked project/package/baseline trees; any project-local authorization evidence path is invalid. pathScope.frozenPaths is not operator-selected: the receiver mechanically derives and exact-compares the complete immutable project-path set reachable from the validated W0 package, while allowedWritePaths remains identity- and containment-disjoint from that set. assignedReceiver binds both the complete installed receiver Skill tree and the human-approved expected loaded-process closure before the human responds; no actual worker observation is claimed until the post-semantic signed ADMIT execution receipt. scopeCoreSha256 hashes exactly the pre-response scopeCore object with UTF-8 json.dumps(scopeCore, ensure_ascii=False, sort_keys=True, separators=(',', ':')). Response-derived authorization id/actor/channel/message/authorizedAt and evidence refs are outside that digest and are bound by the standard presentation→challenge→human transcript/statement→capture→offline pinned-signature provenance chain. A later continuous-lock w0_run_admission_attestation is still mandatory.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "kind", "id", "scopeCoreSha256", "scopeCore", "authorizedAt", "human", "approvalEvidence"],
+  "properties": {
+    "schemaVersion": { "const": "1.0.0" },
+    "kind": { "const": "w0-run-authorization-v1" },
+    "id": { "type": "string", "pattern": "^W0-RUN-AUTH-[A-Z0-9][A-Z0-9._-]*$" },
+    "scopeCoreSha256": { "$ref": "#/$defs/sha256" },
+    "scopeCore": { "$ref": "#/$defs/scopeCore" },
+    "authorizedAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" },
+    "human": {
+      "type": "object", "additionalProperties": false, "required": ["actor", "channel", "messageId"],
+      "properties": {
+        "actor": { "type": "string", "minLength": 1 },
+        "channel": { "type": "string", "minLength": 1 },
+        "messageId": { "type": "string", "minLength": 1 }
+      }
+    },
+    "approvalEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["presentation", "challenge", "transcript", "statement", "capture", "provenanceVerification"],
+      "properties": {
+        "presentation": { "$ref": "#/$defs/artifactReference" },
+        "challenge": { "$ref": "#/$defs/artifactReference" },
+        "transcript": { "$ref": "#/$defs/artifactReference" },
+        "statement": { "$ref": "#/$defs/artifactReference" },
+        "capture": {
+          "type": "object", "additionalProperties": false, "required": ["id", "path", "sha256"],
+          "properties": {
+            "id": { "type": "string", "pattern": "^HAC-W0-RUN-" },
+            "path": { "$ref": "#/$defs/operatorExternalAbsolutePath" },
+            "sha256": { "$ref": "#/$defs/sha256" }
+          }
+        },
+        "provenanceVerification": {
+          "type": "object", "additionalProperties": false, "required": ["id", "path", "sha256", "verificationMode"],
+          "properties": {
+            "id": { "type": "string", "pattern": "^PV-W0-RUN-AUTH-" },
+            "path": { "$ref": "#/$defs/operatorExternalAbsolutePath" },
+            "sha256": { "$ref": "#/$defs/sha256" },
+            "verificationMode": { "const": "pinned-signature" }
+          }
+        }
+      },
+      "description": "All six artifacts are distinct and rehashed. Presentation of the full target/scope precedes the canonical human response; challenge nonce and every interaction/message ID are globally non-reused. Capture and PV exact-match scopeCoreSha256."
+    }
+  },
+  "$defs": {
+    "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "operatorExternalAbsolutePath": {
+      "type": "string",
+      "pattern": "^[A-Za-z]:[\\\\/].+",
+      "description": "Absolute operator-external evidence/control path outside resolvedProjectRoot, every baseline snapshot, the W0 package tree, the installed creator/validator Skill, the assigned receiver Skill tree, and runtime temp. Semantic validation resolves aliases and rejects any containment, symlink, junction, reparse, mount, hardlink identity alias, or path escape into a protected tree."
+    },
+    "receiverSkillAbsolutePath": {
+      "type": "string",
+      "pattern": "^[A-Za-z]:[\\\\/].+",
+      "description": "Absolute installed assigned-receiver Skill entrypoint path inside the receiver Skill tree bound by receiverSkillTreeSha256. It must remain outside resolvedProjectRoot, every B0/B1/B2 snapshot, the W0 package tree, the installed creator/validator Skill, runtime temp, and every operator-external authorization/evidence root. Semantic validation resolves aliases/identities and rejects symlink, junction, reparse, mount, hardlink alias, or path escape."
+    },
+    "projectPath": {
+      "type": "string",
+      "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.?($|/))(?!.*\\\\)(?!.*//)(?!.*(?:^|/)(?:[Cc][Oo][Nn]|[Pp][Rr][Nn]|[Aa][Uu][Xx]|[Nn][Uu][Ll]|[Cc][Oo][Mm][1-9]|[Ll][Pp][Tt][1-9])(?:\\.|$|/))(?!.*\\.(?:$|/))[A-Za-z0-9._-]+(?:/[A-Za-z0-9._-]+)*$",
+      "description": "Normalized project-relative POSIX path. Windows device basenames, dot/parent segments, backslashes, duplicate separators, and a segment ending in dot are invalid; semantic validation additionally requires one case-folded resolved identity with no alias or containment ambiguity."
+    },
+    "pathSet": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "$ref": "#/$defs/projectPath" } },
+    "artifactReference": {
+      "type": "object", "additionalProperties": false, "required": ["path", "sha256"],
+      "properties": { "path": { "$ref": "#/$defs/operatorExternalAbsolutePath" }, "sha256": { "$ref": "#/$defs/sha256" } }
+    },
+    "baselineReference": {
+      "type": "object", "additionalProperties": false, "required": ["id", "path", "sha256", "fileSetSha256"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^B2-[A-Z0-9][A-Z0-9._-]*$" },
+        "path": { "type": "string", "minLength": 1 },
+        "sha256": { "$ref": "#/$defs/sha256" },
+        "fileSetSha256": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "runAuthorizationTarget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "authorizationId", "scopeCoreSha256", "b2", "w0Package", "bootstrapRunId", "postexecutionAttestation", "firstWp"],
+      "properties": {
+        "kind": { "const": "w0-run-authorization-target-v1" },
+        "authorizationId": { "type": "string", "pattern": "^W0-RUN-AUTH-" },
+        "scopeCoreSha256": { "$ref": "#/$defs/sha256" },
+        "b2": { "$ref": "#/$defs/baselineReference" },
+        "w0Package": {
+          "type": "object", "additionalProperties": false, "required": ["id", "path", "sha256"],
+          "properties": { "id": { "type": "string", "minLength": 1 }, "path": { "type": "string", "minLength": 1 }, "sha256": { "$ref": "#/$defs/sha256" } }
+        },
+        "bootstrapRunId": { "type": "string", "minLength": 16 },
+        "postexecutionAttestation": { "$ref": "#/$defs/artifactReference" },
+        "firstWp": {
+          "type": "object", "additionalProperties": false, "required": ["id", "path", "sha256"],
+          "properties": { "id": { "type": "string", "minLength": 1 }, "path": { "$ref": "#/$defs/projectPath" }, "sha256": { "$ref": "#/$defs/sha256" } }
+        }
+      }
+    },
+    "scopeCore": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind", "approvalChallenge", "b2", "w0Package", "bootstrap", "firstWp", "pathScope",
+        "assignedReceiver", "transfer", "operations", "deniedOperations", "expiresAt", "additionalScope"
+      ],
+      "properties": {
+        "kind": { "const": "w0-run-authorization-scope-v1" },
+        "approvalChallenge": {
+          "type": "object", "additionalProperties": false, "required": ["id", "nonceSha256"],
+          "properties": {
+            "id": { "type": "string", "pattern": "^HCH-W0-RUN-" },
+            "nonceSha256": { "$ref": "#/$defs/sha256" }
+          }
+        },
+        "b2": { "$ref": "#/$defs/baselineReference" },
+        "w0Package": {
+          "type": "object", "additionalProperties": false, "required": ["id", "path", "sha256"],
+          "properties": { "id": { "type": "string", "minLength": 1 }, "path": { "type": "string", "minLength": 1 }, "sha256": { "$ref": "#/$defs/sha256" } }
+        },
+        "bootstrap": {
+          "type": "object", "additionalProperties": false, "required": ["runId", "launchChallenge", "postexecutionAttestation"],
+          "properties": {
+            "runId": { "type": "string", "minLength": 16 },
+            "launchChallenge": { "$ref": "#/$defs/artifactReference" },
+            "postexecutionAttestation": { "$ref": "#/$defs/artifactReference" }
+          }
+        },
+        "firstWp": {
+          "type": "object", "additionalProperties": false, "required": ["id", "path", "sha256"],
+          "properties": { "id": { "type": "string", "minLength": 1 }, "path": { "$ref": "#/$defs/projectPath" }, "sha256": { "$ref": "#/$defs/sha256" } }
+        },
+        "pathScope": {
+          "type": "object", "additionalProperties": false, "required": ["allowedReadPaths", "allowedWritePaths", "frozenPaths"],
+          "properties": {
+            "allowedReadPaths": { "$ref": "#/$defs/pathSet" },
+            "allowedWritePaths": {
+              "$ref": "#/$defs/pathSet",
+              "description": "Exact authorized write paths. Semantic validation resolves Windows aliases and identities and rejects every exact, case-insensitive, ancestor, descendant, or identity overlap with frozenPaths."
+            },
+            "frozenPaths": {
+              "$ref": "#/$defs/pathSet",
+              "description": "Exact Unicode-ordinal-sorted, normalized project-relative set mechanically rederived from the validated W0 package and current package path: B0/B1/B2 manifest paths; every physical snapshot member at revision.snapshotRoot/files[].path; the W0 package itself; and every project-local handoff/proof artifact transitively reachable through package and referenced JSON evidence. Missing or extra paths, aliases, non-canonical Windows names, symlinks/junctions/reparse points, hardlinks or other file-identity aliases, and operator-selected substitutions fail closed. Every immutable snapshot member must be an independent link-count-1 regular file."
+            }
+          },
+          "description": "The receiver derives frozenPaths before presentation and exact-compares it again at ADMIT. allowedWritePaths must remain disjoint from the derived immutable set under resolved Windows path, containment, and file-identity semantics."
+        },
+        "assignedReceiver": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["skill", "receiverSkillTreeSha256", "workerId", "requestedModel", "resolvedModel", "provider", "account", "tool", "expectedLoadedProcessClosureSha256", "authConstraints", "transferScopeSha256", "operationScopeSha256"],
+          "properties": {
+            "skill": {
+              "type": "object", "additionalProperties": false, "required": ["id", "version", "path", "sha256"],
+              "properties": { "id": { "type": "string", "minLength": 1 }, "version": { "type": "string", "minLength": 1 }, "path": { "$ref": "#/$defs/receiverSkillAbsolutePath" }, "sha256": { "$ref": "#/$defs/sha256" } }
+            },
+            "receiverSkillTreeSha256": {
+              "$ref": "#/$defs/sha256",
+              "description": "Human-approved SHA-256 of canonical JSON {files:[...]} for the exact installed receiver Skill root containing skill.path. files is the Unicode-ordinal-sorted unique closed set of every regular file as {path,bytes,sha256}, using relative POSIX paths and UTF-8 json.dumps(..., ensure_ascii=False, sort_keys=True, separators=(',', ':')). Missing, extra, symlink, junction, reparse, mount, special, escape, or identity-aliased entries fail. skill.sha256 separately binds the receiver Skill entrypoint bytes."
+            },
+            "workerId": { "type": "string", "minLength": 1 },
+            "requestedModel": { "type": "string", "minLength": 1 },
+            "resolvedModel": { "type": "string", "minLength": 1 },
+            "provider": { "type": "string", "minLength": 1 },
+            "account": { "type": "string", "minLength": 1 },
+            "tool": { "type": "string", "minLength": 1 },
+            "expectedLoadedProcessClosureSha256": {
+              "$ref": "#/$defs/sha256",
+              "description": "Human-approved expected digest for the complete receiver process closure eligible to load, including the selected tool/host executable, modules, DLL/shared libraries, helpers, and receiver Skill tree. No assigned worker may be launched before ADMIT semantic PASS. After that PASS, the authority launches the worker suspended/pre-entry under scope enforcement and records an independently observed actualLoadedProcessClosureSha256 in the signed ADMIT execution receipt; it must equal this expected digest byte-for-byte before bootstrap PASS or any product effect. An unobserved, missing, extra, or substituted component fails closed."
+            },
+            "authConstraints": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+            "transferScopeSha256": { "$ref": "#/$defs/sha256" },
+            "operationScopeSha256": { "$ref": "#/$defs/sha256" }
+          }
+        },
+        "transfer": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["approval", "provider", "account", "model", "destination", "scope", "contentSha256", "maxCost", "expiresAt"],
+          "properties": {
+            "approval": {
+              "type": "object", "additionalProperties": false, "required": ["id", "path", "sha256"],
+              "properties": { "id": { "type": "string", "minLength": 1 }, "path": { "$ref": "#/$defs/operatorExternalAbsolutePath" }, "sha256": { "$ref": "#/$defs/sha256" } }
+            },
+            "provider": { "type": "string", "minLength": 1 },
+            "account": { "type": "string", "minLength": 1 },
+            "model": { "type": "string", "minLength": 1 },
+            "destination": { "type": "string", "minLength": 1 },
+            "scope": { "type": "string", "minLength": 1 },
+            "contentSha256": { "$ref": "#/$defs/sha256" },
+            "maxCost": {
+              "type": "object", "additionalProperties": false, "required": ["currency", "amount"],
+              "properties": { "currency": { "type": "string", "pattern": "^[A-Z]{3}$" }, "amount": { "type": "number", "minimum": 0 } }
+            },
+            "expiresAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" }
+          }
+        },
+        "operations": {
+          "type": "object", "additionalProperties": false, "required": ["code", "studio", "os", "network"],
+          "properties": {
+            "code": { "$ref": "#/$defs/codeOperationSet" },
+            "studio": { "$ref": "#/$defs/studioOperationSet" },
+            "os": { "$ref": "#/$defs/osOperationSet" },
+            "network": { "$ref": "#/$defs/networkOperationSet" }
+          }
+        },
+        "deniedOperations": {
+          "const": ["unlisted-path-write", "frozen-path-write", "scope-expansion", "subdelegation", "commit", "push", "production-publish", "public-activation", "production-datastore-write", "commerce-production-change", "credential-secret-or-permission-change", "external-network-outside-allowlist"]
+        },
+        "expiresAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" },
+        "additionalScope": { "const": false }
+      }
+    },
+    "codeOperationSet": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "enum": ["read-authorized-files", "write-authorized-files", "run-authorized-tests"] } },
+    "studioOperationSet": {
+      "oneOf": [
+        { "const": ["none"] },
+        { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "enum": ["inspect-authorized-place", "edit-authorized-place", "playtest-authorized-place"] } }
+      ]
+    },
+    "osOperationSet": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "enum": ["read-authorized-files", "write-authorized-files", "spawn-authorized-local-tools"] } },
+    "networkOperationSet": {
+      "oneOf": [
+        { "const": ["none"] },
+        { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "enum": ["localhost-rojo", "authorized-studio-mcp"] } }
+      ]
+    }
+  }
+}

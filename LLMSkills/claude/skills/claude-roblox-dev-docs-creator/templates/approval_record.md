@@ -24,7 +24,7 @@
 
 ## 2. 委任を新たに記録する場合（該当時のみ）
 
-委任そのものを人間の `[DECISION]` として記録し、**対象範囲・期限・取消条件・対象外**を明記する。対象外は少なくとも: productionのUniverse／Place・ID・DataStore・Open Cloud・商品・Secrets・権限・binding・publish settingsへの接触、全環境のpublish、production activation、commit／push、Gate 1、D5、formal document昇格。
+委任そのものを人間の `[DECISION]` として記録し、**対象範囲・期限・取消条件・対象外**を明記する。対象外は少なくとも: productionのUniverse／Place・ID・DataStore・Open Cloud・商品・Secrets・権限・binding・publish settingsへの接触、全環境のpublish、production activation、commit／push、Gate 1、P0 start、final P0 contract、D5、formal document昇格。
 
 `[HUMAN]` は人間専権のまま維持し、「またはAI」を足さない。AI行使は `[AI-APPROVED]` 記録側から委任 `[DECISION]` を参照する。全文検索でAIの `[DECISION]`、AI完了可能な `[HUMAN]`、D5代替経路がないことを確認する。
 

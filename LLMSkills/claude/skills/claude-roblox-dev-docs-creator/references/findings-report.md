@@ -102,7 +102,7 @@
 |---|---|
 | `[FACT]` | 確認済みの事実。測定方法も書く |
 | `[DECISION]` | 人間本人が直接承認済み。委任AIは作成しない |
-| `[AI-APPROVED]` | 人間の委任決定の範囲内でAIが承認した工程内状態。D5やformal document昇格の代替ではない |
+| `[AI-APPROVED]` | 人間の委任決定の範囲内でAIが承認した工程内状態。Gate 1・P0 start・最終P0 contract・D5・formal document昇格の代替ではない |
 | `[PROPOSAL]` | AI提案、未承認 |
 | `[OPEN blocking: yes\|no]` | 未決。blocking:yes は進捗記録のblocker欄にも登録 |
 | `[HUMAN]` | 人間だけが実行可能。AI実行候補へ付けない |
@@ -114,7 +114,7 @@
 
 D4はfindings-only／read-onlyで、軽微所見も正本文書へ直接反映しない。各所見にD0〜D3の該当執筆工程向け修正方向を書く。
 
-初回 D4 で Critical／Major があれば `D4不合格 / D0〜D3是正へ`、post-P0 D4 なら `post-P0 D4不合格 / P0是正へ` とし、所有工程へ是正を依頼する。改訂後は過去所見・差分を渡さず、fresh clean context の3系統 full D4を行う。初回の3系統が Critical 0 / Major 0 の場合だけ `D4合格 / P0着手資格あり（人間P0開始承認待ち）` とする。post-P0 は `audit-d4.md` §6 の B0→candidate 差分再監査を使い、合格時だけ `post-P0 D4合格 / B1昇格可 / D5提示可能` とする。
+初回 D4 で Critical／Major があれば `D4不合格 / D0〜D3是正へ`、post-P0 D4 なら `post-P0 D4不合格 / P0是正へ` とし、所有工程へ是正を依頼する。改訂後はいずれも過去所見を渡さずfresh clean contextの3系統を使う。初回は毎回full D4、post-P0は `audit-d4.md` §6 のcandidate-derived delta（escalation条件ならfull）を再実行し、どちらも文書単位residual-onlyにはしない。初回の3系統が Critical 0 / Major 0 の場合だけ `D4合格 / P0着手資格あり（人間P0開始承認待ち）` とする。post-P0 は合格時だけ `post-P0 D4合格 / B1昇格可 / D5提示可能` とする。
 
 ## 監査記録の保存
 

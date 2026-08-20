@@ -1,0 +1,46 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "D4-REQUEST-{{PREFIX}}-{{TRACK}}-{{CANDIDATE_ID}}-R{{ROUND}}",
+  "requestCore": {
+    "laneRunId": "D4-RUN-{{PREFIX}}-{{TRACK}}-{{CANDIDATE_ID}}-R{{ROUND}}",
+    "auditTrack": "{{TRACK}}",
+    "mode": "{{full|delta}}",
+    "candidate": {
+      "id": "{{CANDIDATE_ID}}",
+      "path": "{{CANDIDATE_MANIFEST_PATH}}",
+      "sha256": "{{CANDIDATE_MANIFEST_SHA256}}",
+      "fileSetSha256": "{{CANDIDATE_FILE_SET_SHA256}}"
+    },
+    "capsule": { "path": "{{CAPSULE_PATH}}", "sha256": "{{CAPSULE_SHA256}}" },
+    "auditPolicy": {
+      "id": "{{D4_AUDIT_POLICY_ID}}",
+      "path": "{{D4_AUDIT_POLICY_PATH}}",
+      "sha256": "{{D4_AUDIT_POLICY_SHA256}}",
+      "compiledPolicySha256": "{{D4_COMPILED_POLICY_SHA256}}"
+    },
+    "runtimeAllowlist": {
+      "path": "{{D4_RUNTIME_ALLOWLIST_PATH}}",
+      "sha256": "{{D4_RUNTIME_ALLOWLIST_SHA256}}",
+      "digestSha256": "{{D4_RUNTIME_ALLOWLIST_DIGEST_SHA256}}"
+    },
+    "p0LifecycleTransition": null,
+    "purpose": "findings-only",
+    "writePolicy": "read-only",
+    "contextMode": "clean",
+    "denyCategories": [
+      "conversation-history",
+      "worker-identity",
+      "prior-findings",
+      "expected-verdict",
+      "e0-capability-probe",
+      "handoff-conversation",
+      "self-evaluation"
+    ],
+    "requiredCheckIds": ["{{EXACT_INSTALLED_POLICY_APPLICABLE_LANE_CHECK_ID}}"]
+  },
+  "requestCoreSha256": "{{CANONICAL_REQUEST_CORE_SHA256}}",
+  "fullPromptArtifact": {
+    "path": "{{EXACT_SUBMITTED_PROVIDER_PAYLOAD_PATH}}",
+    "sha256": "{{EXACT_SUBMITTED_PROVIDER_PAYLOAD_SHA256}}"
+  }
+}
