@@ -19,7 +19,7 @@ description: 承認済みのRoblox仕様・データ定義・Work Packageから�
 開始時に、実行IDと次の承認状態を証跡へ記録する。曖昧なら安全な作業だけ続け、該当操作は止める。
 
 - 編集してよいリポジトリ、Worktree、パス、WP。
-- OS入力注入、全画面キャプチャ、Studioプロセス終了、強制終了、デスクトップセッション切替、commit、push、publishの各可否。OS入力とStudio終了は包括承認を使わず、今回のrunの当該操作ごとに承認ID・対象・時刻・範囲を記録する。
+- OS入力注入、全画面キャプチャ、Studioプロセス終了、強制終了、デスクトップセッション切替、commit、push、publishの各可否。OS入力とStudio終了は包括承認を使わず、今回のrunの当該操作ごとに承認ID・対象・時刻・範囲を記録する。**例外は place のローカル保存（§4.1）だけ**——所有者が2026-08-21に恒常許可した File → ファイルに保存の経路であり、この許可を他のOS入力へ広げない。
 - **実施workerの指定**（Codex CLI / Claudeサブエージェント / Cursor CLI経由 / DeepSeek 等）と、その階層。**指定が無ければ訊く。既定値で黙って始めない。** 階層ごとに強制機構と適用範囲が違い、無人で`workspace-write`を与えてよいのは同梱helper経由のCodex（T1）だけである。判定表と各階層の条件は [委譲契約](references/delegation-contract.md) §0。
 - **指定workerの送信先**へ送信してよいprompt・repository・path範囲、除外するsecret、model、認証channel、account/billing identity。**送信先はworkerごとに違い、承認は引き継がれない**（§0.4）。Windowsの`read-only`/`workspace-write`は書込権限の差であり、同じOS accountで読めるローカルfileの読取・model送信範囲を狭めない。自動委譲は無関係なsecretを持たない専用OS account/VMで行う。共有accountしか使えない場合は、読取可能な全local dataの理論上の開示を所有者が今回明示承認しなければ`BLOCKED`とする。ambient `CODEX_API_KEY`は今回のjobへの所有者承認なしに採用しない（他workerのambient認証情報も同様に扱う）。
 - 全画面キャプチャ前は、機密ウィンドウを隠したことと今回の明示同意を確認する。
@@ -38,6 +38,7 @@ description: 承認済みのRoblox仕様・データ定義・Work Packageから�
 |---|---|
 | Studio MCP | セッション列挙、`execute_luau`、コンソール取得、権威状態・UI実体の照会、節目テストの駆動 |
 | Studio 入力 | `StudioTestService` / `VirtualInput`（§4-1）。OS入力fallbackは**当該操作の所有者明示承認**と直前identity一致を両方満たす場合だけ |
+| place 保存 | File → ファイルに保存を Computer Use で実行し、file の bytes / mtime / SHA-256 で成立を実測する（§4.1。恒常許可済み） |
 | 画面 | **対象ウィンドウ**のcapture。座標証拠のrefresh |
 | プロセス | **自分が起動した**Studioでも、終了操作ごとの所有者明示承認と直前identity一致を両方満たす場合だけ終了・後始末 |
 | 内蔵ブラウザ | Creator Docs の参照、Creator Dashboard の**読取**（設定値・place ID・版の確認） |
@@ -69,30 +70,6 @@ description: 承認済みのRoblox仕様・データ定義・Work Packageから�
 防ぐには、証跡に**生の出力を貼る**。「疎通した」「PASSした」という要約を証拠として採用しない。§5の相関要件（実行ID・テストID・build SHA-256・HEAD・Studio版・timestamp・event ID・PID/role/player対応表）は自律モードでこそ効く——後から誰も口頭で補えないためである。
 
 ## 2. 開始ゲート
-
-### 2.0 D5 handoff provenance — 最初に fail-closed 検証
-
-`Approved` header や会話上の申告だけで開始しない。`claude-roblox-dev-docs-creator` が生成した `docs/evidence/d5/<D5-ID>_w0_handoff_package.json` を必須入力とし、同梱 schema と実ファイルから次を再計算する。
-
-1. `d5Approval.id` が `DECISIONS.md` の人間本人による直接承認へ解決し、承認対象が `baselines.b1.id` / manifest hash と一致する。
-2. `p0.startApprovalId` / `p0.contractApprovalId` / `d5Approval.id` が別 ID で、`postP0D4Records` の3系統記録が同じ `P0-CAND-n` を指し、各記録の Critical / Major が0。その候補と `baselines.b1` は `promotedFrom` と同一 file-set hash で結ばれる。
-3. B1 content baseline と B2 post-sync baseline の manifest file SHA-256を再計算し、package が外側から束縛した値、parent関係、各 path/bytes/sha256と照合する。B1→B2 は formal header/change-history、運行記録の規定追記、最初のWP authorization、生成物だけを許し、その他の製品仕様bodyはbyte-identicalである。
-4. post-sync docs manifest / index の file set・version・statusがformal headerと一致する。
-5. `firstAuthorizedWp` の ID/path/sha256が実在し、Status `Approved`、`Authorized by` が `d5Approval.id` を参照する。
-
-package欠落、schema不一致、hash不一致、参照未解決、古いbaseline、許可外差分が1件でもあれば、code・Studio・OSへ副作用を起こさず `claude-roblox-dev-docs-creator` のD5同期へ戻す。package作成を本skill側で補完しない。
-
-副作用前に creator 同梱validatorを**自分で**実行し、exit code 0以外を開始不可とする。
-
-```powershell
-$docsCreatorSkill = (Resolve-Path -LiteralPath 'C:/Users/ryufu/.claude/skills/claude-roblox-dev-docs-creator').Path
-$projectRoot = (Get-Location).Path
-if (Get-Command python -ErrorAction SilentlyContinue) { $pythonExe='python'; $pythonPrefix=@() }
-elseif (Get-Command py -ErrorAction SilentlyContinue) { $pythonExe='py'; $pythonPrefix=@('-3') }
-else { throw 'Python interpreter not found' }
-& $pythonExe @pythonPrefix (Join-Path $docsCreatorSkill 'scripts\validate_d5_acceptance.py') --project-root $projectRoot --source-project-root $projectRoot --prefix '<PREFIX>' --package 'docs\evidence\d5\<D5-ID>_w0_handoff_package.json'
-if ($LASTEXITCODE -ne 0) { throw 'D5/W0 provenance validation failed' }
-```
 
 ### 2.1 仕様とGitの基準点
 
@@ -182,6 +159,50 @@ Studioのmanifest、handshake、coordinate/capture証拠、test artifactは、re
 
 画面取得は`scripts/studio_session.ps1 -Action Capture`だけを使い、対象ウィンドウを基本とする。low-level capture helperをpath実行しない。全画面は明示同意後だけ使い、仮想スクリーン原点を記録する。画像座標とOS座標を混同しない。
 
+### 4.1 place のローカル保存（File → ファイルに保存）
+
+**運行中に place の保存が必要になったら、Studio の File メニューを Computer Use で操作して保存する。** これはローカルfileへの書込であり、Publish・外部配布ではない。§1の外部公開禁止には当たらない。所有者は本手順を **place のローカル保存に限って** 恒常的に許可している（2026-08-21）。この許可を他のOS入力（gameplay操作、設定変更、ダイアログ応答）へ広げない——それらは従来どおり当該操作ごとの個別明示承認を要する。
+
+保存が要る場面を先に見積もる。**未保存placeはStudio終了で全消失する。** DataModelだけに存在する成果（適用済みmodule、生成したworld、fixture instance）を持ったまま長時間走るrun、Studio再起動を伴う検証、runの区切りでは保存する。
+
+**Studio内部からは保存できない。** `game:Save()` はDataModelに存在せず、MCPの`execute_luau`はpluginコンテキストではないため`plugin`グローバルも無い。実測で両方とも不可を確認済み。よってGUI経路が唯一の手段である。
+
+手順は次の順で、各段の実測値を証跡へ残す。
+
+1. **セッションが対話可能か確認する。** `quser` の `STATE` が `Active` でなければ実行しない。`Disc`（リモート接続切断）では画面自体が存在せず、captureは `desktopCapturer returned no screen sources` で失敗し、入力も届かない。この場合は保存を`blocked-capability`として記録し、所有者へ再接続を依頼する。勝手にセッション切替（`tscon`等）をしない。
+
+   ```powershell
+   quser
+   Get-Process -Name RobloxStudioBeta | Select-Object Id, SessionId, MainWindowTitle
+   ```
+
+2. **等倍screenshotを撮り、そこから座標を読む。** 縮尺付きcaptureの座標系と実座標系は一致しないことがあるため、クリック用の座標は必ず**スケール指定なしのscreenshot**から取る。**固定座標を手順へ焼き込まない**——Studio版、ウィンドウ位置、DPI、言語で毎回変わる。タイトルバーで対象placeのpathを読み、操作対象が意図したwindowであることを確認する。
+
+3. **「ファイル」メニューをクリックし、開いたメニューを screenshot で確認してから「ファイルに保存」をクリックする。** メニュー項目の位置は開いてみるまで確定しない。1回のbatchでメニュークリック→wait→screenshotまで進め、**項目座標は開いた後のscreenshotから取り直す**。英語UIなら `File` → `Save to File`。`Roblox に保存` / `Save to Roblox` は publish 系なので**押さない**（隣接しているため誤クリックに注意）。
+
+4. **保存の成立をファイル側で実測する。** メニューが閉じただけでは証拠にならない。保存先pathの `bytes` / `LastWriteTime` / `SHA-256` を取得し、mtimeが今回の操作時刻であることを確認して証跡へ記録する。
+
+   ```powershell
+   $p = '<place path>'
+   $f = Get-Item $p
+   "bytes: $($f.Length)"; "mtime: $($f.LastWriteTime)"
+   "sha256: " + (Get-FileHash -Path $p -Algorithm SHA256).Hash
+   "age_seconds: " + [math]::Round(((Get-Date) - $f.LastWriteTime).TotalSeconds, 1)
+   ```
+
+5. 初回保存や別名保存でダイアログが出た場合は、path入力と確定も同じ要領（screenshot→座標確定→クリック）で行い、確定後に4を実測する。上書き確認が出たら、対象pathが意図したものであることをscreenshotで確認してから応答する。
+
+失敗時の切り分けは症状で決める。推測で再試行しない。
+
+| 症状（実測文言） | 意味 | 対応 |
+|---|---|---|
+| `desktopCapturer returned no screen sources` / `Screenshot capture failed` | セッションが`Disc`。画面が無い | `blocked-capability`として記録し再接続を依頼。保存は保留 |
+| `blocked by UIPI` | Studioが昇格プロセスで、非昇格のComputer Useから入力が届かない | `blocked-permission`として記録。所有者へ手動`Ctrl+S`を依頼。**Studioの終了・再起動で解決しようとしない**（DataModelが消える） |
+| メニューは開くが項目が違う | 座標を使い回した | 開いた状態のscreenshotから取り直す |
+| mtimeが更新されない | 保存が実行されていない | 4の実測を根拠に失敗と判定し、2からやり直す。「押したから保存された」と書かない |
+
+**保存できたことを、DataModel復元の代わりにしない。** place保存は利便であり、正本は依然としてrepositoryのsource evidenceと復元手順である。保存の成否にかかわらず、run終了時にはmodule sourceのreadback照合（byte + ClassName）と復元artifactの整合を維持する。
+
 ## 5. 証拠の作り方
 
 構造化イベントログだけで合格にしない。各重要な主張を、次の独立した観測と組にする。
@@ -222,13 +243,14 @@ Studioのmanifest、handshake、coordinate/capture証拠、test artifactは、re
 - 各WPでコード、テスト、`PROGRESS`、`CHANGELOG`、`Traceability`、影響仕様書が同じrevisionへ同期している。
 - Last Known Goodが、所有者承認済みcommitまたはimmutable snapshot IDとして記録されている。
 - 開始前の既存変更を混ぜていない。
+- place を保存した場合、その path・bytes・SHA-256・保存時刻を記録している。保存できなかった場合は理由（`blocked-capability` / `blocked-permission`）と、source evidence から復元可能であることを記録している。
 
 ローカル同一PCの検証だけでは、実端末のタッチ、実ネットワーク、性能、同時入力、公開環境を保証しない。実施していない検証は明示して完了範囲から外す。
 
 ## 8. 同梱資材
 
 - [委譲契約](references/delegation-contract.md): worker階層と指定、Codex CLI起動（T1専用）、実装契約、smoke manifest。
-- [Studio自動化](references/studio-automation.md): 能力確認、セッションmanifest、入力、捕捉、後始末。
+- [Studio自動化](references/studio-automation.md): 能力確認、セッションmanifest、入力、捕捉、**place のローカル保存（§6.1）**、後始末。
 - [Roblox実行時pitfalls](references/roblox-pitfalls.md): version付き再現候補。
 - [証跡テンプレート](references/evidence-template.md): 実行ごとの必須記録。
 

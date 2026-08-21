@@ -380,6 +380,77 @@ osX = imageX + OriginX
 osY = imageY + OriginY
 ```
 
+## 6.1 place のローカル保存（File → ファイルに保存）
+
+SKILL.md §4.1 の実施詳細。**保存はローカルfile書込であり publish ではない。** 所有者は place のローカル保存に限り恒常許可している（2026-08-21）。他のOS入力へ拡大しない。
+
+### 前提の確認（副作用前）
+
+```powershell
+quser                                   # STATE が Active であること。Disc なら実行しない
+Get-Process -Name RobloxStudioBeta | Select-Object Id, SessionId, MainWindowTitle
+```
+
+`MainWindowTitle` に対象 place の path が出ていることを確認する。複数 Studio がある場合、保存対象の window を title で特定してから進む。
+
+### Studio内部経路が使えないことの実測（再現済み）
+
+```
+game:Save()      -> "Save is not a valid member of DataModel"
+typeof(plugin)   -> "nil"（MCP execute_luau は plugin コンテキストではない）
+```
+
+したがって GUI 経路以外に保存手段は無い。`SaveToRoblox` 系は publish なので使わない。
+
+### 操作（Computer Use）
+
+1. `screenshot`（**scale 指定なし**）を撮る。縮尺付き capture の座標をクリックへ流用しない。
+2. タイトルバーで対象 place を確認し、そのウィンドウの「ファイル」メニュー座標を **今撮った screenshot から** 読む。
+3. `left_click`（ファイル）→ `wait 2` → `screenshot` を 1 batch で実行する。
+4. 開いたメニューの screenshot から「ファイルに保存」の座標を読み、`left_click` → `wait 5` → `screenshot`。
+   - 英語 UI: `File` → `Save to File`
+   - **`Roblox に保存` / `Save to Roblox` は publish 系。押さない**（メニュー上で隣接するため要注意）
+5. ダイアログが出た場合（初回保存・別名保存・上書き確認）も、同じ要領で screenshot → 座標確定 → クリック。
+
+### 成立の実測（これを証跡にする）
+
+メニューが閉じたことは証拠にならない。file 側を測る。
+
+```powershell
+$p = '<place path>'
+$f = Get-Item $p
+"path : $($f.FullName)"
+"bytes: $($f.Length)"
+"mtime: $($f.LastWriteTime)"
+"sha256: " + (Get-FileHash -Path $p -Algorithm SHA256).Hash
+"age_seconds: " + [math]::Round(((Get-Date) - $f.LastWriteTime).TotalSeconds, 1)
+```
+
+`age_seconds` が今回の操作から数十秒以内であることを確認し、`bytes` / `sha256` / `mtime` を run の証跡へ記録する。
+
+参考（2026-08-21 の実測。手順が成立したときの形）:
+
+```
+path : C:\Users\Administrator\AppData\Local\ClaudeRobloxMvpEvidence\places\RCR_qa_01.rbxlx
+bytes: 1786267        # 初期の骨組み 995 bytes から実体化
+mtime: 08/21/2026 07:34:23
+sha256: 5184F3B14897468182B0043A45E63ED7A5E5FBF5296021A877E98AA0B7FD3340
+age_seconds: 14.7
+```
+
+### 失敗の切り分け
+
+| 実測文言 | 原因 | 対応 |
+|---|---|---|
+| `desktopCapturer returned no screen sources` | セッションが `Disc`。物理画面が無い | `blocked-capability` として記録し再接続を依頼。`tscon` 等の切替はしない |
+| `Simulate("not all input events were sent... blocked by UIPI")` | Studio が昇格プロセス。非昇格の Computer Use から入力不可 | `blocked-permission` として記録し手動 `Ctrl+S` を依頼。**Studio を終了・再起動して回避しない**（未保存 DataModel が消える） |
+| メニューは開くが別項目が反応 | 座標の使い回し | 開いた状態の screenshot から取り直す |
+| `mtime` が更新されない | 保存が実行されていない | 失敗と判定し操作からやり直す。「クリックしたから保存された」と書かない |
+
+### 位置づけ
+
+place 保存は利便であって正本ではない。正本は repository の source evidence と復元手順（累積 restore + readback 照合）である。保存の成否にかかわらず、run 終了時に source の byte + ClassName 一致を維持する。
+
 ## 7. clipboardと後始末
 
 clipboardの読取・上書き・貼付は自動実行しない。lossless backup/restore、機密値の非記録、target bindingを保証する専用helperがないため、MCP/test harnessで代替できなければ`BLOCKED`とする。

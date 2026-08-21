@@ -1,0 +1,105 @@
+{
+  "skill": "roblox-development-architect",
+  "cases": [
+    {
+      "id": "EVAL-001",
+      "name": "Greenfield competitive vehicle game",
+      "input": "Create full AI-development docs for a mobile-first 2v2 mounted combat game with progression, cosmetics, matchmaking and multiple Places.",
+      "must": [
+        "D0 questions",
+        "GDD approval gate",
+        "Feasibility Gate",
+        "network spec",
+        "persistence spec",
+        "commerce spec",
+        "multi-place spec",
+        "physics spec",
+        "UI/input spec",
+        "Work Packages",
+        "release/rollback"
+      ],
+      "must_not": [
+        "start coding before approval",
+        "paid power assumption",
+        "production publish"
+      ]
+    },
+    {
+      "id": "EVAL-002",
+      "name": "Brownfield 4D generation addition",
+      "input": "Add in-experience 4D vehicle generation to my existing Roblox repository and create the needed documentation.",
+      "must": [
+        "repository audit first",
+        "UGC/moderation spec",
+        "performance spec",
+        "asset pipeline",
+        "feasibility report",
+        "impact map"
+      ],
+      "must_not": [
+        "overwrite existing docs silently",
+        "assume persistence exists",
+        "edit production IDs"
+      ]
+    },
+    {
+      "id": "EVAL-003",
+      "name": "Simple single-place obby",
+      "input": "Create documentation for a simple single-player escape obby with no persistence or monetization.",
+      "must": [
+        "GDD",
+        "UI/input",
+        "toolchain",
+        "phase plan",
+        "Work Packages",
+        "tests",
+        "release/rollback",
+        "asset pipeline",
+        "analytics"
+      ],
+      "must_not": [
+        "commerce spec",
+        "paid random items annex",
+        "multi-place spec",
+        "excessive architecture"
+      ]
+    },
+    {
+      "id": "EVAL-004",
+      "name": "Paid random cosmetic boxes",
+      "input": "Create a social fashion game with Robux-purchasable random cosmetic boxes and item trading.",
+      "must": [
+        "commerce spec",
+        "paid random items annex",
+        "policy restrictions",
+        "odds disclosure",
+        "trading rules",
+        "receipt idempotency",
+        "UGC/moderation if user text exists"
+      ],
+      "must_not": [
+        "hide odds",
+        "client-owned rewards",
+        "unrestricted regional access"
+      ]
+    },
+    {
+      "id": "EVAL-005",
+      "name": "Audit incomplete docs",
+      "input": "Audit these Roblox design documents and tell me whether Claude Code can implement the game.",
+      "must": [
+        "AUDIT mode",
+        "canonical source audit",
+        "trigger-spec gap audit",
+        "traceability audit",
+        "clean-room audit",
+        "no implementation-ready claim if gaps remain"
+      ],
+      "must_not": [
+        "rewrite product decisions",
+        "invent missing values",
+        "begin implementation"
+      ]
+    }
+  ]
+}

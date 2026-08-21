@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Save Data Schema Descriptor",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "root",
+    "migrations"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "root": {
+      "type": "object"
+    },
+    "migrations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "from",
+          "to",
+          "procedure",
+          "tests"
+        ],
+        "properties": {
+          "from": {
+            "type": "integer"
+          },
+          "to": {
+            "type": "integer"
+          },
+          "procedure": {
+            "type": "string"
+          },
+          "tests": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "session_locking": {
+      "type": "string"
+    },
+    "corruption_recovery": {
+      "type": "string"
+    }
+  }
+}

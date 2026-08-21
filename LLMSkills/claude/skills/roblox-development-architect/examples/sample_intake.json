@@ -1,0 +1,86 @@
+{
+  "project": {
+    "name": "Mounted Arena",
+    "prefix": "MTA",
+    "mode": "greenfield",
+    "owner": "Project Owner"
+  },
+  "product": {
+    "one_sentence": "Mobile-first short-round mounted combat PvP.",
+    "primary_action": "Charge",
+    "reference_games": [
+      "RIVALS",
+      "Mount & Blade"
+    ],
+    "unique_axes": [
+      "mounted charge timing",
+      "horse ownership",
+      "2v2 short rounds"
+    ],
+    "round_minutes": 1.5,
+    "session_minutes": 20,
+    "meta_loop": "horse mastery and cosmetic collection",
+    "monetization": {
+      "enabled": true,
+      "paid_random_items": false,
+      "trading": false,
+      "p2w_allowed": false
+    },
+    "ip_risks": [
+      "historical equipment references"
+    ],
+    "top_risks": [
+      "mobile mounted control",
+      "high-speed PvP hit validation"
+    ],
+    "mvp_questions": [
+      "Is charging fun?",
+      "Can mobile players understand hits?",
+      "Do parties rematch?"
+    ],
+    "non_goals": [
+      "no open world",
+      "no breeding at launch",
+      "no paid power",
+      "no 20v20",
+      "no gore",
+      "no real factions"
+    ]
+  },
+  "technical": {
+    "existing_repository": false,
+    "toolchain": "Rojo",
+    "multi_place": true,
+    "reserved_servers": true,
+    "teleport": true,
+    "multiplayer": true,
+    "pvp": true,
+    "persistent_data": true,
+    "commerce": true,
+    "analytics": true,
+    "mobile": true,
+    "controller": true,
+    "localization": true,
+    "liveops": true,
+    "external_services": false,
+    "free_text_or_ugc": false,
+    "vehicle_or_custom_physics": true,
+    "high_npc_or_fx_load": false,
+    "real_world_ip_or_history": true,
+    "priority_devices": [
+      "mobile",
+      "pc",
+      "controller"
+    ],
+    "priority_locales": [
+      "en",
+      "ja"
+    ],
+    "minimum_fps": 30
+  },
+  "state": {
+    "approved": true,
+    "approved_by": "Project Owner",
+    "approved_at": "2026-08-05"
+  }
+}

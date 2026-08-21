@@ -50,10 +50,77 @@ When a production entry requires an unavailable platform service, an isolated ha
 - Make the smallest requested mutation, then verify the persisted value or confirmation receipt.
 - Do not expose credentials, access codes, cookies, or private identifiers in logs or evidence.
 
+## Save a Place to disk
+
+Use this whenever a Place must survive the current Studio process. Saving to a local file is not publishing.
+
+### Why the GUI is required
+
+Both in-process paths are unavailable, verified by measurement:
+
+```
+game:Save()      -> "Save is not a valid member of DataModel"
+typeof(plugin)   -> "nil"          -- MCP script execution is not a plugin context
+```
+
+`SaveToRoblox` variants publish and are out of scope for a local save.
+
+### Procedure
+
+1. Verify the session is interactive before any GUI action.
+
+   ```powershell
+   quser                                   # STATE must be Active, not Disc
+   Get-Process -Name RobloxStudioBeta | Select-Object Id, SessionId, MainWindowTitle
+   ```
+
+   Match the target window by the Place path in `MainWindowTitle` when several Studio processes are running.
+
+2. Take an **unscaled** screenshot. Read every coordinate from it. A scaled capture uses a different coordinate frame, and hard-coded coordinates break across Studio versions, window positions, DPI settings, and UI languages.
+3. Click `File` / `ファイル`, wait about two seconds, then screenshot the opened menu.
+4. Read the item position from that second screenshot and click `Save to File` / `ファイルに保存`. `Save to Roblox` / `Roblox に保存` publishes and is adjacent in the same menu.
+5. Handle any dialog (first save, save-as, overwrite confirmation) the same way: screenshot, locate, click. Confirm the path shown in the dialog before accepting an overwrite.
+6. Prove the result from the filesystem.
+
+   ```powershell
+   $p = '<place path>'
+   $f = Get-Item $p
+   "path : $($f.FullName)"
+   "bytes: $($f.Length)"
+   "mtime: $($f.LastWriteTime)"
+   "sha256: " + (Get-FileHash -Path $p -Algorithm SHA256).Hash
+   "age_seconds: " + [math]::Round(((Get-Date) - $f.LastWriteTime).TotalSeconds, 1)
+   ```
+
+A closed menu is not evidence. Only a refreshed `mtime` with a plausible `age_seconds` is.
+
+Reference measurement from a successful run:
+
+```
+path : C:\Users\Administrator\AppData\Local\ClaudeRobloxMvpEvidence\places\RCR_qa_01.rbxlx
+bytes: 1786267
+mtime: 08/21/2026 07:34:23
+sha256: 5184F3B14897468182B0043A45E63ED7A5E5FBF5296021A877E98AA0B7FD3340
+age_seconds: 14.7
+```
+
+### Failure triage
+
+| Observed message | Cause | Action |
+|---|---|---|
+| `desktopCapturer returned no screen sources` | Desktop session is `Disc`; no screen exists | Report the blocker and request reconnection. Do not switch sessions. |
+| `blocked by UIPI` | Studio runs elevated; lower-integrity input cannot reach it | Report and request a manual `Ctrl+S`. Do not restart Studio; the unsaved DataModel would be lost. |
+| Menu opens but the wrong item reacts | Reused coordinates | Re-read positions from the opened-menu screenshot. |
+| `mtime` unchanged | The save never executed | Treat as failure and repeat the procedure. Do not claim a save because a click was issued. |
+
+### What a save does not replace
+
+A saved Place is convenience, not the source of truth. Keep tracked source and any documented restore procedure authoritative, and do not skip source verification because the binary was saved.
+
 ## Cleanup checklist
 
 - Stop Play.
 - Restore disabled scripts, temporary attributes, mock services, injected instances, and client listeners.
-- Leave binary artifacts unsaved when all mutations were test-only.
+- Leave binary artifacts unsaved when all mutations were test-only. When real work exists only in the DataModel, save the Place first (*Save a Place to disk*) and record path, bytes, SHA-256, and save time.
 - Re-run relevant source tests and build checks after implementation changes.
 - Record exact artifact identity and distinguish local, Studio, published-staging, and production evidence.

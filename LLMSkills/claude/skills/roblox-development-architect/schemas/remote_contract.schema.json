@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Remote Contract",
+  "type": "object",
+  "required": [
+    "id",
+    "name",
+    "direction",
+    "transport",
+    "payload",
+    "validation",
+    "rate_limit",
+    "server_result"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^NET-[A-Z0-9]+-[0-9]{3}$"
+    },
+    "name": {
+      "type": "string"
+    },
+    "direction": {
+      "enum": [
+        "client_to_server",
+        "server_to_client",
+        "bidirectional"
+      ]
+    },
+    "transport": {
+      "enum": [
+        "RemoteEvent",
+        "RemoteFunction",
+        "UnreliableRemoteEvent"
+      ]
+    },
+    "payload": {
+      "type": "object"
+    },
+    "validation": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "rate_limit": {
+      "type": "object"
+    },
+    "idempotency": {
+      "type": "string"
+    },
+    "server_result": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "logging": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

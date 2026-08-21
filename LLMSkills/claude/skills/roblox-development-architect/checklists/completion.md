@@ -1,0 +1,22 @@
+# Final Completeness Checklist
+
+- [ ] D0 intake approved
+- [ ] Repository Audit complete when brownfield
+- [ ] GDD human approval recorded
+- [ ] Feasibility Gate completed for all high-risk mechanics
+- [ ] Trigger Matrix applied and Required Specs generated
+- [ ] Machine-readable schemas generated and validated
+- [ ] Phase Plan and Work Packages complete
+- [ ] Test Specification maps all requirements
+- [ ] CLAUDE.md, WORKFLOW, Runbook, Progress, Assets, Human Actions exist
+- [ ] Consistency audit: major 0
+- [ ] Roblox readiness audit: major 0
+- [ ] Clean-room audit: pass
+- [ ] Blocking OQ 0
+- [ ] `[PROPOSAL]` 0 in approved docs
+- [ ] unverified `[ASSUMPTION]` 0 in approved docs
+- [ ] traceability 100%
+- [ ] build/test/serve commands verified
+- [ ] release/rollback defined
+- [ ] first Work Package ready
+- [ ] final human approval recorded
