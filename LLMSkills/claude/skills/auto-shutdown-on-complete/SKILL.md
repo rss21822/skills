@@ -119,6 +119,7 @@ ARMするのは**ユーザーが明示的に頼んだときだけ**。「あと�
 ## フェーズ3: FIRE（発火）
 
 発火すると決めたら、まず作業結果の要約を書き、その**あとで**コマンドを打つ。ユーザーは戻ってきてからこの要約を読む。
+要約には、保存した成果物のパスと実測値（bytes / 更新時刻）を含める。保存が不要だった場合は「未保存の成果なし」と明示する。
 
 ```bash
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File "<skill>/scripts/shutdown.ps1" -Fire -Delay 360
@@ -176,7 +177,24 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File "<skill>/scripts/shutdow
 判断: 保留。エラー内容と試したことを報告して終える。予約は維持。
 ```
 
-**例4 — 取り消す**
+**例4 — 発火しない（未保存）**
+
+```
+状況: 予約中。作業自体は完了しエラーもないが、Roblox Studio の Place に今回適用したモジュールが
+      未保存で残っている。保存を試みたがセッションが切断中で GUI 操作が届かない。
+判断: 保留。落とせば DataModel の成果が消える。
+      「シャットダウン予約は維持中（Place が未保存。再接続後に手動 Ctrl+S が必要なため保留）」と伝えて終える。
+```
+
+**例5 — 保存してから発火する**
+
+```
+状況: 予約中。作業完了、エラーなし、質問なし。Studio の Place だけが未保存。
+判断: 先に File → ファイルに保存を実行し、mtime と bytes で保存成立を実測。
+      そのうえで FIRE。要約に保存先パスと SHA-256 を含める。
+```
+
+**例6 — 取り消す**
 
 ```
 状況: -Fire 実行から2分後、ユーザーが「ありがとう」とだけ送ってきた。
@@ -188,6 +206,7 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File "<skill>/scripts/shutdow
 - Windowsでは `Stop-Computer` に猶予・取消の概念がないため、猶予つき運用には `shutdown.exe /s /t N` を使う。取消は `shutdown.exe /a`。
 - 検証したいだけのときは環境変数 `CLAUDE_SHUTDOWN_DRYRUN=1` を立てる。スクリプトは実際には電源を切らず、実行予定のコマンドをログに書く。
 - 予約状態ファイルは `%USERPROFILE%\.claude\auto-shutdown.state`、ログは同ディレクトリの `auto-shutdown.log`。
+- `shutdown.exe /s` はアプリへ保存を促さず終了させる。未保存ゲート（フェーズ2）を通さずに発火してはいけない。
 - スクリプトの詳細な引数は `references/script-usage.md` を参照。
 - 本文中の `<skill>` は、このスキルフォルダの実パスに読み替える。ユーザースキルとして置いた場合は
   Git Bash から `$HOME/.claude/skills/auto-shutdown-on-complete`、PowerShell から
