@@ -86,6 +86,64 @@ Therefore:
 | `.Source` updated but `require` unchanged | Module cached in the Edit DataModel | Expected. Verify in Play |
 | Canonical Place no longer matches its recorded hash | It was connected and saved from Studio | Rebuild it with `rojo build` while Studio is closed |
 
+## Close a Place without saving
+
+Do this yourself whenever an open Place blocks the next step — most often `rojo build` failing because Studio holds the file. Closing without saving is correct when the tracked source is authoritative: a live-synced DataModel and any test-only mutation are reproducible, and saving would diverge the file from `rojo build` output.
+
+### Bringing the right window forward
+
+This is where the procedure usually fails.
+
+- **Never use `open_application` for this.** It opens a *new* Studio start-screen window and gives it focus. Beyond not switching windows, that stolen focus silently breaks simulated keyboard input into the Place you were testing — a character that stops responding to `W` after a Computer Use step is usually this, not a game bug.
+- Clicking the taskbar, desktop, Start menu, or a file manager is refused unless the session was granted exactly `File Explorer`. That grant is click-only; typing into the shell stays blocked.
+- Prefer the reverse move: close windows you no longer need until the target is the only Studio window left. One window makes both focus and keyboard injection unambiguous.
+- Confirm the target from the title bar, which carries the full Place path.
+
+### Procedure
+
+1. List Studio instances and note the id and name of the one to close, so you can prove it disappears.
+2. Take an **unscaled** screenshot and read the coordinates from it.
+3. Confirm the title bar path matches the Place you intend to close.
+4. Close the window (its `X`, or `File` / `ファイル` → close). Wait, then screenshot.
+5. If a save prompt appears, choose **don't save** (`保存しない`). Do not press `Ctrl+S`, and do not click `Save to Roblox` / `Roblox に保存`, which publishes.
+6. Prove the close from state, not from the click:
+
+   ```bash
+   ls <artifacts dir>/<place>.lock    # must be absent
+   ```
+
+   and re-list Studio instances — the id must be gone. Only then rebuild.
+
+If the lock persists after the window is gone, Studio is still shutting down; wait and re-check before treating it as a failure.
+
+### When not to close
+
+Do not close a Place whose DataModel holds work with no source mapping — instances built by hand, imported models, or anything generated at runtime that the project does not reproduce. Save it first (*Save a Place to disk*), or leave it open and build to a candidate filename instead.
+
+## Give a new Place ground before judging a fall
+
+A Place produced from a Rojo project contains only the mapped subtrees, so there is usually no baseplate. The character spawns over nothing, falls, dies, respawns, and falls again.
+
+**Read the console before adding anything.** In practice the more common cause is not a missing baseplate but a server script that aborts before it builds the arena. A single startup error can leave the world empty, the remotes uncreated, and the client blocked on `WaitForChild` — and dropping in a baseplate would hide all of it behind a floor. Fix the initialization error first, then Play again.
+
+Symptoms worth separating:
+
+| Observed | Likely cause | Action |
+|---|---|---|
+| Console shows an error from a server script during startup | Initialization aborted before world build | Fix the error; do not add ground |
+| Console clean, `Humanoid:GetState()` is `Freefall`, `Position.Y` falling, no ground instance in `Workspace` | Genuinely no baseplate | Insert the baseplate |
+| Character stands but nothing responds | Focus stolen from the Studio window | See *Close a Place without saving* → bringing the right window forward |
+
+To insert the ground, use the asset-insert MCP tool with the asset id rather than browsing the Toolbox through the GUI:
+
+```
+insert_asset(assetId: "9261840032", assetName: "Grass base plate")
+```
+
+Then apply the imported-asset rule from the main skill: inspect descendants for `Script`, `LocalScript`, and `ModuleScript`, remove untrusted executable content, and keep only what the test needs. Play again and confirm the character reaches a standing state (`Running`) at a stable `Position.Y` before drawing any conclusion about gameplay.
+
+Treat the baseplate as test scaffolding. Do not save it into a Place whose ground is supposed to come from the project, and remove it when the real world build is fixed.
+
 ## Edit inspection
 
 Inspect the actual built artifact, not only source files.
@@ -198,7 +256,8 @@ A saved Place is convenience, not the source of truth. Keep tracked source and a
 - Stop Play.
 - Restore disabled scripts, temporary attributes, mock services, injected instances, and client listeners.
 - Revert any probe edit made only to prove a live sync, and confirm it is gone from both the source tree and the synced `Source`.
-- Stop the `rojo serve` session when the task is done, and leave the connected scratch Place unsaved. Produce the canonical artifact with `rojo build` while Studio is closed, then record its hash.
+- Stop the `rojo serve` session when the task is done, and leave the connected scratch Place unsaved. Produce the canonical artifact with `rojo build` while Studio is closed, then record its hash. Close the Place yourself (*Close a Place without saving*) rather than waiting on the user.
+- Remove any baseplate inserted as scaffolding, and any other imported asset kept only for the test.
 - Leave binary artifacts unsaved when all mutations were test-only. When real work exists only in the DataModel, save the Place first (*Save a Place to disk*) and record path, bytes, SHA-256, and save time.
 - Re-run relevant source tests and build checks after implementation changes.
 - Record exact artifact identity and distinguish local, Studio, published-staging, and production evidence.
