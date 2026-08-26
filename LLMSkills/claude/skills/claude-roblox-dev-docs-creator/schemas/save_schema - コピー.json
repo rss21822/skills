@@ -1,0 +1,11 @@
+{
+  "schemaVersion": "1.0.0",
+  "project": "{{PROJECT}}",
+  "prefix": "{{PREFIX}}",
+  "dataVersion": 1,
+  "root": {},
+  "migrations": [],
+  "sessionLocking": "[OPEN blocking: yes] Define lock ownership, expiry, and recovery.",
+  "corruptionRecovery": "[OPEN blocking: yes] Define backup and reset behavior.",
+  "status": "proposed"
+}

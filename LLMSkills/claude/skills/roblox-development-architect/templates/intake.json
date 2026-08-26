@@ -1,0 +1,55 @@
+{
+  "project": {
+    "name": "{{PROJECT}}",
+    "prefix": "{{PREFIX}}",
+    "mode": "greenfield",
+    "owner": "Project Owner"
+  },
+  "product": {
+    "one_sentence": "",
+    "primary_action": "",
+    "reference_games": [],
+    "unique_axes": [],
+    "round_minutes": null,
+    "session_minutes": null,
+    "meta_loop": "",
+    "monetization": {
+      "enabled": false,
+      "paid_random_items": false,
+      "trading": false,
+      "p2w_allowed": false
+    },
+    "ip_risks": [],
+    "top_risks": [],
+    "mvp_questions": [],
+    "non_goals": []
+  },
+  "technical": {
+    "existing_repository": false,
+    "toolchain": "unknown",
+    "multi_place": false,
+    "reserved_servers": false,
+    "teleport": false,
+    "multiplayer": false,
+    "pvp": false,
+    "persistent_data": false,
+    "commerce": false,
+    "analytics": true,
+    "mobile": true,
+    "controller": false,
+    "localization": false,
+    "liveops": false,
+    "external_services": false,
+    "free_text_or_ugc": false,
+    "vehicle_or_custom_physics": false,
+    "high_npc_or_fx_load": false,
+    "real_world_ip_or_history": false,
+    "priority_devices": ["mobile"],
+    "minimum_fps": 30
+  },
+  "state": {
+    "approved": false,
+    "approved_by": "",
+    "approved_at": ""
+  }
+}

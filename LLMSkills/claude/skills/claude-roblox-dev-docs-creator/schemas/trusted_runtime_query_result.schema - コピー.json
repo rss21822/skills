@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/roblox-ai-development-os/trusted-runtime-query-result.schema.json",
+  "title": "Trusted Runtime Query Adapter Result",
+  "description": "Closed normalized result from one pinned-adapter query to the trusted provider/runtime. Its nonce/request/response/raw bytes bind that original query only. A W0 receiver must generate a new unpredictable nonce and freshly query the same externally pinned authority for the same subject and claimsSha256; the new nonce, time, requestId, responseId, and raw bytes are expected to differ. The receiver compares returned authority, subject, claims digest, freshness, and nonce—not byte equality with the old response. This file alone is never proof.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion", "id", "authority", "adapter", "adapterVersion", "nonce", "queriedAt",
+    "requestId", "responseId", "subjectType", "subjectId", "claimsSha256", "rawResponseArtifact"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "1.0.0" },
+    "id": { "type": "string", "pattern": "^TRQ-[A-Z0-9][A-Z0-9._-]*$" },
+    "authority": { "type": "string", "minLength": 1 },
+    "adapter": { "type": "string", "minLength": 1 },
+    "adapterVersion": { "type": "string", "minLength": 1 },
+    "nonce": { "type": "string", "minLength": 16 },
+    "queriedAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" },
+    "requestId": { "type": "string", "minLength": 1 },
+    "responseId": { "type": "string", "minLength": 1 },
+    "subjectType": { "enum": ["d4-auditor-attestation", "human-approval-capture", "d1.5-measurement-evidence"] },
+    "subjectId": { "type": "string", "minLength": 1 },
+    "claimsSha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "rawResponseArtifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256"],
+      "properties": {
+        "path": { "type": "string", "minLength": 1 },
+        "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+      }
+    }
+  }
+}

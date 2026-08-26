@@ -1,0 +1,116 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "D4-RUNTIME-{{PREFIX}}-{{CANDIDATE_ID}}-R{{ROUND}}",
+  "createdAt": "{{ISO_8601_WITH_TIMEZONE}}",
+  "operatorRuntimePinId": "{{OPERATOR_D4_RUNTIME_PIN_ID}}",
+  "pythonExecutable": {
+    "path": "{{ABSOLUTE_EXTERNALLY_PINNED_PYTHON_EXE}}",
+    "bytes": 1,
+    "sha256": "{{PINNED_PYTHON_EXE_SHA256}}",
+    "version": "{{PINNED_PYTHON_VERSION}}",
+    "fixedArgs": ["-B", "-S", "-E", "-X", "utf8"]
+  },
+  "gitExecutable": null,
+  "provenanceVerifierConfig": {
+    "path": "{{ABSOLUTE_OPERATOR_PROVENANCE_VERIFIER_CONFIG_PATH}}",
+    "bytes": 1,
+    "sha256": "{{OPERATOR_PROVENANCE_VERIFIER_CONFIG_SHA256}}"
+  },
+  "readOnlyLibraryRoots": [
+    {
+      "path": "{{ABSOLUTE_EXTERNALLY_PINNED_PYTHON_RUNTIME_ROOT}}",
+      "manifestFormat": "canonical-library-tree-v1",
+      "manifestPath": "{{ABSOLUTE_OPERATOR_PYTHON_RUNTIME_MANIFEST_PATH}}",
+      "manifestSha256": "{{PYTHON_RUNTIME_MANIFEST_SHA256}}",
+      "treeSha256": "{{PYTHON_RUNTIME_TREE_SHA256}}"
+    }
+  ],
+  "policyRuntimeRoot": "{{PROJECT_RELATIVE_SANITIZED_ROOT}}/_policy_runtime",
+  "policyRuntimeFiles": [
+    {
+      "sourcePath": "scripts/d4_preflight.py",
+      "capsulePath": "{{PROJECT_RELATIVE_SANITIZED_ROOT}}/_policy_runtime/scripts/d4_preflight.py",
+      "bytes": 0,
+      "sha256": "{{INSTALLED_D4_PREFLIGHT_SHA256}}",
+      "role": "entrypoint"
+    },
+    {
+      "sourcePath": "scripts/validate_docs.py",
+      "capsulePath": "{{PROJECT_RELATIVE_SANITIZED_ROOT}}/_policy_runtime/scripts/validate_docs.py",
+      "bytes": 0,
+      "sha256": "{{INSTALLED_VALIDATE_DOCS_SHA256}}",
+      "role": "entrypoint"
+    },
+    {
+      "sourcePath": "scripts/lint_docs.py",
+      "capsulePath": "{{PROJECT_RELATIVE_SANITIZED_ROOT}}/_policy_runtime/scripts/lint_docs.py",
+      "bytes": 0,
+      "sha256": "{{INSTALLED_LINT_DOCS_SHA256}}",
+      "role": "entrypoint"
+    },
+    {
+      "sourcePath": "scripts/validate_traceability.py",
+      "capsulePath": "{{PROJECT_RELATIVE_SANITIZED_ROOT}}/_policy_runtime/scripts/validate_traceability.py",
+      "bytes": 0,
+      "sha256": "{{INSTALLED_VALIDATE_TRACEABILITY_SHA256}}",
+      "role": "entrypoint"
+    },
+    {
+      "sourcePath": "scripts/validate_lifecycle_transition.py",
+      "capsulePath": "{{PROJECT_RELATIVE_SANITIZED_ROOT}}/_policy_runtime/scripts/validate_lifecycle_transition.py",
+      "bytes": 0,
+      "sha256": "{{INSTALLED_LIFECYCLE_TRANSITION_VALIDATOR_SHA256}}",
+      "role": "entrypoint"
+    },
+    {
+      "sourcePath": "scripts/validate_d5_acceptance.py",
+      "capsulePath": "{{PROJECT_RELATIVE_SANITIZED_ROOT}}/_policy_runtime/scripts/validate_d5_acceptance.py",
+      "bytes": 0,
+      "sha256": "{{INSTALLED_D4_ACCEPTANCE_VALIDATOR_SHA256}}",
+      "role": "local-import"
+    },
+    {
+      "sourcePath": "scripts/check_p0_state.py",
+      "capsulePath": "{{PROJECT_RELATIVE_SANITIZED_ROOT}}/_policy_runtime/scripts/check_p0_state.py",
+      "bytes": 0,
+      "sha256": "{{INSTALLED_CHECK_P0_STATE_SHA256}}",
+      "role": "entrypoint"
+    },
+    {
+      "sourcePath": "scripts/detect_triggers.py",
+      "capsulePath": "{{PROJECT_RELATIVE_SANITIZED_ROOT}}/_policy_runtime/scripts/detect_triggers.py",
+      "bytes": 0,
+      "sha256": "{{INSTALLED_DETECT_TRIGGERS_SHA256}}",
+      "role": "local-import"
+    },
+    {
+      "sourcePath": "scripts/state_readiness.py",
+      "capsulePath": "{{PROJECT_RELATIVE_SANITIZED_ROOT}}/_policy_runtime/scripts/state_readiness.py",
+      "bytes": 0,
+      "sha256": "{{INSTALLED_STATE_READINESS_SHA256}}",
+      "role": "local-import"
+    },
+    {
+      "sourcePath": "scripts/gen_index.py",
+      "capsulePath": "{{PROJECT_RELATIVE_SANITIZED_ROOT}}/_policy_runtime/scripts/gen_index.py",
+      "bytes": 0,
+      "sha256": "{{INSTALLED_GEN_INDEX_SHA256}}",
+      "role": "local-import"
+    },
+    {
+      "sourcePath": "scripts/strict_json.py",
+      "capsulePath": "{{PROJECT_RELATIVE_SANITIZED_ROOT}}/_policy_runtime/scripts/strict_json.py",
+      "bytes": 0,
+      "sha256": "{{INSTALLED_STRICT_JSON_SHA256}}",
+      "role": "local-import"
+    },
+    {
+      "sourcePath": "{{EVERY_TRANSITIVE_LOCAL_IMPORT_SCHEMA_OR_CONFIG_SOURCE_PATH}}",
+      "capsulePath": "{{MATCHING_POLICY_RUNTIME_COPY_PATH}}",
+      "bytes": 0,
+      "sha256": "{{MATCHING_INSTALLED_SOURCE_SHA256}}",
+      "role": "local-import"
+    }
+  ],
+  "digestSha256": "{{CANONICAL_RUNTIME_ALLOWLIST_DIGEST_SHA256}}"
+}

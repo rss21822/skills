@@ -1,0 +1,43 @@
+{
+  "run_id": "eval-1-silent-transport-bug-without_skill",
+  "passed_count": 4,
+  "total_count": 5,
+  "expectations": [
+    {
+      "text": "クライアント側に一時的な受信リスナーを張って、検証層を通す前の生payloadを直接観測する手順を提示している",
+      "passed": true,
+      "evidence": "第2節で「受信ハンドラの先頭に無条件 print を置く」と明示し、`remote.OnClientEvent:Connect(function(payload) print(\"[NET/C] RAW\", typeof(payload), payload)   -- 条件分岐より前、無条件で` を提示。第7節では StarterPlayerScripts に貼る独立した計測用 LocalScript（received をカウントし raw payload をログするだけのリスナー）を丸ごと提供している。phase 判定（=検証層）より前の生 payload を直接観測する手順として成立。"
+    },
+    {
+      "text": "受信データの値だけでなく型（typeof）を確認するよう指示している",
+      "passed": true,
+      "evidence": "4-1「値と型を必ず両方出す」で `print(string.format(\"[NET/C] phase=%s type=%s eq=%s\", tostring(phase), typeof(phase), tostring(phase == \"Active\")))` を提示し、`nil`→キー名不一致 / `number`→数値 enum / `\"ACTIVE\"`→表記ゆれ / `table`・`userdata`→enum オブジェクト、と型別の読み方まで示している。第7節の計測コードも `payloadType=%s ... phaseType=%s` を出力。"
+    },
+    {
+      "text": "Robloxのリモート直列化が数値キー辞書のキーを文字列へ変換する挙動に到達している",
+      "passed": false,
+      "evidence": "数値キー辞書には触れるが機構が違う。記述は「**数値キー（UserId）の辞書は疎配列とみなされる境界にあり**、破損・欠落の原因になります」「混在テーブルは非サポート…silently データが落ちます（配列部だけ送られる等）」であり、**キーが文字列へ変換されて届く**（クライアントが数値キーで引くと nil になる）という実際の挙動には一度も言及がない。`tostring(userId)` 統一は「実務上の定石」「バリデータ規約」として予防的に勧めているだけで根本原因の説明ではなく、仮説表でも「UserId 数値キー／混在テーブルによるシリアライズ破損」を10件中5位・適合度「中〜高」に留めている。正しい対処に隣接するが実体（キー型変換）に未到達のため不合格。"
+    },
+    {
+      "text": "受信側の検証が黙ってpayloadを捨てている可能性（エラーが出ないこと自体が手がかり）を切り分けの対象にしている",
+      "passed": true,
+      "evidence": "第1節「「エラーも警告も一切出ない」という手掛かりの使い方」で沈黙を積極的な絞り込み条件として使い、「**B2: ハンドラは呼ばれているが `phase == \"Active\"` が常に false**（値が nil・型違い・キー名違い）」を独立バケットとして立てている。4-1「`nil == \"Active\"` は false ですがエラーにはなりません。無言の失敗の典型です」で受信側判定が黙って payload を落とす経路を明示し、5-3「エラーを握り潰していないか」で pcall・独自ロガーによる人為的な沈黙も切り分け対象にしている。"
+    },
+    {
+      "text": "当て推量で修正せず、実測してから直す順序を保っている（診断ログや観測を修正より前に置いている）",
+      "passed": true,
+      "evidence": "冒頭で「いま『確認済み』と言えるのは (a) だけです」と未検証命題を b〜e に分解し、`Step 0（30秒）` のクライアント print で観測系の妥当性を先に確認させる。第2節「決定打になる一点測定（パイプラインの中点で二分する）」の結果で第3/4/5節へ分岐する構成、第7節「まとめて貼れる計測コード」の後に「この2つを入れれば、次の1回のテストで『上流／中流／下流』のどこで切れているかが確定します」と締める。`FireAllClients` への一時変更や `{phase=\"Active\"}` 最小送信も修正でなく切り分け実験として位置づけられ、恒久的な修正提案は最後の第8節に置かれている。"
+    }
+  ],
+  "summary": {
+    "pass_rate": 0.8,
+    "passed": 4,
+    "failed": 1,
+    "total": 5
+  },
+  "timing": {
+    "total_tokens": 69310,
+    "duration_ms": 319252,
+    "total_duration_seconds": 319.3
+  }
+}

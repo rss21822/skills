@@ -1,0 +1,4 @@
+interface:
+  display_name: "Rojo 7.7 Studio Sync"
+  short_description: "Configure Rojo 7.7 and verify Studio sync"
+  default_prompt: "Use $rojo-studio-sync to configure Rojo 7.7 and verify Roblox Studio synchronization."

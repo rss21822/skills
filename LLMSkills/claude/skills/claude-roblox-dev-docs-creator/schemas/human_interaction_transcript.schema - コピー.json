@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/roblox-ai-development-os/human-interaction-transcript.schema.json",
+  "title": "Trusted Human Interaction Transcript",
+  "description": "Offline byte evidence for an approval interaction. This JSON and its channel/interaction/message identifiers are not an authenticity root. It contains the selected assistant/system presentation before the selected human response. A gate receiver must independently verify both message identities, roles, times, contents, actor, and approval target through an operator-pinned external authority query or provider signature; if unavailable, STOP/HUMAN.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "id", "channel", "interactionId", "capturedAt", "messages"],
+  "properties": {
+    "schemaVersion": { "const": "1.0.0" },
+    "id": { "type": "string", "pattern": "^HIT-[A-Z0-9][A-Z0-9._-]*$" },
+    "channel": { "type": "string", "minLength": 1 },
+    "interactionId": { "type": "string", "minLength": 1 },
+    "capturedAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" },
+    "messages": {
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["messageId", "role", "actorId", "occurredAt", "content"],
+        "properties": {
+          "messageId": { "type": "string", "minLength": 1 },
+          "role": { "enum": ["human", "assistant", "system", "tool"] },
+          "actorId": { "type": ["string", "null"], "minLength": 1 },
+          "occurredAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" },
+          "content": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Exact Unicode statement text. Offline validation hashes content encoded as UTF-8 with no added BOM or newline."
+          }
+        }
+      },
+      "allOf": [
+        {
+          "contains": { "properties": { "role": { "enum": ["assistant", "system"] } }, "required": ["role"] },
+          "minContains": 1
+        },
+        {
+          "contains": { "properties": { "role": { "const": "human" } }, "required": ["role"] },
+          "minContains": 1
+        }
+      ],
+      "description": "messageId values are unique. Capture selects one assistant/system presentation message whose exact UTF-8 content equals challenge.presentationArtifact canonical bytes, followed by exactly one selected human response whose content equals canonicalResponse. External provenance binds both messages."
+    }
+  }
+}

@@ -1,0 +1,93 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Asset Ledger Entry",
+  "type": "object",
+  "required": [
+    "id",
+    "type",
+    "purpose",
+    "source",
+    "rights_status",
+    "owner",
+    "status"
+  ],
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string"
+    },
+    "purpose": {
+      "type": "string"
+    },
+    "source": {
+      "type": "string"
+    },
+    "rights_status": {
+      "enum": [
+        "unverified",
+        "approved",
+        "restricted",
+        "rejected"
+      ]
+    },
+    "evidence": {
+      "type": "string"
+    },
+    "owner": {
+      "type": "string"
+    },
+    "polycount": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "texture_budget": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "lod": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "collision": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "moderation_status": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "blocking_work_package": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "status": {
+      "enum": [
+        "todo",
+        "in-progress",
+        "ready",
+        "blocked",
+        "replaced"
+      ]
+    },
+    "fallback": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  }
+}

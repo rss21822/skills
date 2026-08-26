@@ -1,0 +1,12 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "HCH-{{PREFIX}}-{{GATE_TYPE}}-{{SEQUENCE}}",
+  "gateType": "{{gdd-gate1|p0-start|p0-contract|d5|w0-run-authorization}}",
+  "issuedAt": "{{ISO_8601_WITH_TIMEZONE}}",
+  "targetScopeSha256": "{{CANONICAL_TARGET_AND_SCOPE_SHA256}}",
+  "canonicalResponse": "APPROVE HCH-{{PREFIX}}-{{GATE_TYPE}}-{{SEQUENCE}} {{CANONICAL_TARGET_AND_SCOPE_SHA256}}",
+  "presentationArtifact": {
+    "path": "{{HUMAN_APPROVAL_PRESENTATION_PATH}}",
+    "sha256": "{{HUMAN_APPROVAL_PRESENTATION_SHA256}}"
+  }
+}

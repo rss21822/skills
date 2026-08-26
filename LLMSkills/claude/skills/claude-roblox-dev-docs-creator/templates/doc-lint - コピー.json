@@ -1,0 +1,68 @@
+{
+  "_comment": "lint_docs.py の設定雛形。値は記入例なので実プロジェクトへ合わせて置き換える。プロジェクト直下の .claude/doc-lint.json へ置き、PREFIX とパスを実プロジェクトに合わせる。_ で始まるキーは読み飛ばされる。実プロジェクトでの記入例は references/config-example.md。",
+
+  "_required_edits": [
+    "doc_globs / exclude_globs をこのリポジトリの配置に合わせる",
+    "value_owner_docs に数値の所有文書を列挙する（空だと unreferenced-value が無効）",
+    "decision_id_home_docs に決定 ID を定義している文書を列挙する",
+    "manifest_project / manifest_prefix を gen_index.py が使う値へ置き換える",
+    "contracts に通知・イベント契約を登録する（空だと contract-consumer が実質無効）",
+    "status_consistency に索引表と詳細節を持つ文書を登録する（空だと status-index-drift が無効）",
+    "human_action_ledgers に [HUMAN] 台帳、ai_action_ledgers に [AI-ACTION] 台帳を登録する"
+  ],
+
+  "doc_globs": ["docs/*.md", "docs/specs/*.md", "*.md"],
+  "exclude_globs": ["docs/handoffs/**", "docs/evidence/**", "**/node_modules/**"],
+  "report_globs": ["docs/handoffs/out/*_last-message.md"],
+  "index_globs": ["docs/*.md", "docs/specs/*.md"],
+  "manifest_project": null,
+  "manifest_prefix": null,
+
+  "decision_qualifiers": ["GDD", "Feasibility", "gate-threshold", "D0-B"],
+  "decision_id_pattern": "\\b[DF]-\\d+\\b",
+  "decision_id_home_docs": [],
+  "gate_id_pattern": "\\b[A-Z][A-Z0-9]*-(?:GATE|OQ|DEP)-[A-Z0-9-]+\\b",
+
+  "stale_premise_phrases": ["未作成", "作成予定", "将来の", "未整備のため"],
+  "stale_premise_window": 60,
+
+  "value_units": ["frames/s", "studs", "stud", "fps", "ms", "MB", "GB", "KB", "s"],
+  "value_id_patterns": ["\\bDATA-[A-Z]+-\\d+\\b"],
+  "value_owner_docs": [],
+  "value_exempt_markers": ["正本は", "転記", "出所", "canonical"],
+
+  "bare_open_exempt_docs": [],
+
+  "_decision_note": "unsourced-decision は出所、decision-approval-record は人間承認を別検査する。[HUMAN] は human-only、AI実行は別 [AI-ACTION] 台帳。",
+  "decision_source_pattern": "(?:src|source|出所)\\s*[:=]\\s*`?[UWMJ]\\b|evidence\\s*[:=]\\s*\\S",
+  "decision_source_exempt_docs": [],
+  "decision_source_window": 2,
+  "decision_approval_pattern": "(?:approver|approved[-_ ]?by|approval(?:_record|Ref)?|承認者|承認記録)\\s*[:=]\\s*\\S",
+  "decision_approval_exempt_docs": [],
+  "decision_approval_window": 3,
+
+  "human_action_ledgers": ["HUMAN_ACTIONS.md"],
+  "human_action_id_pattern": "H-[A-Z0-9]+(?:-[A-Z0-9]+)*",
+  "human_exec_pattern": "exec\\s*[:=]\\s*`?human-only\\b",
+  "human_exec_values": ["human-only"],
+  "human_exec_window": 4,
+
+  "ai_action_ledgers": ["AI_ACTIONS.md"],
+  "ai_action_id_pattern": "AI-[A-Z0-9]+(?:-[A-Z0-9]+)*",
+  "ai_exec_pattern": "exec\\s*[:=]\\s*`?(?:ai-studio|ai-browser|ai-computer|approved-transfer|blocked-permission|blocked-capability)\\b",
+  "ai_exec_values": ["ai-studio", "ai-browser", "ai-computer", "approved-transfer", "blocked-permission", "blocked-capability"],
+  "ai_exec_window": 4,
+
+  "self_verification_terms": [
+    "独立照合", "別セッション", "サブエージェントレビュー", "受入照合",
+    "読み取り専用レビュー", "別エージェント", "構造検査"
+  ],
+
+  "contracts": [],
+  "forward_refs": [],
+
+  "_status_consistency_note": "対象文書が存在する Tier 0 以降で追加する。索引表の状態列と詳細節の `- <field>:` を突合する。具体例は references/config-example.md。雛形の段階では存在しない仮パスを置かない。",
+  "status_consistency": [],
+
+  "rules": {}
+}

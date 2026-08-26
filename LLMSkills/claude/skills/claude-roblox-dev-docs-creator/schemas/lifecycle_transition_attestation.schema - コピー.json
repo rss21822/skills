@@ -1,0 +1,332 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/roblox-ai-development-os/lifecycle-transition-attestation.schema.json",
+  "title": "Lifecycle Transition Attestation",
+  "description": "Closed, cycle-free record of the actual P0 or D5 write-event sequence. This record is created only after the resulting P0-CAND or B2 manifest exists and is therefore stored outside that result. It is not trusted by itself: a matching outer provenance_verification must independently obtain the actual operation-event sequence from an operator-pinned runtime query or signature authority. Re-signing a caller-authored log/hash without authority-side operation facts is invalid.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "id", "transitionType", "createdAt", "claims"],
+  "properties": {
+    "schemaVersion": { "const": "1.0.0" },
+    "id": { "type": "string", "pattern": "^LTA-(?:P0|D5)-[A-Z0-9][A-Z0-9._-]*$" },
+    "transitionType": { "enum": ["p0", "d5"] },
+    "createdAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" },
+    "claims": {
+      "oneOf": [
+        { "$ref": "#/$defs/p0TransitionClaims" },
+        { "$ref": "#/$defs/d5TransitionClaims" }
+      ]
+    }
+  },
+  "$defs": {
+    "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "artifactReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256"],
+      "properties": {
+        "path": { "type": "string", "minLength": 1 },
+        "sha256": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "revision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "value", "snapshotRoot", "gitStatusEvidence"],
+      "properties": {
+        "kind": { "const": "snapshot" },
+        "value": { "type": "string", "minLength": 1 },
+        "snapshotRoot": { "type": ["string", "null"] },
+        "gitStatusEvidence": { "type": ["string", "null"] }
+      },
+      "allOf": [
+        { "properties": { "snapshotRoot": { "type": "string", "minLength": 1 }, "gitStatusEvidence": { "type": "string", "minLength": 1 } } }
+      ],
+      "description": "Lifecycle v1 transition baselines are snapshot-only; commit-backed evidence is not W0-eligible."
+    },
+    "baselineReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "path", "sha256", "fileSetSha256", "revision"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "path": { "type": "string", "minLength": 1 },
+        "sha256": { "$ref": "#/$defs/sha256" },
+        "fileSetSha256": { "$ref": "#/$defs/sha256" },
+        "revision": { "$ref": "#/$defs/revision" }
+      }
+    },
+    "approvalVerificationBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["approvalId", "verification", "presentationAt", "humanResponseAt", "verificationCompletedAt"],
+      "properties": {
+        "approvalId": { "type": "string", "minLength": 1 },
+        "verification": { "$ref": "#/$defs/artifactReference" },
+        "presentationAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" },
+        "humanResponseAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" },
+        "verificationCompletedAt": {
+          "type": "string",
+          "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$",
+          "description": "Exact outer approval provenance verifiedAt after its creation-time authority query/signature has completed. A receiver additionally performs its own fresh query/signature verification before accepting this transition."
+        }
+      }
+    },
+    "completeWriteLog": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256", "entryCount", "entrySetSha256", "eventSequenceSha256", "complete"],
+      "properties": {
+        "path": { "type": "string", "minLength": 1 },
+        "sha256": { "$ref": "#/$defs/sha256" },
+        "entryCount": { "type": "integer", "minimum": 0 },
+        "entrySetSha256": { "$ref": "#/$defs/sha256" },
+        "eventSequenceSha256": { "$ref": "#/$defs/sha256" },
+        "complete": { "const": true }
+      },
+      "description": "Immutable schema-valid lifecycle_write_log.json. The semantic validator parses every closed operation/eventId/path/before-after/time/phase/classification entry, rederives count/set/sequence digests, and exact-compares them here. The outer authority must attest actual events and zero/unlogged-write facts, not merely this local hash."
+    },
+    "snapshotBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sourceFileSetSha256", "snapshotRoot", "copiedFileCount", "copyMapSha256",
+        "copyStartedAt", "copyCompletedAt", "manifestCreatedAt", "manifest", "sealEventId"
+      ],
+      "properties": {
+        "sourceFileSetSha256": { "$ref": "#/$defs/sha256" },
+        "snapshotRoot": { "type": "string", "minLength": 1 },
+        "copiedFileCount": { "type": "integer", "minimum": 1 },
+        "copyMapSha256": {
+          "$ref": "#/$defs/sha256",
+          "description": "SHA-256 of canonical sorted unique {sourceRootRole,sourcePath,sourceSha256,snapshotPath,snapshotSha256} mappings exact-covering every manifest file; both hashes in each mapping are equal."
+        },
+        "copyStartedAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" },
+        "copyCompletedAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" },
+        "manifestCreatedAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" },
+        "manifest": { "$ref": "#/$defs/artifactReference" },
+        "sealEventId": { "type": "string", "minLength": 1 }
+      },
+      "description": "Authority-observed full snapshot construction. Every file copy/write is logged in result-artifacts; the final manifest follows all copies and the logical seal follows the manifest. No hidden Git/VCS write or omitted file is permitted."
+    },
+    "monitoringBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sessionId", "providerId", "startEventId", "startedAt", "targets", "startState", "scope"],
+      "properties": {
+        "sessionId": { "type": "string", "minLength": 1 },
+        "providerId": { "type": "string", "minLength": 1 },
+        "startEventId": { "type": "string", "minLength": 1 },
+        "startedAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" },
+        "targets": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 3,
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["role", "resolvedRoot", "immutableTargetId"],
+            "properties": {
+              "role": { "enum": ["canonical-project", "private-staging", "result-artifacts"] },
+              "resolvedRoot": { "type": "string", "minLength": 1 },
+              "immutableTargetId": { "type": "string", "minLength": 1 }
+            }
+          },
+          "allOf": [
+            { "contains": { "properties": { "role": { "const": "canonical-project" } }, "required": ["role"] }, "minContains": 1, "maxContains": 1 },
+            { "contains": { "properties": { "role": { "const": "private-staging" } }, "required": ["role"] }, "minContains": 1, "maxContains": 1 },
+            { "contains": { "properties": { "role": { "const": "result-artifacts" } }, "required": ["role"] }, "minContains": 1, "maxContains": 1 }
+          ]
+        },
+        "startState": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["observedAt", "sourceBaselineTreeSha256", "fileSetSha256", "targetStartStates"],
+          "properties": {
+            "observedAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" },
+            "sourceBaselineTreeSha256": {
+              "$ref": "#/$defs/sha256",
+              "description": "SHA-256 of UTF-8 json.dumps([{path,bytes,sha256}, ...] projected from the exact B0/B1 baseline manifest files, sorted by path, ensure_ascii=False, sort_keys=True, separators=(',', ':')). It is the canonical baseline state digest, not a claim about unrelated project-tree bytes."
+            },
+            "fileSetSha256": {
+              "$ref": "#/$defs/sha256",
+              "description": "Exact source baseline fileSetSha256 using the full baseline manifest files canonicalization."
+            },
+            "targetStartStates": {
+              "type": "array",
+              "minItems": 3,
+              "maxItems": 3,
+              "uniqueItems": true,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["role", "stateSetSha256"],
+                "properties": {
+                  "role": { "enum": ["canonical-project", "private-staging", "result-artifacts"] },
+                  "stateSetSha256": {
+                    "$ref": "#/$defs/sha256",
+                    "description": "Authority-observed SHA-256 of UTF-8 json.dumps([{path,exists,bytes,sha256}, ...] for every includeSet path of this role, sorted by path, ensure_ascii=False, sort_keys=True, separators=(',', ':')); absent paths use exists=false and null bytes/sha256."
+                  }
+                }
+              },
+              "allOf": [
+                { "contains": { "properties": { "role": { "const": "canonical-project" } }, "required": ["role"] }, "minContains": 1, "maxContains": 1 },
+                { "contains": { "properties": { "role": { "const": "private-staging" } }, "required": ["role"] }, "minContains": 1, "maxContains": 1 },
+                { "contains": { "properties": { "role": { "const": "result-artifacts" } }, "required": ["role"] }, "minContains": 1, "maxContains": 1 }
+              ]
+            }
+          }
+        },
+        "scope": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "coverage", "includeSetArtifact", "includeSetSha256", "evidenceAcquisitionPolicy", "postMonitorExclusions"],
+          "properties": {
+            "kind": { "const": "in-scope-transition-mutations-v1" },
+            "coverage": { "const": "all-product-ledger-staging-and-result-mutations" },
+            "includeSetArtifact": {
+              "$ref": "#/$defs/artifactReference",
+              "description": "Closed JSON {targets:[sorted unique {rootRole,path}]}; path is normalized POSIX relative to that monitored root. The set includes all canonical/product/ledger writes, every staging path preparing candidate/B2 bytes, and result machine record/manifest paths even when outside candidate files. Every one of the three rootRole values has one matching monitoring.targets entry; physical roots may match but role and immutableTargetId remain explicit."
+            },
+            "includeSetSha256": {
+              "$ref": "#/$defs/sha256",
+              "description": "SHA-256 of UTF-8 json.dumps(targets sorted by (rootRole,path), ensure_ascii=False, sort_keys=True, separators=(',', ':'))."
+            },
+            "evidenceAcquisitionPolicy": { "const": "approval-evidence-outside-transition-mutation-scope" },
+            "postMonitorExclusions": {
+              "const": ["lifecycle-write-log", "lifecycle-transition-attestation", "lifecycle-transition-provenance", "w0-handoff-package"]
+            }
+          }
+        }
+      },
+      "description": "Authority-observed monitoring identity. targets prevent another-root/staging replay; scope forbids partial transition monitoring. startState binds the canonical source-baseline record digest/fileSet and exactly one actual before-state digest for every monitored role over the include set; staging/result roots may be empty but may not be omitted. Every in-scope provider event after start is exact-covered by the log. Approval evidence acquisition is permitted outside this scope; proof-sealing exclusions occur only after monitor close."
+    },
+    "p0TransitionClaims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind", "sourceBaseline", "p0Start", "monitoring", "writeLog", "noUnloggedWrites",
+        "inventoryMutationCount", "firstInventoryMutationAt", "inventoryMutationCompletedAt",
+        "preApprovalWriteCount", "firstPreApprovalWriteAt", "lastPreApprovalWriteAt",
+        "approvedContentFileSetSha256", "normalizationRule", "approvalPayloadPreparedAt", "p0Contract",
+        "fixedMetadataWriteAt", "candidateSnapshot", "freezeCompletedAt", "resultCandidate", "p0ContractRecord",
+        "postFreezeRecordWriteAt", "firstApplyWriteAt", "lastApplyWriteAt", "sealCompletedAt",
+        "eventSequenceSha256", "completedAt"
+      ],
+      "properties": {
+        "kind": { "const": "p0-transition-v1" },
+        "sourceBaseline": {
+          "allOf": [
+            { "$ref": "#/$defs/baselineReference" },
+            { "properties": { "id": { "pattern": "^B0-[A-Z0-9][A-Z0-9._-]*$" } } }
+          ]
+        },
+        "p0Start": { "$ref": "#/$defs/approvalVerificationBinding" },
+        "monitoring": { "$ref": "#/$defs/monitoringBinding" },
+        "writeLog": { "$ref": "#/$defs/completeWriteLog" },
+        "noUnloggedWrites": { "const": true },
+        "inventoryMutationCount": { "type": "integer", "minimum": 0 },
+        "firstInventoryMutationAt": { "type": ["string", "null"], "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" },
+        "inventoryMutationCompletedAt": { "type": ["string", "null"], "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" },
+        "preApprovalWriteCount": { "type": "integer", "minimum": 0 },
+        "firstPreApprovalWriteAt": { "type": ["string", "null"], "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" },
+        "lastPreApprovalWriteAt": { "type": ["string", "null"], "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" },
+        "approvedContentFileSetSha256": { "$ref": "#/$defs/sha256" },
+        "normalizationRule": { "const": "strip-fixed-p0-approval-procedure-v1" },
+        "approvalPayloadPreparedAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" },
+        "p0Contract": { "$ref": "#/$defs/approvalVerificationBinding" },
+        "fixedMetadataWriteAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" },
+        "candidateSnapshot": { "$ref": "#/$defs/snapshotBinding" },
+        "freezeCompletedAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" },
+        "resultCandidate": {
+          "allOf": [
+            { "$ref": "#/$defs/baselineReference" },
+            { "properties": { "id": { "pattern": "^P0-CAND-[A-Z0-9][A-Z0-9._-]*$" } } }
+          ]
+        },
+        "p0ContractRecord": {
+          "$ref": "#/$defs/artifactReference",
+          "description": "The post-freeze gate_approval_record whose p0-contract target binds the actual resultCandidate ID/path/outer hash/fileSet/revision. It cannot be created before the candidate freeze."
+        },
+        "postFreezeRecordWriteAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" },
+        "firstApplyWriteAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" },
+        "lastApplyWriteAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" },
+        "sealCompletedAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" },
+        "eventSequenceSha256": { "$ref": "#/$defs/sha256" },
+        "completedAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "inventoryMutationCount": { "const": 0 } }, "required": ["inventoryMutationCount"] },
+          "then": { "properties": { "firstInventoryMutationAt": { "type": "null" }, "inventoryMutationCompletedAt": { "type": "null" } } },
+          "else": { "properties": { "firstInventoryMutationAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" }, "inventoryMutationCompletedAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" } } }
+        },
+        {
+          "if": { "properties": { "preApprovalWriteCount": { "const": 0 } }, "required": ["preApprovalWriteCount"] },
+          "then": { "properties": { "firstPreApprovalWriteAt": { "type": "null" }, "lastPreApprovalWriteAt": { "type": "null" } } },
+          "else": { "properties": { "firstPreApprovalWriteAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" }, "lastPreApprovalWriteAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" } } }
+        }
+      ],
+      "description": "Semantic validator enforces monitoring.startState sourceBaselineTreeSha256/fileSetSha256 equal the B0 manifest projection/fileSet and rederives all three targetStartStates from includeSet before states. Ordering is monitoring.startedAt <= startState.observedAt <= p0Start presentation/response/PV <= every inventory/preapproval write <= approvalPayloadPreparedAt < p0Contract presentation/response/PV <= every postapproval metadata write <= freezeCompletedAt <= the unique p0-contract record at postFreezeRecordWriteAt <= every exact-candidate canonical apply from firstApplyWriteAt through lastApplyWriteAt <= the single logical monitor seal at sealCompletedAt <= completedAt. Candidate/staging content is immutable after freeze; only the actual-candidate record and exact frozen-byte apply are allowed before seal, and no mutation is allowed after seal. First/last inventory writes are a classified subset. The authority observes approvalPayloadPreparedAt and the normalized digest. Zero-row inventory requires inventoryMutationCount 0 and inventory mutation times null, but preapproval procedural writes remain independently counted/classified. approvedContentFileSetSha256 must equal the preapproval normalized digest; resultCandidate is the actual frozen P0-CAND outer hash/file-set/revision."
+    },
+    "d5TransitionClaims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind", "sourceBaseline", "d5Approval", "monitoring", "writeLog", "noUnloggedWrites",
+        "firstSyncWriteAt", "lastSyncWriteAt", "allowedDiffRule", "allowedDiffArtifact", "allowedDiffSha256",
+        "allowedDiffArtifactCreatedAt", "postSyncManifest", "postSyncManifestCreatedAt",
+        "resultBaseline", "resultSnapshot", "sealCompletedAt", "eventSequenceSha256", "completedAt"
+      ],
+      "properties": {
+        "kind": { "const": "d5-transition-v1" },
+        "sourceBaseline": {
+          "allOf": [
+            { "$ref": "#/$defs/baselineReference" },
+            { "properties": { "id": { "pattern": "^B1-[A-Z0-9][A-Z0-9._-]*$" } } }
+          ]
+        },
+        "d5Approval": { "$ref": "#/$defs/approvalVerificationBinding" },
+        "monitoring": { "$ref": "#/$defs/monitoringBinding" },
+        "writeLog": { "$ref": "#/$defs/completeWriteLog" },
+        "noUnloggedWrites": { "const": true },
+        "firstSyncWriteAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" },
+        "lastSyncWriteAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" },
+        "allowedDiffRule": { "const": "d5-fixed-allowlist-v1" },
+        "allowedDiffArtifact": {
+          "$ref": "#/$defs/artifactReference",
+          "description": "Closed JSON {changes:[sorted unique {path,beforeSha256,afterSha256,ruleId}]}; every successful canonical D5 write is exact-covered and every ruleId is from the fixed D5 allowlist."
+        },
+        "allowedDiffSha256": {
+          "$ref": "#/$defs/sha256",
+          "description": "SHA-256 of UTF-8 json.dumps(changes, ensure_ascii=False, sort_keys=True, separators=(',', ':'))."
+        },
+        "allowedDiffArtifactCreatedAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" },
+        "postSyncManifest": { "$ref": "#/$defs/artifactReference" },
+        "postSyncManifestCreatedAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" },
+        "resultBaseline": {
+          "allOf": [
+            { "$ref": "#/$defs/baselineReference" },
+            { "properties": { "id": { "pattern": "^B2-[A-Z0-9][A-Z0-9._-]*$" } } }
+          ]
+        },
+        "resultSnapshot": { "$ref": "#/$defs/snapshotBinding" },
+        "sealCompletedAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" },
+        "eventSequenceSha256": { "$ref": "#/$defs/sha256" },
+        "completedAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" }
+      },
+      "description": "Semantic validator enforces monitoring.startState sourceBaselineTreeSha256/fileSetSha256 equal the B1 manifest projection/fileSet and rederives all three targetStartStates from includeSet before states. Ordering is monitoring.startedAt <= startState.observedAt <= d5Approval presentation/response/PV <= every d5-sync write from firstSyncWriteAt through lastSyncWriteAt <= the one logged allowed-diff artifact at allowedDiffArtifactCreatedAt <= the one logged post-sync manifest at postSyncManifestCreatedAt <= the B2-manifest seal at sealCompletedAt <= completedAt; no sync or mutation is allowed after seal. includeSetArtifact is fixed before monitoring starts and already names all three result artifacts. allowedDiffSha256 covers the exact fixed D5 event-level allowlist diff; postSyncManifest and resultBaseline bind the actual B2 result."
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "transitionType": { "const": "p0" } }, "required": ["transitionType"] },
+      "then": { "properties": { "id": { "pattern": "^LTA-P0-" }, "claims": { "$ref": "#/$defs/p0TransitionClaims" } } }
+    },
+    {
+      "if": { "properties": { "transitionType": { "const": "d5" } }, "required": ["transitionType"] },
+      "then": { "properties": { "id": { "pattern": "^LTA-D5-" }, "claims": { "$ref": "#/$defs/d5TransitionClaims" } } }
+    }
+  ]
+}

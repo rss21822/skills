@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/roblox-ai-development-os/docs-manifest.schema.json",
+  "title": "Roblox Documentation Manifest",
+  "type": "object",
+  "required": [
+    "project",
+    "prefix",
+    "documents"
+  ],
+  "properties": {
+    "project": {
+      "type": "string",
+      "minLength": 1
+    },
+    "prefix": {
+      "type": "string",
+      "pattern": "^[A-Z0-9]{2,6}$"
+    },
+    "documents": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "path",
+          "domain",
+          "required",
+          "status"
+        ],
+        "properties": {
+          "path": {
+            "type": "string"
+          },
+          "domain": {
+            "type": "string"
+          },
+          "required": {
+            "type": "boolean"
+          },
+          "status": {
+            "enum": [
+              "draft",
+              "review",
+              "approved",
+              "superseded"
+            ]
+          },
+          "trigger": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      }
+    }
+  }
+}

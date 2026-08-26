@@ -1,0 +1,834 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/roblox-ai-development-os/provenance-verification.schema.json",
+  "title": "External Provenance Verification",
+  "description": "Outer, non-cyclic verification of a human approval capture, D4 runtime/assembly attestation, D1.5 measurement, or P0/D5 lifecycle transition. A locally authored JSON/hash, transcript, or write log is never sufficient. trusted-runtime-query is permitted only while creating a non-W0 route artifact; every PV accepted by a W0 package or W0 run authorization must already use pinned-signature before its first immutable binding, and the W0 receiver performs no network query/send. pinned-signature requires cryptographic verification against an externally pinned trust anchor. Lifecycle transition claims must come from authority-side actual operation events, including zero/unlogged-write facts; merely re-signing the local attestation/log hash is invalid. Record-local verifier/authority/adapter/key strings are claims, not trust configuration. If required external signature verification is unavailable, transition is STOP/HUMAN.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion", "id", "subjectType", "subject", "verificationMode", "verifier",
+    "sourceArtifact", "verificationContext", "verifiedAt", "claims", "claimsSha256", "verdict"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "1.0.0" },
+    "id": { "type": "string", "pattern": "^PV-[A-Z0-9][A-Z0-9._-]*$" },
+    "subjectType": { "enum": ["d4-auditor-attestation", "d4-capsule-assembly-attestation", "human-approval-capture", "d1.5-measurement-evidence", "lifecycle-transition-attestation", "w0-run-authorization-capture"] },
+    "subject": { "$ref": "#/$defs/subjectReference" },
+    "verificationMode": { "enum": ["trusted-runtime-query", "pinned-signature"] },
+    "verifier": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "authority", "adapter", "adapterVersion"],
+      "description": "Informational identity of the verifier. Receiver trust comes only from external pinned configuration, never these strings.",
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "authority": { "type": "string", "minLength": 1 },
+        "adapter": { "type": "string", "minLength": 1 },
+        "adapterVersion": { "type": "string", "minLength": 1 }
+      }
+    },
+    "sourceArtifact": {
+      "$ref": "#/$defs/artifactReference",
+      "description": "Original creation-time evidence: schema-valid trusted_runtime_query_result or pinned_signature_evidence. Actual bytes are rehashed and external config pins the adapter/key. W0-eligible records require pinned_signature_evidence at the owning stage; a query-only record is never upgraded during D5/W0 and forces STOP/rebuild."
+    },
+    "verificationContext": {
+      "oneOf": [
+        { "$ref": "#/$defs/trustedQueryContext" },
+        { "$ref": "#/$defs/pinnedSignatureContext" }
+      ]
+    },
+    "verifiedAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" },
+    "claims": {
+      "oneOf": [
+        { "$ref": "#/$defs/d4RuntimeClaims" },
+        { "$ref": "#/$defs/capsuleAssemblyClaims" },
+        { "$ref": "#/$defs/humanApprovalClaims" },
+        { "$ref": "#/$defs/d15MeasurementClaims" },
+        { "$ref": "#/$defs/lifecycleTransitionClaims" },
+        { "$ref": "#/$defs/w0RunAuthorizationClaims" }
+      ]
+    },
+    "claimsSha256": {
+      "$ref": "#/$defs/sha256",
+      "description": "SHA-256 of UTF-8 json.dumps(claims, ensure_ascii=False, sort_keys=True, separators=(',', ':'))."
+    },
+    "verdict": { "const": "verified" }
+  },
+  "$defs": {
+    "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "artifactReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256"],
+      "properties": {
+        "path": { "type": "string", "minLength": 1 },
+        "sha256": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "subjectReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "path", "sha256"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "path": { "type": "string", "minLength": 1 },
+        "sha256": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "operatorExternalAbsolutePath": {
+      "type": "string",
+      "pattern": "^(?:[A-Za-z]:[\\\\/]|/).+",
+      "description": "Resolved absolute operator-external path outside locked project/package/baseline/installed-Skill trees."
+    },
+    "operatorExternalArtifactReference": {
+      "type": "object", "additionalProperties": false, "required": ["path", "sha256"],
+      "properties": { "path": { "$ref": "#/$defs/operatorExternalAbsolutePath" }, "sha256": { "$ref": "#/$defs/sha256" } }
+    },
+    "operatorExternalSubjectReference": {
+      "type": "object", "additionalProperties": false, "required": ["id", "path", "sha256"],
+      "properties": { "id": { "type": "string", "minLength": 1 }, "path": { "$ref": "#/$defs/operatorExternalAbsolutePath" }, "sha256": { "$ref": "#/$defs/sha256" } }
+    },
+    "trustedQueryContext": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "nonce", "requestId", "responseId"],
+      "properties": {
+        "kind": { "const": "trusted-runtime-query-v1" },
+        "nonce": { "type": "string", "minLength": 16 },
+        "requestId": { "type": "string", "minLength": 1 },
+        "responseId": { "type": "string", "minLength": 1 }
+      }
+    },
+    "pinnedSignatureContext": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "algorithm", "keyId", "trustAnchorSha256"],
+      "properties": {
+        "kind": { "const": "pinned-signature-v1" },
+        "algorithm": { "enum": ["ed25519", "ecdsa-p256-sha256", "rsa-pss-sha256"] },
+        "keyId": { "type": "string", "minLength": 1 },
+        "trustAnchorSha256": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "d4RuntimeClaims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind", "attestationId", "laneRunId", "executionId", "sessionId", "auditTrack",
+        "auditorClass", "worker", "requestedModel", "resolvedModel", "toolVersion",
+        "contextMode", "filesystemAccess", "providerPolicy", "capsule", "auditPolicy",
+        "runtimeAllowlist", "fullPromptSha256", "inspectedInputs", "inspectedInputsSha256",
+        "requestId", "requestCoreSha256", "requestSha256",
+        "requiredCheckIds", "commands", "responseSha256",
+        "finishReason", "startedAt", "completedAt"
+      ],
+      "properties": {
+        "kind": { "const": "d4-runtime-v1" },
+        "attestationId": { "type": "string", "minLength": 1 },
+        "laneRunId": { "type": "string", "minLength": 1 },
+        "executionId": { "type": "string", "minLength": 1 },
+        "sessionId": { "type": "string", "minLength": 1 },
+        "auditTrack": { "enum": ["consistency", "roblox-readiness", "clean-room"] },
+        "auditorClass": { "const": "A" },
+        "worker": { "type": "string", "minLength": 1 },
+        "requestedModel": { "type": "string", "minLength": 1 },
+        "resolvedModel": {
+          "type": "string",
+          "minLength": 1,
+          "not": {
+            "pattern": "^(?:[Uu][Nn][Vv][Ee][Rr][Ii][Ff][Ii][Aa][Bb][Ll][Ee]|[Uu][Nn][Kk][Nn][Oo][Ww][Nn]|[Uu][Nn][Rr][Ee][Ss][Oo][Ll][Vv][Ee][Dd]|[Nn][Oo][Nn][Ee]|[Nn]/[Aa])$"
+          }
+        },
+        "toolVersion": { "type": "string", "minLength": 1 },
+        "contextMode": { "const": "clean" },
+        "filesystemAccess": { "const": "read-only-sanitized-root-plus-pinned-runtime-and-verifier" },
+        "providerPolicy": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["id", "sha256"],
+          "properties": {
+            "id": { "type": "string", "minLength": 1 },
+            "sha256": { "$ref": "#/$defs/sha256" }
+          },
+          "description": "Trusted authority's identity/digest for the provider-internal policy/runtime frame that enforced clean context and the filesystem boundary. A local prompt cannot self-assert this."
+        },
+        "capsule": { "$ref": "#/$defs/artifactReference" },
+        "auditPolicy": { "$ref": "#/$defs/policyReference" },
+        "runtimeAllowlist": { "$ref": "#/$defs/runtimeAllowlistReference" },
+        "fullPromptSha256": {
+          "$ref": "#/$defs/sha256",
+          "description": "SHA-256 of the exact payload bytes explicitly submitted by the orchestrator for this lane. It must equal request/attestation fullPromptArtifact.sha256 and the trusted authority result; it does not claim provider-internal implicit frames."
+        },
+        "inspectedInputs": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/artifactReference" }
+        },
+        "inspectedInputsSha256": {
+          "$ref": "#/$defs/sha256",
+          "description": "Digest of the path-sorted full inspectedInputs array using the canonical json.dumps algorithm."
+        },
+        "requestId": { "type": "string", "minLength": 1 },
+        "requestCoreSha256": { "$ref": "#/$defs/sha256" },
+        "requestSha256": { "$ref": "#/$defs/sha256" },
+        "requiredCheckIds": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "commands": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/verifiedCommand" }
+        },
+        "responseSha256": { "$ref": "#/$defs/sha256" },
+        "finishReason": { "const": "stop" },
+        "startedAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" },
+        "completedAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" }
+      }
+    },
+    "verifiedCommand": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "checkId", "argv", "cwd", "expectedExitCode", "actualExitCode", "outputPath", "outputSha256"
+      ],
+      "properties": {
+        "checkId": { "type": "string", "minLength": 1 },
+        "argv": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "cwd": { "type": "string", "minLength": 1 },
+        "expectedExitCode": { "type": "integer" },
+        "actualExitCode": { "type": "integer" },
+        "outputPath": { "type": "string", "minLength": 1 },
+        "outputSha256": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "revision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "value", "snapshotRoot", "gitStatusEvidence"],
+      "properties": {
+        "kind": { "enum": ["commit", "snapshot"] },
+        "value": { "type": "string", "minLength": 1 },
+        "snapshotRoot": { "type": ["string", "null"] },
+        "gitStatusEvidence": { "type": ["string", "null"] }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "kind": { "const": "commit" } }, "required": ["kind"] },
+          "then": { "properties": { "value": { "pattern": "^[a-f0-9]{40}(?:[a-f0-9]{24})?$" }, "snapshotRoot": { "type": "null" } } }
+        },
+        {
+          "if": { "properties": { "kind": { "const": "snapshot" } }, "required": ["kind"] },
+          "then": { "properties": { "snapshotRoot": { "type": "string", "minLength": 1 }, "gitStatusEvidence": { "type": "string", "minLength": 1 } } }
+        }
+      ]
+    },
+    "assemblyCandidateReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "path", "sha256", "fileSetSha256", "revision"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^(?:D4|P0)-CAND-[A-Z0-9][A-Z0-9._-]*$" },
+        "path": { "type": "string", "minLength": 1 },
+        "sha256": { "$ref": "#/$defs/sha256" },
+        "fileSetSha256": { "$ref": "#/$defs/sha256" },
+        "revision": {
+          "allOf": [
+            { "$ref": "#/$defs/revision" },
+            { "properties": { "kind": { "const": "snapshot" }, "snapshotRoot": { "type": "string", "minLength": 1 }, "gitStatusEvidence": { "type": "string", "minLength": 1 } } }
+          ],
+          "description": "Lifecycle v1 transition baselines are snapshot-only."
+        }
+      }
+    },
+    "assemblyPreflightResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["checkId", "argv", "cwd", "expectedExitCode", "actualExitCode", "outputPath", "outputSha256"],
+      "properties": {
+        "checkId": { "enum": ["D4-PREFLIGHT-SOURCE-STATE-001", "D4-PREFLIGHT-REVISION-001", "D4-PREFLIGHT-TREE-001"] },
+        "argv": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+        "cwd": { "type": "string", "minLength": 1 },
+        "expectedExitCode": { "const": 0 },
+        "actualExitCode": { "const": 0 },
+        "outputPath": { "type": "string", "minLength": 1 },
+        "outputSha256": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "capsuleAssemblyClaims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind", "attestationId", "candidate", "auditPolicy", "runtimeAllowlist",
+        "sourceTreePolicySha256", "resolvedSource", "sourceStateEvidence", "sourceTree", "inputSetSha256", "inputCount",
+        "dependencyClosure", "preflight", "assembledAt"
+      ],
+      "properties": {
+        "kind": { "const": "d4-capsule-assembly-v1" },
+        "attestationId": { "type": "string", "pattern": "^D4-CAPSULE-ASSEMBLY-[A-Z0-9][A-Z0-9._-]*$" },
+        "candidate": { "$ref": "#/$defs/assemblyCandidateReference" },
+        "auditPolicy": { "$ref": "#/$defs/policyReference" },
+        "runtimeAllowlist": { "$ref": "#/$defs/runtimeAllowlistReference" },
+        "sourceTreePolicySha256": { "$ref": "#/$defs/sha256" },
+        "resolvedSource": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "path", "revisionValue", "treeEntriesSha256"],
+          "properties": {
+            "kind": { "enum": ["commit-repository", "immutable-snapshot"] },
+            "path": { "type": "string", "minLength": 1 },
+            "revisionValue": { "type": "string", "minLength": 1 },
+            "treeEntriesSha256": { "$ref": "#/$defs/sha256" }
+          }
+        },
+        "sourceStateEvidence": { "$ref": "#/$defs/artifactReference" },
+        "sourceTree": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["entryCount", "entriesSha256", "outputPath", "outputSha256"],
+          "properties": {
+            "entryCount": { "type": "integer", "minimum": 1 },
+            "entriesSha256": { "$ref": "#/$defs/sha256" },
+            "outputPath": { "type": "string", "minLength": 1 },
+            "outputSha256": { "$ref": "#/$defs/sha256" }
+          }
+        },
+        "inputSetSha256": { "$ref": "#/$defs/sha256" },
+        "inputCount": { "type": "integer", "minimum": 1 },
+        "dependencyClosure": { "$ref": "#/$defs/artifactReference" },
+        "preflight": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 3,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/assemblyPreflightResult" },
+          "allOf": [
+            { "contains": { "properties": { "checkId": { "const": "D4-PREFLIGHT-SOURCE-STATE-001" } }, "required": ["checkId"] }, "minContains": 1, "maxContains": 1 },
+            { "contains": { "properties": { "checkId": { "const": "D4-PREFLIGHT-REVISION-001" } }, "required": ["checkId"] }, "minContains": 1, "maxContains": 1 },
+            { "contains": { "properties": { "checkId": { "const": "D4-PREFLIGHT-TREE-001" } }, "required": ["checkId"] }, "minContains": 1, "maxContains": 1 }
+          ]
+        },
+        "assembledAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" }
+      },
+      "description": "Externally returned actual assembly facts. They exact-match attestation/policy/runtime: resolved source root, candidate revision, complete tree, input/dependency digests, and SOURCE-STATE/REVISION/TREE argv, exits, raw outputs. Snapshot root equals revision.snapshotRoot; commit uses pinned Git and exact object."
+    },
+    "policyReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "path", "sha256", "compiledPolicySha256"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^D4-POLICY-[A-Z0-9][A-Z0-9._-]*$" },
+        "path": { "type": "string", "minLength": 1 },
+        "sha256": { "$ref": "#/$defs/sha256" },
+        "compiledPolicySha256": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "runtimeAllowlistReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256", "digestSha256"],
+      "properties": {
+        "path": { "type": "string", "minLength": 1 },
+        "sha256": { "$ref": "#/$defs/sha256" },
+        "digestSha256": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "humanApprovalClaims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind", "captureId", "gateType", "approver", "challengeId", "challengeIssuedAt",
+        "targetScopeSha256", "channel", "interactionId", "presentationMessageId",
+        "presentationRole", "presentationSentAt", "presentationContentSha256",
+        "messageId", "messageRole",
+        "actorId", "sentAt", "messageContentSha256", "statementSha256"
+      ],
+      "properties": {
+        "kind": { "const": "human-approval-v1" },
+        "captureId": { "type": "string", "minLength": 1 },
+        "gateType": { "enum": ["gdd-gate1", "p0-start", "p0-contract", "d5"] },
+        "approver": { "type": "string", "minLength": 1 },
+        "challengeId": { "type": "string", "minLength": 1 },
+        "challengeIssuedAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" },
+        "targetScopeSha256": { "$ref": "#/$defs/sha256" },
+        "channel": { "type": "string", "minLength": 1 },
+        "interactionId": { "type": "string", "minLength": 1 },
+        "presentationMessageId": { "type": "string", "minLength": 1 },
+        "presentationRole": { "enum": ["assistant", "system"] },
+        "presentationSentAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" },
+        "presentationContentSha256": {
+          "$ref": "#/$defs/sha256",
+          "description": "Must equal challenge.presentationArtifact.sha256 and the exact provider-authority message content hash."
+        },
+        "messageId": { "type": "string", "minLength": 1 },
+        "messageRole": { "const": "human" },
+        "actorId": { "type": "string", "minLength": 1 },
+        "sentAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" },
+        "messageContentSha256": { "$ref": "#/$defs/sha256" },
+        "statementSha256": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "d15MeasurementClaims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind", "evidenceId", "evidencePath", "evidenceSha256", "triggerId", "experimentId",
+        "target", "requestSha256", "commandSha256", "rawResponseSha256",
+        "preFixedThresholdSha256", "requiredSubchecksSha256", "subcheckEvidenceSetSha256", "combinedSuiteSha256", "result", "runtimeId", "toolId", "toolVersion",
+        "startedAt", "completedAt"
+      ],
+      "properties": {
+        "kind": { "const": "d1.5-measurement-v1" },
+        "evidenceId": { "type": "string", "minLength": 1 },
+        "evidencePath": { "type": "string", "minLength": 1 },
+        "evidenceSha256": { "$ref": "#/$defs/sha256" },
+        "triggerId": { "const": "feasibility_report" },
+        "experimentId": { "const": "feasibility_report-combined-v1" },
+        "target": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["studioVersion", "universeId", "placeId", "sessionId", "dataModelSha256"],
+          "properties": {
+            "studioVersion": { "type": "string", "minLength": 1 },
+            "universeId": { "type": "string", "minLength": 1 },
+            "placeId": { "type": "string", "minLength": 1 },
+            "sessionId": { "type": "string", "minLength": 1 },
+            "dataModelSha256": { "$ref": "#/$defs/sha256" }
+          }
+        },
+        "requestSha256": { "$ref": "#/$defs/sha256" },
+        "commandSha256": { "$ref": "#/$defs/sha256" },
+        "rawResponseSha256": { "$ref": "#/$defs/sha256" },
+        "preFixedThresholdSha256": { "$ref": "#/$defs/sha256" },
+        "requiredSubchecksSha256": {
+          "$ref": "#/$defs/sha256",
+          "description": "Must equal both required_specs measurementContract and evidence.combinedSuite requiredSubchecksSha256."
+        },
+        "subcheckEvidenceSetSha256": {
+          "$ref": "#/$defs/sha256",
+          "description": "Must equal evidence.combinedSuite.subcheckEvidenceSetSha256 after the external authority derives every per-subcheck trial/threshold/raw-output binding."
+        },
+        "combinedSuiteSha256": {
+          "$ref": "#/$defs/sha256",
+          "description": "Canonical JSON SHA-256 of the complete non-empty combinedSuite object."
+        },
+        "result": { "enum": ["pass", "fail", "inconclusive"] },
+        "runtimeId": { "type": "string", "minLength": 1 },
+        "toolId": { "type": "string", "minLength": 1 },
+        "toolVersion": { "type": "string", "minLength": 1 },
+        "startedAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" },
+        "completedAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" }
+      }
+    },
+    "transitionBaselineReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "path", "sha256", "fileSetSha256", "revision"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "path": { "type": "string", "minLength": 1 },
+        "sha256": { "$ref": "#/$defs/sha256" },
+        "fileSetSha256": { "$ref": "#/$defs/sha256" },
+        "revision": {
+          "allOf": [
+            { "$ref": "#/$defs/revision" },
+            { "properties": { "kind": { "const": "snapshot" }, "snapshotRoot": { "type": "string", "minLength": 1 }, "gitStatusEvidence": { "type": "string", "minLength": 1 } } }
+          ],
+          "description": "Lifecycle v1 transition baselines are snapshot-only."
+        }
+      }
+    },
+    "transitionApprovalBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["approvalId", "verification", "presentationAt", "humanResponseAt", "verificationCompletedAt"],
+      "properties": {
+        "approvalId": { "type": "string", "minLength": 1 },
+        "verification": { "$ref": "#/$defs/artifactReference" },
+        "presentationAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" },
+        "humanResponseAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" },
+        "verificationCompletedAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" }
+      }
+    },
+    "transitionWriteLog": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256", "entryCount", "entrySetSha256", "eventSequenceSha256", "complete"],
+      "properties": {
+        "path": { "type": "string", "minLength": 1 },
+        "sha256": { "$ref": "#/$defs/sha256" },
+        "entryCount": { "type": "integer", "minimum": 0 },
+        "entrySetSha256": { "$ref": "#/$defs/sha256" },
+        "eventSequenceSha256": { "$ref": "#/$defs/sha256" },
+        "complete": { "const": true }
+      }
+    },
+    "transitionSnapshotBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sourceFileSetSha256", "snapshotRoot", "copiedFileCount", "copyMapSha256",
+        "copyStartedAt", "copyCompletedAt", "manifestCreatedAt", "manifest", "sealEventId"
+      ],
+      "properties": {
+        "sourceFileSetSha256": { "$ref": "#/$defs/sha256" },
+        "snapshotRoot": { "type": "string", "minLength": 1 },
+        "copiedFileCount": { "type": "integer", "minimum": 1 },
+        "copyMapSha256": { "$ref": "#/$defs/sha256" },
+        "copyStartedAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" },
+        "copyCompletedAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" },
+        "manifestCreatedAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" },
+        "manifest": { "$ref": "#/$defs/artifactReference" },
+        "sealEventId": { "type": "string", "minLength": 1 }
+      },
+      "description": "Authority actual full snapshot copy map/manifest/seal facts, exact-equal to the transition attestation."
+    },
+    "transitionMonitoringBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sessionId", "providerId", "startEventId", "startedAt", "targets", "startState", "scope"],
+      "properties": {
+        "sessionId": { "type": "string", "minLength": 1 },
+        "providerId": { "type": "string", "minLength": 1 },
+        "startEventId": { "type": "string", "minLength": 1 },
+        "startedAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" },
+        "targets": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 3,
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["role", "resolvedRoot", "immutableTargetId"],
+            "properties": {
+              "role": { "enum": ["canonical-project", "private-staging", "result-artifacts"] },
+              "resolvedRoot": { "type": "string", "minLength": 1 },
+              "immutableTargetId": { "type": "string", "minLength": 1 }
+            }
+          },
+          "allOf": [
+            { "contains": { "properties": { "role": { "const": "canonical-project" } }, "required": ["role"] }, "minContains": 1, "maxContains": 1 },
+            { "contains": { "properties": { "role": { "const": "private-staging" } }, "required": ["role"] }, "minContains": 1, "maxContains": 1 },
+            { "contains": { "properties": { "role": { "const": "result-artifacts" } }, "required": ["role"] }, "minContains": 1, "maxContains": 1 }
+          ]
+        },
+        "startState": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["observedAt", "sourceBaselineTreeSha256", "fileSetSha256", "targetStartStates"],
+          "properties": {
+            "observedAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" },
+            "sourceBaselineTreeSha256": {
+              "$ref": "#/$defs/sha256",
+              "description": "Canonical SHA-256 of the exact source baseline manifest files projection [{path,bytes,sha256}, ...], not a complete unrelated project-tree claim."
+            },
+            "fileSetSha256": { "$ref": "#/$defs/sha256" },
+            "targetStartStates": {
+              "type": "array",
+              "minItems": 3,
+              "maxItems": 3,
+              "uniqueItems": true,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["role", "stateSetSha256"],
+                "properties": {
+                  "role": { "enum": ["canonical-project", "private-staging", "result-artifacts"] },
+                  "stateSetSha256": {
+                    "$ref": "#/$defs/sha256",
+                    "description": "Authority-observed canonical digest of sorted {path,exists,bytes,sha256} before states for every includeSet path of this role."
+                  }
+                }
+              },
+              "allOf": [
+                { "contains": { "properties": { "role": { "const": "canonical-project" } }, "required": ["role"] }, "minContains": 1, "maxContains": 1 },
+                { "contains": { "properties": { "role": { "const": "private-staging" } }, "required": ["role"] }, "minContains": 1, "maxContains": 1 },
+                { "contains": { "properties": { "role": { "const": "result-artifacts" } }, "required": ["role"] }, "minContains": 1, "maxContains": 1 }
+              ]
+            }
+          }
+        },
+        "scope": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "coverage", "includeSetArtifact", "includeSetSha256", "evidenceAcquisitionPolicy", "postMonitorExclusions"],
+          "properties": {
+            "kind": { "const": "in-scope-transition-mutations-v1" },
+            "coverage": { "const": "all-product-ledger-staging-and-result-mutations" },
+            "includeSetArtifact": { "$ref": "#/$defs/artifactReference" },
+            "includeSetSha256": { "$ref": "#/$defs/sha256" },
+            "evidenceAcquisitionPolicy": { "const": "approval-evidence-outside-transition-mutation-scope" },
+            "postMonitorExclusions": {
+              "const": ["lifecycle-write-log", "lifecycle-transition-attestation", "lifecycle-transition-provenance", "w0-handoff-package"]
+            }
+          }
+        }
+      },
+      "description": "Authority-side monitor session/targets/start-state/scope. Must exact-equal the transition attestation, bind the source-baseline projection/fileSet plus all three role-specific includeSet before-state digests, cover canonical/product/ledger/private-staging/result mutations, and prevent other-root, partial-monitor, or replay acceptance. Approval evidence and fixed post-close proof artifacts are the only exclusions."
+    },
+    "p0TransitionActualClaims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind", "sourceBaseline", "p0Start", "monitoring", "writeLog", "noUnloggedWrites",
+        "inventoryMutationCount", "firstInventoryMutationAt", "inventoryMutationCompletedAt",
+        "preApprovalWriteCount", "firstPreApprovalWriteAt", "lastPreApprovalWriteAt",
+        "approvedContentFileSetSha256", "normalizationRule", "approvalPayloadPreparedAt", "p0Contract",
+        "fixedMetadataWriteAt", "candidateSnapshot", "freezeCompletedAt", "resultCandidate", "p0ContractRecord",
+        "postFreezeRecordWriteAt", "firstApplyWriteAt", "lastApplyWriteAt", "sealCompletedAt",
+        "eventSequenceSha256", "completedAt"
+      ],
+      "properties": {
+        "kind": { "const": "p0-transition-v1" },
+        "sourceBaseline": {
+          "allOf": [
+            { "$ref": "#/$defs/transitionBaselineReference" },
+            { "properties": { "id": { "pattern": "^B0-[A-Z0-9][A-Z0-9._-]*$" } } }
+          ]
+        },
+        "p0Start": { "$ref": "#/$defs/transitionApprovalBinding" },
+        "monitoring": { "$ref": "#/$defs/transitionMonitoringBinding" },
+        "writeLog": { "$ref": "#/$defs/transitionWriteLog" },
+        "noUnloggedWrites": { "const": true },
+        "inventoryMutationCount": { "type": "integer", "minimum": 0 },
+        "firstInventoryMutationAt": { "type": ["string", "null"], "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" },
+        "inventoryMutationCompletedAt": { "type": ["string", "null"], "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" },
+        "preApprovalWriteCount": { "type": "integer", "minimum": 0 },
+        "firstPreApprovalWriteAt": { "type": ["string", "null"], "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" },
+        "lastPreApprovalWriteAt": { "type": ["string", "null"], "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" },
+        "approvedContentFileSetSha256": { "$ref": "#/$defs/sha256" },
+        "normalizationRule": { "const": "strip-fixed-p0-approval-procedure-v1" },
+        "approvalPayloadPreparedAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" },
+        "p0Contract": { "$ref": "#/$defs/transitionApprovalBinding" },
+        "fixedMetadataWriteAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" },
+        "candidateSnapshot": { "$ref": "#/$defs/transitionSnapshotBinding" },
+        "freezeCompletedAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" },
+        "resultCandidate": {
+          "allOf": [
+            { "$ref": "#/$defs/transitionBaselineReference" },
+            { "properties": { "id": { "pattern": "^P0-CAND-[A-Z0-9][A-Z0-9._-]*$" } } }
+          ]
+        },
+        "p0ContractRecord": { "$ref": "#/$defs/artifactReference" },
+        "postFreezeRecordWriteAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" },
+        "firstApplyWriteAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" },
+        "lastApplyWriteAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" },
+        "sealCompletedAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" },
+        "eventSequenceSha256": { "$ref": "#/$defs/sha256" },
+        "completedAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "inventoryMutationCount": { "const": 0 } }, "required": ["inventoryMutationCount"] },
+          "then": { "properties": { "firstInventoryMutationAt": { "type": "null" }, "inventoryMutationCompletedAt": { "type": "null" } } },
+          "else": { "properties": { "firstInventoryMutationAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" }, "inventoryMutationCompletedAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" } } }
+        },
+        {
+          "if": { "properties": { "preApprovalWriteCount": { "const": 0 } }, "required": ["preApprovalWriteCount"] },
+          "then": { "properties": { "firstPreApprovalWriteAt": { "type": "null" }, "lastPreApprovalWriteAt": { "type": "null" } } },
+          "else": { "properties": { "firstPreApprovalWriteAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" }, "lastPreApprovalWriteAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" } } }
+        }
+      ],
+      "description": "Authority-side actual P0 operation facts, exact-equal to attestation.claims. Monitoring identity/start state/scope covers B0 plus all staging/result/canonical targets. P0-start presentation/response/provenance precede all preapproval writes; inventory and procedural writes are separately counted/classified; authority-observed normalized payload precedes P0-contract presentation/response/provenance and fixed metadata. The single candidate freeze is followed only by one actual-candidate machine record, exact frozen-byte canonical apply events, and one final seal; candidate/staging mutation, refreeze, or any post-seal mutation is invalid. Zero-row inventory is explicitly zero/null while procedural writes remain provable."
+    },
+    "d5TransitionActualClaims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind", "sourceBaseline", "d5Approval", "monitoring", "writeLog", "noUnloggedWrites",
+        "firstSyncWriteAt", "lastSyncWriteAt", "allowedDiffRule", "allowedDiffArtifact", "allowedDiffSha256",
+        "allowedDiffArtifactCreatedAt", "postSyncManifest", "postSyncManifestCreatedAt",
+        "resultBaseline", "resultSnapshot", "sealCompletedAt", "eventSequenceSha256", "completedAt"
+      ],
+      "properties": {
+        "kind": { "const": "d5-transition-v1" },
+        "sourceBaseline": {
+          "allOf": [
+            { "$ref": "#/$defs/transitionBaselineReference" },
+            { "properties": { "id": { "pattern": "^B1-[A-Z0-9][A-Z0-9._-]*$" } } }
+          ]
+        },
+        "d5Approval": { "$ref": "#/$defs/transitionApprovalBinding" },
+        "monitoring": { "$ref": "#/$defs/transitionMonitoringBinding" },
+        "writeLog": { "$ref": "#/$defs/transitionWriteLog" },
+        "noUnloggedWrites": { "const": true },
+        "firstSyncWriteAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" },
+        "lastSyncWriteAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" },
+        "allowedDiffRule": { "const": "d5-fixed-allowlist-v1" },
+        "allowedDiffArtifact": { "$ref": "#/$defs/artifactReference" },
+        "allowedDiffSha256": { "$ref": "#/$defs/sha256" },
+        "allowedDiffArtifactCreatedAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" },
+        "postSyncManifest": { "$ref": "#/$defs/artifactReference" },
+        "postSyncManifestCreatedAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" },
+        "resultBaseline": {
+          "allOf": [
+            { "$ref": "#/$defs/transitionBaselineReference" },
+            { "properties": { "id": { "pattern": "^B2-[A-Z0-9][A-Z0-9._-]*$" } } }
+          ]
+        },
+        "resultSnapshot": { "$ref": "#/$defs/transitionSnapshotBinding" },
+        "sealCompletedAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" },
+        "eventSequenceSha256": { "$ref": "#/$defs/sha256" },
+        "completedAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" }
+      },
+      "description": "Authority-side actual D5 operation facts, exact-equal to attestation.claims. Monitoring identity/start state/scope covers B1 and every canonical/staging/result target; D5 presentation/response/provenance precedes every sync write. After the final sync, the allowed-diff artifact and post-sync manifest are each logged once before the B2-manifest seal; no post-seal mutation is allowed. Complete parsed log, exact allowed-diff digest, B2 result, and no-unlogged-writes are mandatory."
+    },
+    "lifecycleTransitionClaims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "transitionType", "attestationId", "attestationPath", "attestationSha256", "actual"],
+      "properties": {
+        "kind": { "const": "lifecycle-transition-external-v1" },
+        "transitionType": { "enum": ["p0", "d5"] },
+        "attestationId": { "type": "string", "pattern": "^LTA-(?:P0|D5)-[A-Z0-9][A-Z0-9._-]*$" },
+        "attestationPath": { "type": "string", "minLength": 1 },
+        "attestationSha256": { "$ref": "#/$defs/sha256" },
+        "actual": {
+          "oneOf": [
+            { "$ref": "#/$defs/p0TransitionActualClaims" },
+            { "$ref": "#/$defs/d5TransitionActualClaims" }
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "transitionType": { "const": "p0" } }, "required": ["transitionType"] },
+          "then": { "properties": { "attestationId": { "pattern": "^LTA-P0-" }, "actual": { "$ref": "#/$defs/p0TransitionActualClaims" } } }
+        },
+        {
+          "if": { "properties": { "transitionType": { "const": "d5" } }, "required": ["transitionType"] },
+          "then": { "properties": { "attestationId": { "pattern": "^LTA-D5-" }, "actual": { "$ref": "#/$defs/d5TransitionActualClaims" } } }
+        }
+      ]
+    },
+    "w0RunAuthorizationClaims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind", "captureId", "authorizationId", "scopeCoreSha256", "targetScopeSha256", "challengeId", "challengeNonceSha256", "challengeIssuedAt",
+        "presentationMessageId", "presentationRole", "presentationAt", "presentationContentSha256",
+        "actor", "channel", "messageId", "messageRole", "sentAt", "contentSha256", "consumption",
+        "b2Sha256", "w0PackageSha256", "bootstrapRunId", "postexecutionAttestationSha256",
+        "firstWpId", "firstWpPath", "firstWpSha256", "authorizedAt", "expiresAt", "additionalScope"
+      ],
+      "properties": {
+        "kind": { "const": "w0-run-authorization-v1" },
+        "captureId": { "type": "string", "pattern": "^HAC-W0-RUN-" },
+        "authorizationId": { "type": "string", "pattern": "^W0-RUN-AUTH-" },
+        "scopeCoreSha256": { "$ref": "#/$defs/sha256" },
+        "targetScopeSha256": { "$ref": "#/$defs/sha256" },
+        "challengeId": { "type": "string", "pattern": "^HCH-W0-RUN-" },
+        "challengeNonceSha256": { "$ref": "#/$defs/sha256" },
+        "challengeIssuedAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" },
+        "presentationMessageId": { "type": "string", "minLength": 1 },
+        "presentationRole": { "enum": ["assistant", "system"] },
+        "presentationAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" },
+        "presentationContentSha256": { "$ref": "#/$defs/sha256" },
+        "actor": { "type": "string", "minLength": 1 },
+        "channel": { "type": "string", "minLength": 1 },
+        "messageId": { "type": "string", "minLength": 1 },
+        "messageRole": { "const": "human" },
+        "sentAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" },
+        "contentSha256": { "$ref": "#/$defs/sha256" },
+        "consumption": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["registryAuthority", "registryId", "eventId", "nonce", "consumedAt", "verdict", "globalNonreuse"],
+          "properties": {
+            "registryAuthority": { "type": "string", "minLength": 1 },
+            "registryId": { "type": "string", "minLength": 1 },
+            "eventId": { "type": "string", "minLength": 1 },
+            "nonce": { "type": "string", "minLength": 32 },
+            "consumedAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" },
+            "verdict": { "const": "consumed-once" },
+            "globalNonreuse": { "const": true }
+          }
+        },
+        "b2Sha256": { "$ref": "#/$defs/sha256" },
+        "w0PackageSha256": { "$ref": "#/$defs/sha256" },
+        "bootstrapRunId": { "type": "string", "minLength": 16 },
+        "postexecutionAttestationSha256": { "$ref": "#/$defs/sha256" },
+        "firstWpId": { "type": "string", "minLength": 1 },
+        "firstWpPath": { "type": "string", "minLength": 1 },
+        "firstWpSha256": { "$ref": "#/$defs/sha256" },
+        "authorizedAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" },
+        "expiresAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" },
+        "additionalScope": { "const": false }
+      },
+      "description": "Provider-signed actual human authorization interaction plus external one-time challenge consumption. scopeCoreSha256 exact-matches the pre-response scope object; distinct targetScopeSha256 exact-matches canonical {gateType,target,scope} and the challenge/canonical response. External claims prove challengeIssuedAt <= presentationAt < sentAt <= authorizedAt <= verifiedAt, exact assistant/system presentation bytes, exact human response bytes, and globally unique nonce/event consumption. Offline signature verification is mandatory."
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "subjectType": { "const": "d4-auditor-attestation" } }, "required": ["subjectType"] },
+      "then": {
+        "properties": {
+          "verificationMode": { "enum": ["trusted-runtime-query", "pinned-signature"] },
+          "claims": { "$ref": "#/$defs/d4RuntimeClaims" }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "subjectType": { "const": "d4-capsule-assembly-attestation" } }, "required": ["subjectType"] },
+      "then": {
+        "properties": {
+          "verificationMode": { "enum": ["trusted-runtime-query", "pinned-signature"] },
+          "claims": { "$ref": "#/$defs/capsuleAssemblyClaims" }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "subjectType": { "const": "human-approval-capture" } }, "required": ["subjectType"] },
+      "then": {
+        "properties": {
+          "verificationMode": { "enum": ["trusted-runtime-query", "pinned-signature"] },
+          "claims": { "$ref": "#/$defs/humanApprovalClaims" }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "subjectType": { "const": "d1.5-measurement-evidence" } }, "required": ["subjectType"] },
+      "then": {
+        "properties": {
+          "verificationMode": { "enum": ["trusted-runtime-query", "pinned-signature"] },
+          "claims": { "$ref": "#/$defs/d15MeasurementClaims" }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "subjectType": { "const": "lifecycle-transition-attestation" } }, "required": ["subjectType"] },
+      "then": {
+        "properties": {
+          "verificationMode": { "enum": ["trusted-runtime-query", "pinned-signature"] },
+          "claims": { "$ref": "#/$defs/lifecycleTransitionClaims" }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "subjectType": { "const": "w0-run-authorization-capture" } }, "required": ["subjectType"] },
+      "then": {
+        "properties": {
+          "verificationMode": { "const": "pinned-signature" },
+          "claims": { "$ref": "#/$defs/w0RunAuthorizationClaims" },
+          "subject": { "$ref": "#/$defs/operatorExternalSubjectReference" },
+          "sourceArtifact": { "$ref": "#/$defs/operatorExternalArtifactReference" }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "verificationMode": { "const": "trusted-runtime-query" } }, "required": ["verificationMode"] },
+      "then": { "properties": { "verificationContext": { "$ref": "#/$defs/trustedQueryContext" } } }
+    },
+    {
+      "if": { "properties": { "verificationMode": { "const": "pinned-signature" } }, "required": ["verificationMode"] },
+      "then": { "properties": { "verificationContext": { "$ref": "#/$defs/pinnedSignatureContext" } } }
+    }
+  ]
+}

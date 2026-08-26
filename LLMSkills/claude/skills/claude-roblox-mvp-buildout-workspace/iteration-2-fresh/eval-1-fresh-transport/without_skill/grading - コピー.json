@@ -1,0 +1,43 @@
+{
+  "run_id": "eval-1-fresh-transport-without_skill",
+  "passed_count": 6,
+  "total_count": 6,
+  "expectations": [
+    {
+      "text": "クライアント側に一時的な受信リスナーを張って検証層を通す前の生payloadを直接観測する手順を提示している",
+      "passed": true,
+      "evidence": "Step 1 で使い捨てプローブを明示: 「HUD も phase ゲートも一切通さない、受信だけを見るLocalScriptを `StarterPlayer/StarterPlayerScripts` に置きます。既存コードは触りません。」 コードも `remote.OnClientEvent:Connect(function(...)` で全引数を `table.pack(...)` して生のまま print している。"
+    },
+    {
+      "text": "受信データの値だけでなく型（typeof）を確認するよう指示している",
+      "passed": true,
+      "evidence": "「このプローブは同時に、`nargs` と各引数の `typeof` を出すことで後述の B-0（引数ズレ）も一撃で暴きます。」 B-1 でも `\"typeof =\", typeof(payload and payload.phase)`、B-2 のダンプでも `typeof(k)` / `typeof(v)` を出力させている。"
+    },
+    {
+      "text": "Robloxのリモート直列化が数値キー辞書のキーを文字列へ変換する挙動に到達している",
+      "passed": true,
+      "evidence": "B-2 に「**数値キーの辞書**（= UserId キー）は…キーが数値のまま届くか、文字列化されるか、そもそも欠落するかを **ダンプの `typeof(k)` で実測**してください。サーバーで `[123456789]`、クライアントで `[\"123456789\"]` になっていれば、`standings[LocalPlayer.UserId]` は当然 nil を返し、ガード付きコードなら無言で return します。」と、キーの文字列化とその帰結を名指ししている。"
+    },
+    {
+      "text": "「エラーが出ない」こと自体を絞り込みの材料として使っている",
+      "passed": true,
+      "evidence": "「なお「警告も出ていない」こと自体が情報になります。」 さらに「**本当に payload が nil なら `payload.phase` で \"attempt to index nil\" が出るはず**です。エラーが皆無ということは、コードのどこかに「nil なら黙って return する」ガードがあるか、ハンドラ自体が一度も呼ばれていないかのどちらかです。」と、無エラーから候補を二分している。"
+    },
+    {
+      "text": "そもそも観測している出力の場所が正しいか（クライアントの出力はクライアント側に出る）を確認させている",
+      "passed": true,
+      "evidence": "前提2として「Studio の Output はコンテキスト（Server / Client）でフィルタされます。Team Test や複数クライアント起動時は、クライアントのエラーがサーバー側の Output に出ません。実機なら F9（Developer Console）の Client タブです。**まずここを確認してから**「エラーなし」という観測を信用してください。」"
+    },
+    {
+      "text": "当て推量で修正せず実測してから直す順序を保っている",
+      "passed": true,
+      "evidence": "既存コードを触らないプローブ投入→分岐（0件ならA / 受信ありならB）という順で進め、「Step 1 のプローブ1本で 1〜2 と 3〜6 が分かれ、B-1 のゲート撤去で 3 と 4〜5 が分かれます。実質2回の実行で原因は1つに絞れます。」と実測による絞り込みを先行させている。設計上の改善提案も「原因が判明したあとで構いませんが」と後置している。"
+    }
+  ],
+  "summary": {
+    "pass_rate": 1.0,
+    "passed": 6,
+    "failed": 0,
+    "total": 6
+  }
+}

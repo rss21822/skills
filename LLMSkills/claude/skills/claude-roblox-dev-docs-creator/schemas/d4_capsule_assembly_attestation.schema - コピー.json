@@ -1,0 +1,161 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/roblox-ai-development-os/d4-capsule-assembly-attestation.schema.json",
+  "title": "D4 Capsule Assembly Attestation",
+  "description": "Cycle-free local assembly record created before the capsule. Local bytes are not a trust root; an outer provenance_verification must independently bind actual target-revision enumeration and all fixed preflight argv/outputs through an operator-pinned query or signature. The attestation never names or hashes the later capsule.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion", "id", "candidate", "auditPolicy", "runtimeAllowlist",
+    "sourceTreePolicySha256", "resolvedSource", "sourceStateEvidence", "sourceTree", "inputSetSha256", "inputCount",
+    "dependencyClosure", "preflight", "assembledAt"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "1.0.0" },
+    "id": { "type": "string", "pattern": "^D4-CAPSULE-ASSEMBLY-[A-Z0-9][A-Z0-9._-]*$" },
+    "candidate": { "$ref": "#/$defs/candidateReference" },
+    "auditPolicy": { "$ref": "#/$defs/policyReference" },
+    "runtimeAllowlist": { "$ref": "#/$defs/runtimeAllowlistReference" },
+    "sourceTreePolicySha256": {
+      "$ref": "#/$defs/sha256",
+      "description": "Canonical JSON SHA-256 of auditPolicy.sourceTreePolicy rederived from installed policy."
+    },
+    "resolvedSource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "path", "revisionValue", "treeEntriesSha256"],
+      "properties": {
+        "kind": { "enum": ["commit-repository", "immutable-snapshot"] },
+        "path": { "type": "string", "minLength": 1 },
+        "revisionValue": { "type": "string", "minLength": 1 },
+        "treeEntriesSha256": { "$ref": "#/$defs/sha256" }
+      },
+      "description": "Resolved actual source. Snapshot path must equal resolved candidate.revision.snapshotRoot exactly; commit path is the repository root from which pinned Git resolves the exact revision object. revisionValue and tree digest equal candidate/sourceTree. Curated alternate roots are invalid."
+    },
+    "sourceStateEvidence": {
+      "$ref": "#/$defs/artifactReference",
+      "description": "Rehashable SOURCE-STATE output. Snapshot mode must include and rehash candidate.revision.gitStatusEvidence; commit mode records pinned-Git worktree/object state. This is source-state evidence, not a substitute for REVISION/TREE proof."
+    },
+    "sourceTree": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["entryCount", "entriesSha256", "outputPath", "outputSha256"],
+      "properties": {
+        "entryCount": { "type": "integer", "minimum": 1 },
+        "entriesSha256": {
+          "$ref": "#/$defs/sha256",
+          "description": "SHA-256 of UTF-8 json.dumps(the complete path-sorted [{path,bytes,sha256}] target-revision tree, ensure_ascii=False, sort_keys=True, separators=(',', ':'))."
+        },
+        "outputPath": { "type": "string", "minLength": 1 },
+        "outputSha256": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "inputSetSha256": { "$ref": "#/$defs/sha256" },
+    "inputCount": { "type": "integer", "minimum": 1 },
+    "dependencyClosure": { "$ref": "#/$defs/artifactReference" },
+    "preflight": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/preflightResult" },
+      "allOf": [
+        { "contains": { "properties": { "checkId": { "const": "D4-PREFLIGHT-SOURCE-STATE-001" } }, "required": ["checkId"] }, "minContains": 1, "maxContains": 1 },
+        { "contains": { "properties": { "checkId": { "const": "D4-PREFLIGHT-REVISION-001" } }, "required": ["checkId"] }, "minContains": 1, "maxContains": 1 },
+        { "contains": { "properties": { "checkId": { "const": "D4-PREFLIGHT-TREE-001" } }, "required": ["checkId"] }, "minContains": 1, "maxContains": 1 }
+      ],
+      "description": "Exact policy preflight set. SOURCE-STATE, REVISION, and TREE raw outputs are immutable and rehashed. Commit mode requires runtimeAllowlist.gitExecutable; snapshot mode rederives from immutable revision.snapshotRoot."
+    },
+    "assembledAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "candidate": { "properties": { "revision": { "properties": { "kind": { "const": "commit" } }, "required": ["kind"] } }, "required": ["revision"] } }, "required": ["candidate"] },
+      "then": { "properties": { "resolvedSource": { "properties": { "kind": { "const": "commit-repository" } } } } }
+    },
+    {
+      "if": { "properties": { "candidate": { "properties": { "revision": { "properties": { "kind": { "const": "snapshot" } }, "required": ["kind"] } }, "required": ["revision"] } }, "required": ["candidate"] },
+      "then": { "properties": { "resolvedSource": { "properties": { "kind": { "const": "immutable-snapshot" } } } } }
+    }
+  ],
+  "$defs": {
+    "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "artifactReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256"],
+      "properties": {
+        "path": { "type": "string", "minLength": 1 },
+        "sha256": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "revision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "value", "snapshotRoot", "gitStatusEvidence"],
+      "properties": {
+        "kind": { "enum": ["commit", "snapshot"] },
+        "value": { "type": "string", "minLength": 1 },
+        "snapshotRoot": { "type": ["string", "null"] },
+        "gitStatusEvidence": { "type": ["string", "null"] }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "kind": { "const": "commit" } }, "required": ["kind"] },
+          "then": { "properties": { "value": { "pattern": "^[a-f0-9]{40}(?:[a-f0-9]{24})?$" }, "snapshotRoot": { "type": "null" } } }
+        },
+        {
+          "if": { "properties": { "kind": { "const": "snapshot" } }, "required": ["kind"] },
+          "then": { "properties": { "snapshotRoot": { "type": "string", "minLength": 1 }, "gitStatusEvidence": { "type": "string", "minLength": 1 } } }
+        }
+      ]
+    },
+    "candidateReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "path", "sha256", "fileSetSha256", "revision"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^(?:D4|P0)-CAND-[A-Z0-9][A-Z0-9._-]*$" },
+        "path": { "type": "string", "minLength": 1 },
+        "sha256": { "$ref": "#/$defs/sha256" },
+        "fileSetSha256": { "$ref": "#/$defs/sha256" },
+        "revision": { "$ref": "#/$defs/revision" }
+      }
+    },
+    "policyReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "path", "sha256", "compiledPolicySha256"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^D4-POLICY-[A-Z0-9][A-Z0-9._-]*$" },
+        "path": { "type": "string", "minLength": 1 },
+        "sha256": { "$ref": "#/$defs/sha256" },
+        "compiledPolicySha256": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "runtimeAllowlistReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256", "digestSha256"],
+      "properties": {
+        "path": { "type": "string", "minLength": 1 },
+        "sha256": { "$ref": "#/$defs/sha256" },
+        "digestSha256": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "preflightResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["checkId", "argv", "cwd", "expectedExitCode", "actualExitCode", "outputPath", "outputSha256"],
+      "properties": {
+        "checkId": { "enum": ["D4-PREFLIGHT-SOURCE-STATE-001", "D4-PREFLIGHT-REVISION-001", "D4-PREFLIGHT-TREE-001"] },
+        "argv": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+        "cwd": { "type": "string", "minLength": 1 },
+        "expectedExitCode": { "const": 0 },
+        "actualExitCode": { "const": 0 },
+        "outputPath": { "type": "string", "minLength": 1 },
+        "outputSha256": { "$ref": "#/$defs/sha256" }
+      }
+    }
+  }
+}

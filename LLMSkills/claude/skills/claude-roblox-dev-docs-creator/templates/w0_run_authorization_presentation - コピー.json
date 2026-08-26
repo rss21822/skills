@@ -1,0 +1,44 @@
+{
+  "schemaVersion": "1.0.0",
+  "challengeId": "HCH-W0-RUN-{{RUN_AUTH_ID}}",
+  "gateType": "w0-run-authorization",
+  "issuedAt": "{{RUN_AUTH_CHALLENGE_ISSUED_AT}}",
+  "target": {
+    "kind": "w0-run-authorization-target-v1",
+    "authorizationId": "W0-RUN-AUTH-{{RUN_AUTH_ID}}",
+    "scopeCoreSha256": "{{RUN_AUTHORIZATION_SCOPE_CORE_SHA256}}",
+    "b2": { "id": "{{B2_ID}}", "path": "{{B2_MANIFEST_PATH}}", "sha256": "{{B2_MANIFEST_SHA256}}", "fileSetSha256": "{{B2_FILE_SET_SHA256}}" },
+    "w0Package": { "id": "{{W0_PACKAGE_ID}}", "path": "{{W0_PACKAGE_PATH}}", "sha256": "{{W0_PACKAGE_SHA256}}" },
+    "bootstrapRunId": "{{W0_BOOTSTRAP_RUN_ID}}",
+    "postexecutionAttestation": { "path": "{{ABSOLUTE_OPERATOR_EXTERNAL_W0_POSTEXECUTION_ATTESTATION_PATH}}", "sha256": "{{W0_POSTEXECUTION_ATTESTATION_SHA256}}" },
+    "firstWp": { "id": "{{FIRST_WP_ID}}", "path": "docs/{{PREFIX}}_work_packages.md", "sha256": "{{FIRST_WP_POST_SYNC_SHA256}}" }
+  },
+  "scope": {
+    "kind": "w0-run-authorization-scope-v1",
+    "approvalChallenge": { "id": "HCH-W0-RUN-{{RUN_AUTH_ID}}", "nonceSha256": "{{RUN_AUTHORIZATION_CHALLENGE_NONCE_SHA256}}" },
+    "b2": { "id": "{{B2_ID}}", "path": "{{B2_MANIFEST_PATH}}", "sha256": "{{B2_MANIFEST_SHA256}}", "fileSetSha256": "{{B2_FILE_SET_SHA256}}" },
+    "w0Package": { "id": "{{W0_PACKAGE_ID}}", "path": "{{W0_PACKAGE_PATH}}", "sha256": "{{W0_PACKAGE_SHA256}}" },
+    "bootstrap": { "runId": "{{W0_BOOTSTRAP_RUN_ID}}", "launchChallenge": { "path": "{{ABSOLUTE_OPERATOR_EXTERNAL_W0_LAUNCH_CHALLENGE_PATH}}", "sha256": "{{W0_LAUNCH_CHALLENGE_SHA256}}" }, "postexecutionAttestation": { "path": "{{ABSOLUTE_OPERATOR_EXTERNAL_W0_POSTEXECUTION_ATTESTATION_PATH}}", "sha256": "{{W0_POSTEXECUTION_ATTESTATION_SHA256}}" } },
+    "firstWp": { "id": "{{FIRST_WP_ID}}", "path": "docs/{{PREFIX}}_work_packages.md", "sha256": "{{FIRST_WP_POST_SYNC_SHA256}}" },
+    "pathScope": {
+      "allowedReadPaths": ["docs/{{PREFIX}}_work_packages.md"],
+      "allowedWritePaths": ["src/{{FIRST_AUTHORIZED_SOURCE_PATH}}"],
+      "frozenPaths": ["{{B0_MANIFEST_PATH}}", "{{MACHINE_DERIVED_B0_SNAPSHOT_MEMBER_PHYSICAL_PATH_0001}}", "{{B1_MANIFEST_PATH}}", "{{MACHINE_DERIVED_B1_SNAPSHOT_MEMBER_PHYSICAL_PATH_0001}}", "{{B2_MANIFEST_PATH}}", "{{MACHINE_DERIVED_B2_SNAPSHOT_MEMBER_PHYSICAL_PATH_0001}}", "{{W0_PACKAGE_PATH}}", "{{MACHINE_DERIVED_PROJECT_LOCAL_HANDOFF_OR_PROOF_PATH_0001}}"]
+    },
+    "assignedReceiver": {
+      "skill": { "id": "{{RECEIVER_SKILL_ID}}", "version": "{{RECEIVER_SKILL_VERSION}}", "path": "{{ABSOLUTE_INSTALLED_RECEIVER_SKILL_ENTRYPOINT_PATH}}", "sha256": "{{RECEIVER_SKILL_SHA256}}" },
+      "receiverSkillTreeSha256": "{{RECEIVER_SKILL_TREE_SHA256}}",
+      "workerId": "{{ASSIGNED_WORKER_ID}}", "requestedModel": "{{REQUESTED_MODEL}}", "resolvedModel": "{{RESOLVED_MODEL}}", "provider": "{{RESOLVED_PROVIDER}}", "account": "{{RESOLVED_ACCOUNT}}", "tool": "{{RESOLVED_TOOL}}", "expectedLoadedProcessClosureSha256": "{{EXPECTED_LOADED_PROCESS_CLOSURE_SHA256}}", "authConstraints": ["{{EXACT_AUTH_CONSTRAINT}}"], "transferScopeSha256": "{{TRANSFER_SCOPE_SHA256}}", "operationScopeSha256": "{{OPERATION_SCOPE_SHA256}}"
+    },
+    "transfer": {
+      "approval": { "id": "{{TRANSFER_APPROVAL_ID}}", "path": "{{ABSOLUTE_OPERATOR_EXTERNAL_TRANSFER_APPROVAL_PATH}}", "sha256": "{{TRANSFER_APPROVAL_SHA256}}" },
+      "provider": "{{TRANSFER_PROVIDER}}", "account": "{{TRANSFER_ACCOUNT}}", "model": "{{TRANSFER_MODEL}}", "destination": "{{TRANSFER_DESTINATION}}", "scope": "{{EXACT_TRANSFER_SCOPE}}", "contentSha256": "{{TRANSFER_CONTENT_SHA256}}", "maxCost": { "currency": "USD", "amount": 0 }, "expiresAt": "{{TRANSFER_APPROVAL_EXPIRES_AT}}"
+    },
+    "operations": { "code": ["read-authorized-files", "write-authorized-files", "run-authorized-tests"], "studio": ["none"], "os": ["read-authorized-files", "write-authorized-files", "spawn-authorized-local-tools"], "network": ["none"] },
+    "deniedOperations": ["unlisted-path-write", "frozen-path-write", "scope-expansion", "subdelegation", "commit", "push", "production-publish", "public-activation", "production-datastore-write", "commerce-production-change", "credential-secret-or-permission-change", "external-network-outside-allowlist"],
+    "expiresAt": "{{RUN_AUTHORIZATION_EXPIRES_AT}}",
+    "additionalScope": false
+  },
+  "targetScopeSha256": "{{RUN_AUTHORIZATION_TARGET_SCOPE_SHA256}}",
+  "canonicalResponse": "APPROVE HCH-W0-RUN-{{RUN_AUTH_ID}} {{RUN_AUTHORIZATION_TARGET_SCOPE_SHA256}}"
+}

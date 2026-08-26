@@ -1,0 +1,23 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "HIT-{{PREFIX}}-{{GATE_TYPE}}-{{SEQUENCE}}",
+  "channel": "{{TRUSTED_CHANNEL}}",
+  "interactionId": "{{STABLE_INTERACTION_ID}}",
+  "capturedAt": "{{ISO_8601_WITH_TIMEZONE}}",
+  "messages": [
+    {
+      "messageId": "{{STABLE_PRESENTATION_MESSAGE_ID}}",
+      "role": "assistant",
+      "actorId": "{{PRESENTING_SYSTEM_OR_ASSISTANT_ID}}",
+      "occurredAt": "{{PRESENTATION_TIME_WITH_TIMEZONE}}",
+      "content": "{{EXACT_CANONICAL_PRESENTATION_ARTIFACT_UTF8_TEXT}}"
+    },
+    {
+      "messageId": "{{STABLE_HUMAN_MESSAGE_ID}}",
+      "role": "human",
+      "actorId": "{{APPROVER}}",
+      "occurredAt": "{{HUMAN_MESSAGE_TIME_WITH_TIMEZONE}}",
+      "content": "{{EXACT_HUMAN_APPROVAL_STATEMENT}}"
+    }
+  ]
+}

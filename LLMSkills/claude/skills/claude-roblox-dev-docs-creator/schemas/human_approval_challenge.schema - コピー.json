@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/roblox-ai-development-os/human-approval-challenge.schema.json",
+  "title": "Human Approval Challenge",
+  "description": "Fail-closed cycle-free approval challenge. Preallocate id, build a human_approval_presentation containing full typed target/scope, hash its canonical UTF-8 bytes, then create this record with presentationArtifact. targetScopeSha256 is always the canonical SHA-256 of exactly {gateType,target,scope}; for w0-run-authorization it is distinct from the scope-only scopeCoreSha256 and both are rederived. canonicalResponse is 'APPROVE ' + id + ' ' + targetScopeSha256. The exact presentation—not a bare digest—must be sent before the human response. Chronology is issuedAt <= selected presentation time < selected human response time <= capture.occurredAt <= provenance verifiedAt; run authorization additionally requires externally proven one-time nonce consumption.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "id", "gateType", "issuedAt", "targetScopeSha256", "canonicalResponse", "presentationArtifact"],
+  "properties": {
+    "schemaVersion": { "const": "1.0.0" },
+    "id": { "type": "string", "pattern": "^HCH-[A-Z0-9][A-Z0-9._-]*$" },
+    "gateType": { "enum": ["gdd-gate1", "p0-start", "p0-contract", "d5", "w0-run-authorization"] },
+    "issuedAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" },
+    "targetScopeSha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "canonicalResponse": {
+      "type": "string",
+      "pattern": "^APPROVE HCH-[A-Z0-9][A-Z0-9._-]* [a-f0-9]{64}$"
+    },
+    "presentationArtifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256"],
+      "properties": {
+        "path": { "type": "string", "minLength": 1 },
+        "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+      },
+      "description": "Schema-valid human_approval_presentation canonical bytes. challengeId/gateType/issuedAt/digest/canonicalResponse must equal this challenge."
+    }
+  },
+  "$defs": {
+    "operatorExternalAbsolutePath": {
+      "type": "string",
+      "pattern": "^(?:[A-Za-z]:[\\\\/]|/).+",
+      "description": "Resolved absolute operator-external path outside the locked project/package/baseline/installed-Skill trees."
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "gateType": { "const": "w0-run-authorization" } }, "required": ["gateType"] },
+      "then": {
+        "properties": {
+          "presentationArtifact": {
+            "properties": { "path": { "$ref": "#/$defs/operatorExternalAbsolutePath" } }
+          }
+        }
+      }
+    }
+  ]
+}

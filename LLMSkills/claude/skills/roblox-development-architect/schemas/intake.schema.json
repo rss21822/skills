@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Roblox Project Intake",
+  "type": "object",
+  "required": [
+    "project",
+    "product",
+    "technical",
+    "state"
+  ],
+  "properties": {
+    "project": {
+      "type": "object",
+      "required": [
+        "name",
+        "prefix",
+        "mode"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "prefix": {
+          "type": "string",
+          "pattern": "^[A-Z0-9]{2,6}$"
+        },
+        "mode": {
+          "enum": [
+            "greenfield",
+            "brownfield",
+            "audit",
+            "sub-spec"
+          ]
+        },
+        "owner": {
+          "type": "string"
+        }
+      }
+    },
+    "product": {
+      "type": "object"
+    },
+    "technical": {
+      "type": "object"
+    },
+    "state": {
+      "type": "object"
+    }
+  }
+}

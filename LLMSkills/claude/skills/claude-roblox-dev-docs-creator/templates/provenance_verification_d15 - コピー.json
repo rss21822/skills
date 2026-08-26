@@ -1,0 +1,58 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "PV-{{PREFIX}}-D15-{{EXPERIMENT_ID}}",
+  "subjectType": "d1.5-measurement-evidence",
+  "subject": {
+    "id": "{{MEASUREMENT_EVIDENCE_ID}}",
+    "path": "{{MEASUREMENT_EVIDENCE_PATH}}",
+    "sha256": "{{MEASUREMENT_EVIDENCE_SHA256}}"
+  },
+  "verificationMode": "pinned-signature",
+  "verifier": {
+    "id": "{{VERIFIER_ID}}",
+    "authority": "{{TRUSTED_STUDIO_RUNTIME_AUTHORITY}}",
+    "adapter": "{{EXTERNALLY_PINNED_ADAPTER}}",
+    "adapterVersion": "{{EXTERNALLY_PINNED_ADAPTER_VERSION}}"
+  },
+  "sourceArtifact": {
+    "path": "{{PINNED_SIGNATURE_EVIDENCE_PATH}}",
+    "sha256": "{{PINNED_SIGNATURE_EVIDENCE_SHA256}}"
+  },
+  "verificationContext": {
+    "kind": "pinned-signature-v1",
+    "algorithm": "rsa-pss-sha256",
+    "keyId": "{{PINNED_KEY_ID}}",
+    "trustAnchorSha256": "{{PINNED_TRUST_ANCHOR_SHA256}}"
+  },
+  "verifiedAt": "{{ISO_8601_WITH_TIMEZONE}}",
+  "claims": {
+    "kind": "d1.5-measurement-v1",
+    "evidenceId": "{{MEASUREMENT_EVIDENCE_ID}}",
+    "evidencePath": "{{MEASUREMENT_EVIDENCE_PATH}}",
+    "evidenceSha256": "{{MEASUREMENT_EVIDENCE_SHA256}}",
+    "triggerId": "feasibility_report",
+    "experimentId": "feasibility_report-combined-v1",
+    "target": {
+      "studioVersion": "{{STUDIO_VERSION}}",
+      "universeId": "{{UNIVERSE_ID}}",
+      "placeId": "{{PLACE_ID}}",
+      "sessionId": "{{STUDIO_SESSION_ID}}",
+      "dataModelSha256": "{{DATA_MODEL_SHA256}}"
+    },
+    "requestSha256": "{{MEASUREMENT_REQUEST_SHA256}}",
+    "commandSha256": "{{MEASUREMENT_COMMAND_SHA256}}",
+    "rawResponseSha256": "{{RAW_MEASUREMENT_RESPONSE_SHA256}}",
+    "preFixedThresholdSha256": "{{PRE_FIXED_THRESHOLD_SHA256}}",
+    "requiredSubchecksSha256": "{{REQUIRED_SPECS_SORTED_SUBCHECKS_SHA256}}",
+    "subcheckEvidenceSetSha256": "{{CANONICAL_SORTED_SUBCHECK_EVIDENCE_SET_SHA256}}",
+    "combinedSuiteSha256": "{{CANONICAL_COMBINED_SUITE_SHA256}}",
+    "result": "pass",
+    "runtimeId": "{{RUNTIME_ID}}",
+    "toolId": "{{TOOL_ID}}",
+    "toolVersion": "{{TOOL_VERSION}}",
+    "startedAt": "{{STARTED_AT_WITH_TIMEZONE}}",
+    "completedAt": "{{COMPLETED_AT_WITH_TIMEZONE}}"
+  },
+  "claimsSha256": "{{CANONICAL_CLAIMS_SHA256}}",
+  "verdict": "verified"
+}

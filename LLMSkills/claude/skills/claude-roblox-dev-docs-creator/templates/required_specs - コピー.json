@@ -1,0 +1,26 @@
+{
+  "schemaVersion": "1.0.0",
+  "project": "{{PROJECT}}",
+  "prefix": "{{PREFIX}}",
+  "required_specs": [
+    {
+      "id": "feasibility_report",
+      "template": "feasibility_report.md",
+      "reason": "{{TRIGGER_DERIVED_HIGH_RISK_REASON}}",
+      "measurementContract": {
+        "kind": "d1.5-combined-suite-v1",
+        "experimentId": "feasibility_report-combined-v1",
+        "cardinality": "exactly-one",
+        "coverage": "all-triggered-high-risk-subchecks",
+        "requiredSubchecks": [
+          {
+            "id": "technical.vehicle_or_custom_physics",
+            "source": "technical.vehicle_or_custom_physics",
+            "sourceValueSha256": "{{CANONICAL_APPROVED_INTAKE_TRUE_SHA256}}"
+          }
+        ],
+        "requiredSubchecksSha256": "{{CANONICAL_SORTED_REQUIRED_SUBCHECKS_SHA256}}"
+      }
+    }
+  ]
+}

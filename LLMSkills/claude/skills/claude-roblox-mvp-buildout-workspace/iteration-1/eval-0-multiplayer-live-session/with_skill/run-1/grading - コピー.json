@@ -1,0 +1,48 @@
+{
+  "run_id": "eval-0-multiplayer-live-session-with_skill",
+  "passed_count": 6,
+  "total_count": 6,
+  "expectations": [
+    {
+      "text": "MCPの合成キー入力ではプレイヤー操作を再現できず、OSレベルの入力注入が必要だと明示している",
+      "passed": true,
+      "evidence": "§0: 「Roblox の UserInputService / ContextActionService は MCP の合成キー入力を受け取らない。…**MCP の user_keyboard_input では一切操作できない**。実操作の再現は OS レベルの入力注入（studio_input.ps1 / SendInput）で行う。」根拠（ContextActionService:BindAction 経路）まで示し、§1 の表でも「プレイヤー操作の再現 → studio_input.ps1（OS 入力注入）」と割り当てている。"
+    },
+    {
+      "text": "OS入力には対象ウィンドウの前面化が必要である点、および複数ウィンドウでの前面の奪い合いへの対処（他ウィンドウの最小化など）に触れている",
+      "passed": true,
+      "evidence": "§4.1: 「OS 入力は**前面ウィンドウにしか届かない**。つまり4人を同時に操作することはできない。1クライアントずつ前面を取って撃ち、次へ移る。」 §3.4: 「スクリプトが各ラウンドで他ウィンドウを最小化してから送る。前面の奪い合いを放置すると、メニュークリックが**黙って失敗する**。」加えて fg=True の必須確認、fg=False 時の tscon 1 /dest:console まで具体化。studio_session.ps1 に Minimize-Others、studio_input.ps1 に SetForegroundWindow と fg= 戻り値が実在することを確認。"
+    },
+    {
+      "text": "起動やクライアント追加の待機を固定sleepではなく成立条件（プロセス数・ウィンドウ・MCPの列挙など）のループで行うよう指示している",
+      "passed": true,
+      "evidence": "§9: 「待ちは**固定 sleep にしない**。プロセス数・ウィンドウ・MCP のインスタンス一覧など、成立を判定できる条件でループする（studio_session.ps1 は既にそうなっている）。」個別にも §2「list_roblox_studios を呼び、対象が返るまで待つ（5秒間隔・最大7回）」、§3.3「成立判定はプロセス数（RobloxStudioBeta が +1）」、§3.4「1台ずつ成立を待つ…目標プロセス数 = 6」。studio_session.ps1 に while ((Get-Date) -lt $deadline) の条件ループが実在。"
+    },
+    {
+      "text": "検証の主軸をサーバー側の構造化ログ／権威側の状態読み取りに置いている（画面目視のみで判定していない）",
+      "passed": true,
+      "evidence": "§0: 「判定はすべて**サーバーの構造化ログの実値**で行う。」 §5 の18行判定表は各行が MVP_FSM ... result=committed to=Starting、MVP_COMBAT spin_hit ... balance_before=100 balance_after=83 など実値ログを Pass 条件にしている。§4.2 は execute_luau (datamodel_type: Server) で権威側の座標を読む Luau を提示。§4.3: 「画面キャプチャは「何かおかしい」までしか言えないので、値の判定はこのGUIツリー読み取りで行う。」"
+    },
+    {
+      "text": "完了条件として、単発動作ではなく試合の全サイクル（開始→操作→決着→次試合へ戻る循環）が通ることを求めている",
+      "passed": true,
+      "evidence": "§5 #18: 「再戦 | Finished → ResetCommitted → WaitingForPlayers → 接続維持の4名で RosterReady → Starting → Active（**2試合目成立**、match identity が更新される）」。§8-D の完了チェックリストにも「決着条件（5点先取 または 3分＋SuddenDeath）で Finished に到達」「Finished → ResetCommitted → WaitingForPlayers から**2試合目が成立**（単発の確認では循環の欠陥が残る）」と循環一周を明示的に要求。"
+    },
+    {
+      "text": "実行可能な具体手段（スクリプトやコマンド、MCPツール名、座標確認の方法など）を含み、抽象的な方針だけで終わっていない",
+      "passed": true,
+      "evidence": "実行可能なコマンドが全編にある: & \"$SKILL\\studio_session.ps1\" -Action AddClients -ServerPid <serverPid> -Clients 4、& \"$SKILL\\studio_input.ps1\" -ProcId <client1Pid> -Actions \"click:640:400,wait:400,down:W,wait:2500,up:W\"、Rojo 2回ビルド＋Get-FileHash -Algorithm SHA256、Select-String -Encoding utf8 -Pattern \"MVP_FSM|MVP_SCORE...\"。MCP ツール名も実名（list_roblox_studios / execute_luau / get_console_output）。座標は実測値（テスト=(246,43)、クライアントを追加=(290,290)）を示したうえで -FullScreen で実位置を読み -TestMenuX/-TestMenuY 等に渡す確認手順を提示。参照3スクリプトの実在と SHIFT=0xA0 の記述一致をファイルで確認済み。"
+    }
+  ],
+  "summary": {
+    "pass_rate": 1.0,
+    "passed": 6,
+    "failed": 0,
+    "total": 6
+  },
+  "timing": {
+    "total_tokens": 128066,
+    "duration_ms": 365733,
+    "total_duration_seconds": 365.7
+  }
+}

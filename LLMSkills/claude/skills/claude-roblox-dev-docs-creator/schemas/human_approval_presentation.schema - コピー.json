@@ -1,0 +1,254 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/roblox-ai-development-os/human-approval-presentation.schema.json",
+  "title": "Human Approval Presentation",
+  "description": "Exact content presented before the human response. Artifact bytes are UTF-8 json.dumps(this object, ensure_ascii=False, sort_keys=True, separators=(',', ':')) with no BOM/newline. It fully exposes gate, target, closed scope, digest, and canonical response so a signature cannot be detached from an unseen arbitrary digest. A W0 run-authorization presentation exposes the complete machine-derived immutable frozenPaths set plus receiverSkillTreeSha256 and expectedLoadedProcessClosureSha256; summary-only or operator-selected replacements are invalid.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion", "challengeId", "gateType", "issuedAt", "target", "scope",
+    "targetScopeSha256", "canonicalResponse"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "1.0.0" },
+    "challengeId": { "type": "string", "pattern": "^HCH-[A-Z0-9][A-Z0-9._-]*$" },
+    "gateType": { "enum": ["gdd-gate1", "p0-start", "p0-contract", "d5", "w0-run-authorization"] },
+    "issuedAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" },
+    "target": {
+      "oneOf": [
+        { "$ref": "#/$defs/artifactTarget" },
+        { "$ref": "#/$defs/baselineTarget" },
+        { "$ref": "#/$defs/plannedCandidateTarget" },
+        { "$ref": "https://example.invalid/roblox-ai-development-os/w0-run-authorization.schema.json#/$defs/runAuthorizationTarget" }
+      ]
+    },
+    "scope": {
+      "oneOf": [
+        { "$ref": "#/$defs/gddGate1Scope" },
+        { "$ref": "#/$defs/p0StartScope" },
+        { "$ref": "#/$defs/p0ContractScope" },
+        { "$ref": "#/$defs/d5Scope" },
+        { "$ref": "https://example.invalid/roblox-ai-development-os/w0-run-authorization.schema.json#/$defs/scopeCore" }
+      ]
+    },
+    "targetScopeSha256": {
+      "$ref": "#/$defs/sha256",
+      "description": "SHA-256 of canonical JSON for exactly {gateType,target,scope}. For w0-run-authorization this remains distinct from scopeCoreSha256; both are independently rederived and externally bound."
+    },
+    "canonicalResponse": {
+      "type": "string",
+      "pattern": "^APPROVE HCH-[A-Z0-9][A-Z0-9._-]* [a-f0-9]{64}$"
+    }
+  },
+  "$defs": {
+    "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "artifactReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256"],
+      "properties": {
+        "path": { "type": "string", "minLength": 1 },
+        "sha256": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "artifactTarget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "path", "sha256", "revision"],
+      "properties": {
+        "kind": { "const": "artifact" },
+        "path": { "type": "string", "minLength": 1 },
+        "sha256": { "$ref": "#/$defs/sha256" },
+        "revision": { "type": "string", "minLength": 1 }
+      }
+    },
+    "baselineTarget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "id", "path", "sha256", "fileSetSha256", "revision"],
+      "properties": {
+        "kind": { "const": "baseline" },
+        "id": { "type": "string", "minLength": 1 },
+        "path": { "type": "string", "minLength": 1 },
+        "sha256": { "$ref": "#/$defs/sha256" },
+        "fileSetSha256": { "$ref": "#/$defs/sha256" },
+        "revision": { "type": "string", "minLength": 1 }
+      }
+    },
+    "plannedCandidateTarget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "id", "approvedContentFileSetSha256", "sourceBaselineRevision", "normalizationRule"],
+      "properties": {
+        "kind": { "const": "planned-candidate" },
+        "id": { "type": "string", "pattern": "^P0-CAND-[A-Z0-9][A-Z0-9._-]*$" },
+        "approvedContentFileSetSha256": { "$ref": "#/$defs/sha256" },
+        "sourceBaselineRevision": {
+          "$ref": "#/$defs/revision",
+          "description": "Exact existing B0.revision. approvedContentFileSetSha256 separately binds the pre-freeze staging bytes; this field is never the future P0-CAND revision."
+        },
+        "normalizationRule": { "const": "strip-fixed-p0-approval-procedure-v1" }
+      }
+    },
+    "revision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "value", "snapshotRoot", "gitStatusEvidence"],
+      "properties": {
+        "kind": { "const": "snapshot" },
+        "value": { "type": "string", "minLength": 1 },
+        "snapshotRoot": { "type": ["string", "null"] },
+        "gitStatusEvidence": { "type": ["string", "null"] }
+      },
+      "allOf": [
+        { "properties": { "snapshotRoot": { "type": "string", "minLength": 1 }, "gitStatusEvidence": { "type": "string", "minLength": 1 } } }
+      ],
+      "description": "W0 lifecycle v1 sourceBaselineRevision is the existing immutable B0 snapshot. Commit is unsupported/STOP."
+    },
+    "inventoryReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "section", "fileSha256", "inventoryId", "sourceItemIds"],
+      "properties": {
+        "path": { "const": "PROGRESS.md" },
+        "section": { "const": "Proposed P0 closure inventory" },
+        "fileSha256": { "$ref": "#/$defs/sha256" },
+        "inventoryId": { "type": "string", "minLength": 1 },
+        "sourceItemIds": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "managementWp": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "path"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^WP-[A-Z0-9]+-[A-Z0-9][A-Z0-9._-]*$" },
+        "path": { "type": "string", "pattern": "^docs/[A-Za-z0-9._-]+_work_packages\\.md$" }
+      }
+    },
+    "gddGate1Scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "decision", "approvedIntake", "requiredSpecs", "additionalScope"],
+      "properties": {
+        "kind": { "const": "gdd-gate1-v1" },
+        "decision": { "const": "approve-gdd-for-d1.5-and-d2" },
+        "approvedIntake": { "$ref": "#/$defs/artifactReference" },
+        "requiredSpecs": { "$ref": "#/$defs/artifactReference" },
+        "additionalScope": { "const": false }
+      },
+      "description": "The presentation exposes the exact approved intake and trigger-derived required_specs bytes alongside the target GDD before the human response."
+    },
+    "p0StartScope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "inventory", "p0ManagementWp", "productContentMutation", "fixedProcedure", "additionalScope"],
+      "properties": {
+        "kind": { "const": "p0-start-v1" },
+        "inventory": { "$ref": "#/$defs/inventoryReference" },
+        "p0ManagementWp": { "$ref": "#/$defs/managementWp" },
+        "productContentMutation": { "const": "inventory-rows-only" },
+        "fixedProcedure": { "const": "p0-standard-six-step-v1" },
+        "additionalScope": { "const": false }
+      }
+    },
+    "p0ContractScope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "p0StartApprovalId", "inventoryId", "closedSourceItemIds", "p0ManagementWp", "approvalOutcome", "additionalScope"],
+      "properties": {
+        "kind": { "const": "p0-contract-v1" },
+        "p0StartApprovalId": { "type": "string", "minLength": 1 },
+        "inventoryId": { "type": "string", "minLength": 1 },
+        "closedSourceItemIds": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "p0ManagementWp": { "$ref": "#/$defs/managementWp" },
+        "approvalOutcome": { "const": "contract-approved" },
+        "additionalScope": { "const": false }
+      }
+    },
+    "d5Scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "firstWp", "authorization", "additionalScope"],
+      "properties": {
+        "kind": { "const": "d5-v1" },
+        "firstWp": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["id", "path"],
+          "properties": {
+            "id": { "type": "string", "minLength": 1 },
+            "path": { "type": "string", "minLength": 1 }
+          }
+        },
+        "authorization": { "const": "w0-handoff-only" },
+        "additionalScope": { "const": false }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "gateType": { "const": "gdd-gate1" } }, "required": ["gateType"] },
+      "then": {
+        "properties": {
+          "target": { "$ref": "#/$defs/artifactTarget" },
+          "scope": { "$ref": "#/$defs/gddGate1Scope" }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "gateType": { "const": "p0-start" } }, "required": ["gateType"] },
+      "then": {
+        "properties": {
+          "target": {
+            "allOf": [
+              { "$ref": "#/$defs/baselineTarget" },
+              { "properties": { "id": { "pattern": "^B0-" } } }
+            ]
+          },
+          "scope": { "$ref": "#/$defs/p0StartScope" }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "gateType": { "const": "p0-contract" } }, "required": ["gateType"] },
+      "then": {
+        "properties": {
+          "target": { "$ref": "#/$defs/plannedCandidateTarget" },
+          "scope": { "$ref": "#/$defs/p0ContractScope" }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "gateType": { "const": "d5" } }, "required": ["gateType"] },
+      "then": {
+        "properties": {
+          "target": {
+            "allOf": [
+              { "$ref": "#/$defs/baselineTarget" },
+              { "properties": { "id": { "pattern": "^B1-" } } }
+            ]
+          },
+          "scope": { "$ref": "#/$defs/d5Scope" }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "gateType": { "const": "w0-run-authorization" } }, "required": ["gateType"] },
+      "then": {
+        "properties": {
+          "target": { "$ref": "https://example.invalid/roblox-ai-development-os/w0-run-authorization.schema.json#/$defs/runAuthorizationTarget" },
+          "scope": { "$ref": "https://example.invalid/roblox-ai-development-os/w0-run-authorization.schema.json#/$defs/scopeCore" }
+        }
+      }
+    }
+  ]
+}

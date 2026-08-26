@@ -1,0 +1,120 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/roblox-ai-development-os/d4-auditor-attestation.schema.json",
+  "title": "D4 Auditor Execution Attestation",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion", "id", "laneRunId", "executionId", "sessionId", "auditTrack", "auditorClass", "worker", "requestedModel", "resolvedModel",
+    "toolVersion", "contextMode", "filesystemAccess", "capsule", "auditPolicy",
+    "runtimeAllowlist", "fullPromptArtifact", "requestCoreSha256", "inspectedInputs", "commands", "requestArtifact",
+    "responseArtifact", "finishReason", "startedAt", "completedAt"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "1.0.0" },
+    "id": { "type": "string", "pattern": "^D4-ATTEST-[A-Z0-9][A-Z0-9._-]*$" },
+    "laneRunId": { "type": "string", "pattern": "^D4-RUN-[A-Z0-9][A-Z0-9._-]*$" },
+    "executionId": { "type": "string", "minLength": 1 },
+    "sessionId": { "type": "string", "minLength": 1 },
+    "auditTrack": { "enum": ["consistency", "roblox-readiness", "clean-room"] },
+    "auditorClass": { "const": "A" },
+    "worker": { "type": "string", "minLength": 1 },
+    "requestedModel": { "type": "string", "minLength": 1 },
+    "resolvedModel": {
+      "type": "string",
+      "minLength": 1,
+      "not": {
+        "pattern": "^(?:[Uu][Nn][Vv][Ee][Rr][Ii][Ff][Ii][Aa][Bb][Ll][Ee]|[Uu][Nn][Kk][Nn][Oo][Ww][Nn]|[Uu][Nn][Rr][Ee][Ss][Oo][Ll][Vv][Ee][Dd]|[Nn][Oo][Nn][Ee]|[Nn]/[Aa])$"
+      }
+    },
+    "toolVersion": { "type": "string", "minLength": 1 },
+    "contextMode": { "const": "clean" },
+    "filesystemAccess": {
+      "const": "read-only-sanitized-root-plus-pinned-runtime-and-verifier",
+      "description": "Only sanitizedRoot, the exact d4RuntimePin Python/Git closure, and runtimeAllowlist.provenanceVerifierConfig plus its externally pinned adapter/signature closure. Installed skill, project config, PATH, sibling imports, and any other filesystem path are denied."
+    },
+    "capsule": { "$ref": "#/$defs/artifactReference" },
+    "auditPolicy": {
+      "$ref": "#/$defs/policyReference",
+      "description": "Must exactly equal requestCore.auditPolicy and capsule.auditPolicy."
+    },
+    "runtimeAllowlist": {
+      "$ref": "#/$defs/runtimeAllowlistReference",
+      "description": "Must exactly equal requestCore.runtimeAllowlist and capsule.runtimeAllowlist. No installed-skill path may be read directly. Post-P0 transition check freshly queries/verifies only through the exact external provenanceVerifierConfig closure."
+    },
+    "fullPromptArtifact": {
+      "$ref": "#/$defs/artifactReference",
+      "description": "Must exactly equal outer request.fullPromptArtifact and the orchestrator-submitted payload bytes reported by the trusted runtime/provider; provider-internal implicit frames are outside this hash."
+    },
+    "requestCoreSha256": {
+      "$ref": "#/$defs/sha256",
+      "description": "Must exactly equal outer request.requestCoreSha256."
+    },
+    "inspectedInputs": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/artifactReference" }
+    },
+    "commands": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/commandRecord" }
+    },
+    "requestArtifact": { "$ref": "#/$defs/artifactReference" },
+    "responseArtifact": { "$ref": "#/$defs/artifactReference" },
+    "finishReason": { "const": "stop" },
+    "startedAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" },
+    "completedAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" }
+  },
+  "$defs": {
+    "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "artifactReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256"],
+      "properties": {
+        "path": { "type": "string", "minLength": 1 },
+        "sha256": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "policyReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "path", "sha256", "compiledPolicySha256"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^D4-POLICY-[A-Z0-9][A-Z0-9._-]*$" },
+        "path": { "type": "string", "minLength": 1 },
+        "sha256": { "$ref": "#/$defs/sha256" },
+        "compiledPolicySha256": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "runtimeAllowlistReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256", "digestSha256"],
+      "properties": {
+        "path": { "type": "string", "minLength": 1 },
+        "sha256": { "$ref": "#/$defs/sha256" },
+        "digestSha256": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "commandRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["checkId", "argv", "cwd", "exitCode", "outputPath", "outputSha256"],
+      "properties": {
+        "checkId": { "type": "string", "pattern": "^[A-Z0-9][A-Z0-9._-]*$" },
+        "argv": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 },
+          "description": "Exact argv executed with shell=false."
+        },
+        "cwd": { "type": "string", "minLength": 1 },
+        "exitCode": { "type": "integer" },
+        "outputPath": { "type": "string", "minLength": 1 },
+        "outputSha256": { "$ref": "#/$defs/sha256" }
+      }
+    }
+  }
+}

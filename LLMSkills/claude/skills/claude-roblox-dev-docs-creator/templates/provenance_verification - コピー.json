@@ -1,0 +1,85 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "PV-{{PREFIX}}-D4-{{TRACK}}-{{SEQUENCE}}",
+  "subjectType": "d4-auditor-attestation",
+  "subject": {
+    "id": "{{D4_ATTESTATION_ID}}",
+    "path": "{{D4_ATTESTATION_PATH}}",
+    "sha256": "{{D4_ATTESTATION_SHA256}}"
+  },
+  "verificationMode": "pinned-signature",
+  "verifier": {
+    "id": "{{VERIFIER_ID}}",
+    "authority": "{{TRUSTED_RUNTIME_AUTHORITY}}",
+    "adapter": "{{PINNED_ADAPTER}}",
+    "adapterVersion": "{{PINNED_ADAPTER_VERSION}}"
+  },
+  "sourceArtifact": {
+    "path": "{{PINNED_SIGNATURE_EVIDENCE_PATH}}",
+    "sha256": "{{PINNED_SIGNATURE_EVIDENCE_SHA256}}"
+  },
+  "verificationContext": {
+    "kind": "pinned-signature-v1",
+    "algorithm": "rsa-pss-sha256",
+    "keyId": "{{PINNED_KEY_ID}}",
+    "trustAnchorSha256": "{{PINNED_TRUST_ANCHOR_SHA256}}"
+  },
+  "verifiedAt": "{{ISO_8601_WITH_TIMEZONE}}",
+  "claims": {
+    "kind": "d4-runtime-v1",
+    "attestationId": "{{D4_ATTESTATION_ID}}",
+    "laneRunId": "{{D4_LANE_RUN_ID}}",
+    "executionId": "{{RUNTIME_EXECUTION_ID}}",
+    "sessionId": "{{RUNTIME_SESSION_ID}}",
+    "auditTrack": "{{TRACK}}",
+    "auditorClass": "A",
+    "worker": "{{WORKER}}",
+    "requestedModel": "{{REQUESTED_MODEL}}",
+    "resolvedModel": "{{RESOLVED_MODEL}}",
+    "toolVersion": "{{TOOL_VERSION}}",
+    "contextMode": "clean",
+    "filesystemAccess": "read-only-sanitized-root-plus-pinned-runtime-and-verifier",
+    "providerPolicy": {
+      "id": "{{TRUSTED_PROVIDER_POLICY_ID}}",
+      "sha256": "{{TRUSTED_PROVIDER_POLICY_SHA256}}"
+    },
+    "capsule": { "path": "{{D4_CAPSULE_PATH}}", "sha256": "{{D4_CAPSULE_SHA256}}" },
+    "auditPolicy": {
+      "id": "{{D4_AUDIT_POLICY_ID}}",
+      "path": "{{D4_AUDIT_POLICY_PATH}}",
+      "sha256": "{{D4_AUDIT_POLICY_SHA256}}",
+      "compiledPolicySha256": "{{D4_COMPILED_POLICY_SHA256}}"
+    },
+    "runtimeAllowlist": {
+      "path": "{{D4_RUNTIME_ALLOWLIST_PATH}}",
+      "sha256": "{{D4_RUNTIME_ALLOWLIST_SHA256}}",
+      "digestSha256": "{{D4_RUNTIME_ALLOWLIST_DIGEST_SHA256}}"
+    },
+    "fullPromptSha256": "{{FULL_PROVIDER_PROMPT_SHA256}}",
+    "inspectedInputs": [
+      { "path": "{{INSPECTED_CAPSULE_PATH}}", "sha256": "{{INSPECTED_INPUT_SHA256}}" }
+    ],
+    "inspectedInputsSha256": "{{CANONICAL_INSPECTED_INPUTS_SHA256}}",
+    "requestId": "{{D4_REQUEST_ID}}",
+    "requestCoreSha256": "{{CANONICAL_REQUEST_CORE_SHA256}}",
+    "requestSha256": "{{D4_REQUEST_SHA256}}",
+    "requiredCheckIds": ["{{EXACT_REQUIRED_CHECK_ID}}"],
+    "commands": [
+      {
+        "checkId": "{{EXACT_REQUIRED_CHECK_ID}}",
+        "argv": ["{{EXACT_ARGV_ITEM}}"],
+        "cwd": "{{EXACT_CWD}}",
+        "expectedExitCode": 0,
+        "actualExitCode": 0,
+        "outputPath": "{{COMMAND_OUTPUT_PATH}}",
+        "outputSha256": "{{COMMAND_OUTPUT_SHA256}}"
+      }
+    ],
+    "responseSha256": "{{D4_RESPONSE_SHA256}}",
+    "finishReason": "stop",
+    "startedAt": "{{STARTED_AT_WITH_TIMEZONE}}",
+    "completedAt": "{{COMPLETED_AT_WITH_TIMEZONE}}"
+  },
+  "claimsSha256": "{{CANONICAL_CLAIMS_SHA256}}",
+  "verdict": "verified"
+}

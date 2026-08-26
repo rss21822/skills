@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/roblox-ai-development-os/asset-ledger.schema.json",
+  "title": "Asset and Rights Ledger",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "project", "prefix", "assets"],
+  "properties": {
+    "schemaVersion": { "const": "1.0.0" },
+    "project": { "type": "string", "minLength": 1 },
+    "prefix": { "type": "string", "pattern": "^[A-Z0-9]{2,6}$" },
+    "assets": { "type": "array", "items": { "$ref": "#/$defs/asset" } }
+  },
+  "$defs": {
+    "asset": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id", "type", "purpose", "source", "rightsStatus", "rightsEvidence",
+        "owner", "polycount", "textureBudget", "lod", "collision",
+        "moderationStatus", "blockingWorkPackage", "status", "fallback"
+      ],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "type": { "type": "string", "minLength": 1 },
+        "purpose": { "type": "string", "minLength": 1 },
+        "source": { "type": "string", "minLength": 1 },
+        "rightsStatus": { "enum": ["unverified", "approved", "restricted", "rejected"] },
+        "rightsEvidence": { "type": ["string", "null"] },
+        "owner": { "type": "string", "minLength": 1 },
+        "polycount": { "type": ["integer", "null"], "minimum": 0 },
+        "textureBudget": { "type": ["string", "null"] },
+        "lod": { "type": ["string", "null"] },
+        "collision": { "type": ["string", "null"] },
+        "moderationStatus": { "type": ["string", "null"] },
+        "blockingWorkPackage": { "type": ["string", "null"] },
+        "status": { "enum": ["todo", "in-progress", "ready", "blocked", "replaced"] },
+        "fallback": { "type": ["string", "null"] }
+      }
+    }
+  }
+}

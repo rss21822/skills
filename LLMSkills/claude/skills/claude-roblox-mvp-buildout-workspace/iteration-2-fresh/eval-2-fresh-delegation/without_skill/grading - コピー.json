@@ -1,0 +1,48 @@
+{
+  "run_id": "eval-2-fresh-delegation-without_skill",
+  "passed_count": 3,
+  "total_count": 7,
+  "expectations": [
+    {
+      "text": "標準入力を閉じて起動すること（< /dev/null 相当）をハング対策として明示している",
+      "passed": false,
+      "evidence": "No mention of stdin, /dev/null, $null redirection, or closing standard input anywhere. The hang countermeasures given are foreground execution and human watching plus non-interactive flags: \"**バックグラウンドで投げない。** 前景で走らせて、画面に出力が流れているのを見る\" and \"**非対話モード（`codex exec` 相当）で走らせる。**\" / \"`--ask-for-approval never`\". Per the grading rule, \"don't run it in the background, watch it instead\" is explicitly the non-qualifying adjacent claim. Also offers only a manual detection fallback: \"**15 分、出力に新しい行が増えなければ異常**とみなす\"."
+    },
+    {
+      "text": "行頭が開き括弧になる型キャストへの代入を禁止する条項を入れている",
+      "passed": false,
+      "evidence": "No clause about leading-parenthesis / ambiguous-syntax lines or type casts (`::`) at all. The module rules 9-16 cover only project.json, file create/delete/rename, extension conventions, `return`, `require`, circular requires, `--!strict`, and WaitForChild — e.g. \"15. 既存ファイルに `--!strict` を新規に付けないこと。\" The nearest style clause is only about whitespace: \"無関係な行の空白・改行・並び替えを差分に混ぜないこと。\""
+    },
+    {
+      "text": "ファイルの改名・拡張子変更の禁止など Rojo の構造不変条件を守らせる条項を入れている",
+      "passed": true,
+      "evidence": "\"10. ファイルの新規作成・削除・リネーム・移動をしないこと。\" and \"11. ファイル名の拡張子規約を変えないこと。 `*.server.lua(u)` = Script、`*.client.lua(u)` = LocalScript、`*.lua(u)` = ModuleScript、`init.lua(u)` = そのフォルダ自身。\" plus \"9. `default.project.json`（および他の *.project.json）を変更しないこと。\", cross-checked by the reviewer with \"git --no-pager diff -- *.project.json  # 空であること\"."
+    },
+    {
+      "text": "決定論ビルドを2回実行してsha256一致を確認させる受け入れ条件を入れている",
+      "passed": false,
+      "evidence": "No hash, sha256, checksum, or determinism check appears. The two builds requested are before/after the fix, not two runs compared for byte equality: \"A. `rojo build default.project.json --output <一時ディレクトリ>/verify.rbxlx` … - 修正**前**と修正**後**の両方で実行する。\" The acceptance condition is only success/failure: \"修正後に失敗した場合は、成功するまで直すか、直せないなら報告して終了。\""
+    },
+    {
+      "text": "ビルド成功がモジュール読み込み可能の証明にならない点に触れている",
+      "passed": true,
+      "evidence": "\"- 成功 = 少なくとも「Rojo のツリー定義とファイル配置の整合」は壊れていない。\" — build success is explicitly scoped to tree/file-placement consistency only, and a separate post-build step is mandated for load failures: \"### C. Studio で読み込み事故の確認（当たり判定を試す前にここ）\" with strings \"`Requested module experienced an error while loading`\" and \"`Module code did not return exactly one value`\"."
+    },
+    {
+      "text": "実施していない検証を実施したと書かせない条項または報告を証拠扱いしない方針を含む",
+      "passed": false,
+      "evidence": "No clause forbidding claiming un-run verification as run, and no statement that the Codex report is not evidence. What is there instead is a narrow skip-disclosure rule for one optional lint step — \"導入されていなければ実行せず、「未導入のためスキップ」と報告に書くこと\" — and a request for output excerpts in the report: \"3. 実行したコマンドと結果: コマンドと、成否および末尾数行の出力\". Section 3 has the requester re-check things, but it is framed as workflow ordering (\"**A → B が通ってから Studio を開く**のが時間の節約になります\"), not as a policy that the report does not count as evidence."
+    },
+    {
+      "text": "投げた後に依頼者自身が行う検証を具体的に示している",
+      "passed": true,
+      "evidence": "\"## 3. 投げた後にこちらで確認すること\" with concrete steps A-F, e.g. \"git --no-pager diff -U0 | Select-String -Pattern \\\"require|^\\\\-.*return|WaitForChild|--!strict\\\"\", \"rojo build default.project.json --output .\\\\build\\\\verify.rbxlx\", the Studio Output string search list, and \"1. **投げる前に書いた再現手順を、そのまま実行**して期待動作になるか。 - 「直ったはず」ではなく、修正前に Fail していた手順が Pass することを見る。\""
+    }
+  ],
+  "summary": {
+    "pass_rate": 0.4286,
+    "passed": 3,
+    "failed": 4,
+    "total": 7
+  }
+}

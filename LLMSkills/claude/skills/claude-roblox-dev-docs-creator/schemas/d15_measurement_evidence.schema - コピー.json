@@ -1,0 +1,181 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/roblox-ai-development-os/d15-measurement-evidence.schema.json",
+  "title": "D1.5 Runtime Measurement Evidence",
+  "description": "Closed raw-evidence binding for one trigger/experiment. Local bytes alone cannot make the result trustworthy; a separate provenance_verification must derive the same fields from an operator-pinned runtime query or signature. E0 capability probes are never valid instances.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion", "id", "triggerId", "experimentId", "target", "requestArtifact",
+    "commandArtifact", "rawResponseArtifact", "preFixedThresholdArtifact", "combinedSuite", "result",
+    "runtime", "startedAt", "completedAt"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "1.0.0" },
+    "id": { "type": "string", "pattern": "^D15-EVIDENCE-[A-Z0-9][A-Z0-9._-]*$" },
+    "triggerId": { "const": "feasibility_report" },
+    "experimentId": { "const": "feasibility_report-combined-v1" },
+    "target": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["studioVersion", "universeId", "placeId", "sessionId", "dataModelSha256"],
+      "properties": {
+        "studioVersion": { "type": "string", "minLength": 1 },
+        "universeId": { "type": "string", "minLength": 1 },
+        "placeId": { "type": "string", "minLength": 1 },
+        "sessionId": { "type": "string", "minLength": 1 },
+        "dataModelSha256": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "requestArtifact": { "$ref": "#/$defs/artifactReference" },
+    "commandArtifact": {
+      "$ref": "#/$defs/artifactReference",
+      "description": "Exact combined-suite command/argv contract covering every triggered high-risk subcheck."
+    },
+    "rawResponseArtifact": { "$ref": "#/$defs/artifactReference" },
+    "preFixedThresholdArtifact": {
+      "$ref": "#/$defs/artifactReference",
+      "description": "Threshold suite fixed before execution and covering every triggered high-risk subcheck."
+    },
+    "combinedSuite": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "coverage", "requiredSubchecksSha256", "subcheckEvidenceSetSha256", "overallRule", "subchecks"],
+      "properties": {
+        "kind": { "const": "d1.5-combined-suite-v1" },
+        "coverage": { "const": "all-triggered-high-risk-subchecks" },
+        "requiredSubchecksSha256": {
+          "$ref": "#/$defs/sha256",
+          "description": "Must equal required_specs feasibility_report.measurementContract.requiredSubchecksSha256."
+        },
+        "subcheckEvidenceSetSha256": {
+          "$ref": "#/$defs/sha256",
+          "description": "SHA-256 of canonical JSON of subchecks sorted by id after recomputing each subcheckEvidenceSha256. Outer provenance must return the same digest."
+        },
+        "overallRule": { "const": "all-subchecks-pass" },
+        "subchecks": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id", "source", "sourceValueSha256", "trialArtifact", "thresholdArtifact",
+              "rawOutputArtifact", "result", "subcheckEvidenceSha256"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^technical\\.(?:vehicle_or_custom_physics|high_npc_or_fx_load|high_frequency_projectiles_or_fast_pvp|free_text_or_ugc|multi_place)$"
+              },
+              "source": {
+                "type": "string",
+                "pattern": "^technical\\.(?:vehicle_or_custom_physics|high_npc_or_fx_load|high_frequency_projectiles_or_fast_pvp|free_text_or_ugc|multi_place)$"
+              },
+              "sourceValueSha256": { "$ref": "#/$defs/sha256" },
+              "trialArtifact": { "$ref": "#/$defs/artifactReference" },
+              "thresholdArtifact": { "$ref": "#/$defs/artifactReference" },
+              "rawOutputArtifact": { "$ref": "#/$defs/artifactReference" },
+              "result": { "enum": ["pass", "fail", "inconclusive"] },
+              "subcheckEvidenceSha256": {
+                "$ref": "#/$defs/sha256",
+                "description": "SHA-256 of canonical JSON for exactly {id,source,sourceValueSha256,trialArtifact,thresholdArtifact,rawOutputArtifact,result}."
+              }
+            }
+          },
+          "description": "Lexicographically sorted technical-flag IDs exact-cover required_specs. Each subcheck binds its actual trial, pre-fixed threshold, and raw output independently; a top-level bundle is insufficient without these refs."
+        }
+      }
+    },
+    "result": { "enum": ["pass", "fail", "inconclusive"] },
+    "runtime": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["runtimeId", "toolId", "toolVersion"],
+      "properties": {
+        "runtimeId": { "type": "string", "minLength": 1 },
+        "toolId": { "type": "string", "minLength": 1 },
+        "toolVersion": { "type": "string", "minLength": 1 }
+      }
+    },
+    "startedAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" },
+    "completedAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d{1,7})?(?:Z|[+-](?:(?:0\\d|1[0-3]):[0-5]\\d|14:00))$" }
+  },
+  "$defs": {
+    "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "artifactReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256"],
+      "properties": {
+        "path": { "type": "string", "minLength": 1 },
+        "sha256": { "$ref": "#/$defs/sha256" }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "result": { "const": "pass" } }, "required": ["result"] },
+      "then": {
+        "properties": {
+          "combinedSuite": {
+            "properties": {
+              "subchecks": { "items": { "properties": { "result": { "const": "pass" } } } }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "result": { "const": "fail" } }, "required": ["result"] },
+      "then": {
+        "properties": {
+          "combinedSuite": {
+            "properties": {
+              "subchecks": {
+                "contains": { "properties": { "result": { "const": "fail" } }, "required": ["result"] },
+                "minContains": 1
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "result": { "const": "inconclusive" } }, "required": ["result"] },
+      "then": {
+        "properties": {
+          "combinedSuite": {
+            "properties": {
+              "subchecks": {
+                "contains": { "properties": { "result": { "const": "inconclusive" } }, "required": ["result"] },
+                "minContains": 1,
+                "not": {
+                  "contains": { "properties": { "result": { "const": "fail" } }, "required": ["result"] }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "result": { "const": "fail" } }, "required": ["result"] },
+      "then": {},
+      "else": {
+        "properties": {
+          "combinedSuite": {
+            "properties": {
+              "subchecks": {
+                "not": {
+                  "contains": { "properties": { "result": { "const": "fail" } }, "required": ["result"] }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}
