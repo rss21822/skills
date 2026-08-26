@@ -13,6 +13,50 @@ Windows / Git Bash 特有の罠を回避済み。
 - 認証: **Cursorサブスクのログインセッション**を使う。**APIキー不要**
 - アカウント: `status`で確認。メールアドレスをprompt・成果物・attestationへ複製しない
 - `cursor-agent` は **PATH に無い**。Cursor 本体に同梱されている
+- **ユーザープロファイル名をハードコードしない**。Windowsのプロファイル名は環境ごとに違う。
+  常に `$USERPROFILE` から導出する（Git Bash では下記 `CURSOR_AGENT_ROOT` を使う）
+
+```bash
+UP=$(cygpath -u "$USERPROFILE")
+CURSOR_AGENT_ROOT="$UP/AppData/Roaming/Cursor/User/globalStorage/anysphere.cursor-agent-worker/agent-cli/.local/share/cursor-agent/versions"
+```
+
+## Preflight（毎回・最初に実行）
+
+経路A/B のどちらを使う場合も、まず実体の有無を確認する。無ければ**推測でfallbackせず停止**する。
+
+```bash
+UP=$(cygpath -u "$USERPROFILE")
+CURSOR_AGENT_ROOT="$UP/AppData/Roaming/Cursor/User/globalStorage/anysphere.cursor-agent-worker/agent-cli/.local/share/cursor-agent/versions"
+V=$(ls -d "$CURSOR_AGENT_ROOT"/*/ 2>/dev/null | sort | tail -1)
+if [ -n "$V" ]; then echo "PROVISIONED: $V"; else echo "NOT PROVISIONED"; fi
+```
+
+`2>/dev/null` と `-n "$V"` 判定を省かないこと。未展開時は glob が展開されず `ls` が
+`No such file or directory` を吐いて終了コード 2 で終わる。**それは異常ではなく「未展開」という正常な判定結果**なので、
+エラーとして扱わず上記の形で吸収する。
+
+PowerShell 版:
+
+```powershell
+$root = Join-Path $env:USERPROFILE 'AppData\Roaming\Cursor\User\globalStorage\anysphere.cursor-agent-worker\agent-cli\.local\share\cursor-agent\versions'
+if (Test-Path $root) { $v = Get-ChildItem $root -Directory -ErrorAction SilentlyContinue | Sort-Object Name | Select-Object -Last 1 } else { $v = $null }
+if ($v) { "PROVISIONED: $($v.FullName)" } else { "NOT PROVISIONED" }
+```
+
+判定:
+
+| 出力 | 意味 | 対処 |
+|---|---|---|
+| `PROVISIONED: <path>` | CLI 展開済み | 経路A/B へ進む |
+| `NOT PROVISIONED` | **CLI ランタイム未展開** | 停止して使用者へ差し戻す（下記） |
+
+Cursor 本体に同梱されているのは拡張 `resources/app/extensions/cursor-agent-worker/dist/main.js` だけで、
+実行に使う `versions/<日付-hash>/node.exe` + `index.js` は
+**Cursor 側で Agent CLI を一度起動したときに初めてダウンロード・展開される**。
+未展開の状態では `status` も `--model` 指定も実行できず、`version` を pin できないため
+execution block を確定できない。この場合は「Cursor.exe でサブスクにログインし Agent CLI を一度起動する」
+ことを使用者へ依頼し、本 Skill の実行は行わない。
 
 ## 呼び出し経路は2つ
 
@@ -33,7 +77,10 @@ Windows / Git Bash 特有の罠を回避済み。
 ### 経路A: MCP ツール（推奨・通常はこちら）
 
 登録済み MCP サーバー `cursor` を使う。実装は
-`C:\Users\ryufu\.claude\mcp-servers\cursor\server.mjs`。
+`%USERPROFILE%\.claude\mcp-servers\cursor\server.mjs`（プロファイル名を固定で書かない）。
+
+`mcp__cursor__status` などが tool 一覧に存在しなければ、**この環境では MCP サーバー `cursor` が未登録**。
+非対話セッションからは登録できないので、経路B へ切り替えるか、使用者へ登録を依頼する。
 
 | ツール | 用途 |
 |---|---|
@@ -45,10 +92,39 @@ Windows / Git Bash 特有の罠を回避済み。
 
 - `prompt` (必須) — **自己完結させること**。会話履歴もproject fileも見えない。後述のinline context bundleを含める
 - `model` (必須運用) — 完全なIDを明示。server defaultへ依存しない
-- `timeout_ms` (必須運用) — 数値を明示。server defaultへ依存しない
+- `timeout_ms` (必須運用) — 数値を明示。server defaultへ依存しない（server default は 1,200,000 ms）
+- `resume_session_id` (任意) — 前回応答末尾の `session_id`。中断した作業の続きを書かせるときに渡す
 
 MCP サーバー側でバージョンパスを自動解決し、隔離ディレクトリで実行するので、
 呼ぶ側は上記引数だけ意識すればよい。
+
+#### タイムアウトは部分結果として返る（server 2.0.0 以降）
+
+`ask` は `stream-json` + `--stream-partial-output` で実行し、タイムアウトしても
+それまでに受信した本文を捨てずに返す。**この場合も `isError` は立たない。**
+成功と部分失敗が同じ形で返るため、**返り値の先頭を必ず確認する**。
+
+```
+本文先頭が "TIMED OUT after <ms> ms" → 部分結果。完成品として採用しない
+```
+
+部分結果を受け取ったときの手順:
+
+1. 部分出力をそのまま正本・成果物・回答へ流さない
+2. 本文末尾の `session_id` を `resume_session_id` へ渡して再呼出し、続きを書かせる
+3. 分割できる作業なら、resume ではなく prompt を小さく割り直す方が確実
+
+成功時も末尾に `session_id` / `elapsed_ms` / `raw_log`（`%TEMP%\cursor-mcp-runs\<runId>.jsonl`）が付く。
+raw log には thinking delta を含む全ストリームが残るので、応答が途中で切れた原因の切り分けに使う。
+
+実測参考: 設計判断1問（入力小・出力約3,000字）で約195秒。xHigh へ context bundle を積んだ
+実装生成では 600,000 ms を超えて打ち切られた実例がある。**xHigh には短い timeout を渡さない。**
+
+#### server 実装の版を確認する
+
+セッション開始時に spawn 済みの MCP プロセスは、`server.mjs` を更新しても**そのセッションでは旧版のまま動く**。
+`mcp__cursor__status` の出力先頭に `server : cursor <version>` 行が無ければ 2.0.0 未満であり、
+部分結果回収も `resume_session_id` も効かない。その場合は Claude Code を再起動するか、経路B（Bash 直叩き）を使う。
 
 順序は`status`→execution block確定→`ask`。status版がblockと違えば停止し、黙って更新しない。
 MCPのstatusとaskは別callで版固定が原子的でない。exact versionがgate条件なら経路Bを使う。
@@ -56,7 +132,10 @@ MCPのstatusとaskは別callで版固定が原子的でない。exact versionが
 ### 経路B: Bash 直叩き（MCP が使えない / デバッグ時）
 
 ```bash
-V=$(ls -d /c/Users/ryufu/AppData/Roaming/Cursor/User/globalStorage/anysphere.cursor-agent-worker/agent-cli/.local/share/cursor-agent/versions/*/ | sort | tail -1)
+UP=$(cygpath -u "$USERPROFILE")
+CURSOR_AGENT_ROOT="$UP/AppData/Roaming/Cursor/User/globalStorage/anysphere.cursor-agent-worker/agent-cli/.local/share/cursor-agent/versions"
+V=$(ls -d "$CURSOR_AGENT_ROOT"/*/ 2>/dev/null | sort | tail -1)
+test -n "$V" || { echo "cursor-agent CLI not provisioned" >&2; exit 1; }
 EXPECTED_VERSION="<statusで確認しexecution blockへpinした版>"
 RESOLVED_VERSION=$(basename "${V%/}")
 test "$RESOLVED_VERSION" = "$EXPECTED_VERSION" || { echo "version mismatch" >&2; exit 1; }
@@ -186,11 +265,13 @@ cursor-agent は cwd のファイル読み書き・コマンド実行ができ�
 MCP 経路は毎回自動でそうしており、実行後に削除する。
 プロジェクトを読ませたい場合は、必要部分をプロンプトに貼る方を選ぶ。
 
-### 4. バージョンディレクトリはハードコード禁止
+### 4. バージョンディレクトリとプロファイル名はハードコード禁止
 
 `versions/2026.08.11-e8db854/` は Cursor 更新で変わる。
+`C:\Users\<name>\` の `<name>` も環境ごとに違う（別マシンへ持ち込むと必ず壊れる）。
 
-→ `ls -d .../versions/*/ | sort | tail -1` で解決する。MCP 経路は内部で同じことをしている。
+→ プロファイルは `cygpath -u "$USERPROFILE"`、版は `ls -d "$CURSOR_AGENT_ROOT"/*/ | sort | tail -1` で解決する。
+MCP 経路は内部で同じことをしている。
 
 ### 5. モデルの自己申告を信用しない
 
@@ -206,6 +287,33 @@ stdio サーバーで `stdin` の `end` を受けて即 `process.exit(0)` する
 
 → 保留タスクを追跡し、完了後に終了する。`server.mjs` は対処済み。
 Bash 直叩きの場合は `timeout` を長めに（xHigh は数分かかる）。
+
+### 7. CLI ランタイムが未展開で何も動かない
+
+Cursor をインストールしただけでは `versions/` が存在しない。
+この状態では `cursor-agent` の実体（`node.exe` / `index.js`）が無く、
+`status` も `ask` も実行できない。表面上は「パスが見つからない」としか出ないため
+「パスの書き方が悪い」と誤診しやすい。
+
+→ Preflight で `versions/` の有無を先に確認する。空なら停止し、
+Cursor.exe でログイン済みの状態から Agent CLI を一度起動してもらう。
+展開前に別バージョンを推測して叩かない。
+
+### 8. 部分結果を完成品として扱う
+
+これが最も起こりやすく、最も気づかれにくい。`ask` は timeout しても `isError` を立てず、
+成功と部分失敗が同じ形で返る。部分出力は途中まで完全に正しく読めるため、
+見落とすと「モデルがそう言った」として不完全な内容が下流へ流れる。
+
+→ 返り値の先頭を必ず見る。`TIMED OUT after` で始まるなら部分結果として扱い、
+`resume_session_id` で続きを取るか、prompt を分割して取り直す。要約だけを証拠にしない。
+
+### 9. 大きな生成タスクを一発で投げる
+
+xHigh に長い context bundle と複数ファイル生成を同時に投げると、
+10 分では終わらず打ち切られる。実例: 3 module の Luau 実装を 1 回で要求 → 600,000 ms 超過で中断。
+
+→ artifact 単位で分割して投げる。2 module ずつなら同条件で完走した実測がある。
 
 ## 使いどころ
 
