@@ -1,0 +1,22 @@
+# Windows Explorer / OneDrive duplicate artifacts
+# These appear when a file or folder is duplicated in place, and have
+# previously been committed by accident (458 files, cleaned up 2026-08-26).
+* - コピー
+* - コピー.*
+* - Copy
+* - Copy.*
+* - コピー (*)
+* - Copy (*)
+
+# OneDrive sync conflict copies
+*-DESKTOP-*
+* (競合コピー*
+
+# Python bytecode
+__pycache__/
+*.py[cod]
+
+# OS metadata
+.DS_Store
+Thumbs.db
+desktop.ini
