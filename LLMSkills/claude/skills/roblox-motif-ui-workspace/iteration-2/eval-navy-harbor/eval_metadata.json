@@ -1,0 +1,14 @@
+{
+  "eval_id": 7,
+  "eval_name": "navy-harbor",
+  "prompt": "obby-rush のテーマを「夜の港と海軍」にする。セーラー服、信号旗、真鍮の舷窓、ロープ。色は紺と白と赤でまとめたい。メインメニューとショップをこの世界観にして、テストは通るままで。",
+  "profile": {
+    "navyOk": true,
+    "navyRequired": true,
+    "hues": [
+      "red"
+    ],
+    "palette": "any"
+  },
+  "assertions": []
+}

@@ -1,0 +1,213 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>MainMenu preview (approximate Roblox GUI renderer)</title>
+<!-- Web stand-ins for Roblox fonts: FredokaOne, LuckiestGuy; Noto Sans JP for Roblox's CJK fallback. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Luckiest+Guy&family=Noto+Sans+JP:wght@500;700;900&display=block">
+<style>
+  html, body { margin: 0; padding: 0; overflow: hidden; background: #000; }
+  .n { position: absolute; box-sizing: border-box; isolation: isolate; }
+  .t { position: absolute; inset: 0; display: flex; line-height: 1.12; pointer-events: none; }
+</style>
+</head>
+<body>
+<div id="root" style="position:absolute;left:0;top:0;overflow:hidden"></div>
+<script>
+  const params = new URLSearchParams(location.search);
+  document.write('<script src="out/' + (params.get('state') || 'main') + '.js"><\/script>');
+</script>
+<script>
+// Approximates Roblox 2D GUI layout for the node kinds this menu uses: UDim2 size/position/anchor, SizeConstraint,
+// UISizeConstraint, UIAspectRatioConstraint (FitWithinMaxSize), UIListLayout, UIPadding, UIScale, Rotation,
+// UICorner, UIStroke (border + text), UIGradient (colour/transparency, multiplies the background), ClipsDescendants,
+// ZIndexBehavior.Sibling ordering, TextScaled with UITextSizeConstraint. It is a preview, not the engine.
+const GUI = new Set(['Frame', 'TextLabel', 'TextButton', 'TextBox', 'ImageLabel', 'ImageButton', 'ScrollingFrame', 'CanvasGroup']);
+const TEXT = new Set(['TextLabel', 'TextButton', 'TextBox']);
+const kids = n => Array.isArray(n.children) ? n.children : [];
+const mods = n => { const m = {}; for (const c of kids(n)) if (!GUI.has(c.class)) (m[c.class] ||= []).push(c); return m; };
+const rgba = (c, a) => `rgba(${Math.round(c.r * 255)},${Math.round(c.g * 255)},${Math.round(c.b * 255)},${Math.max(0, Math.min(1, a))})`;
+const udim = (u, total) => u ? u.s * total + u.o : 0;
+
+function sample(keys, time, width) { // linear interpolation over [[t, ...values]]
+  if (time <= keys[0][0]) return keys[0].slice(1);
+  for (let i = 1; i < keys.length; i++) {
+    if (time <= keys[i][0]) {
+      const a = keys[i - 1], b = keys[i], f = (time - a[0]) / Math.max(1e-6, b[0] - a[0]);
+      return a.slice(1).map((v, j) => v + (b[j + 1] - v) * f);
+    }
+  }
+  return keys[keys.length - 1].slice(1);
+}
+
+function resolveSize(n, pw, ph) {
+  const p = n.props, s = p.Size || {xs: 0, xo: 200, ys: 0, yo: 50};
+  const sc = p.SizeConstraint && p.SizeConstraint.name;
+  let w = s.xs * (sc === 'RelativeYY' ? ph : pw) + s.xo;
+  let h = s.ys * (sc === 'RelativeXX' ? pw : ph) + s.yo;
+  const m = mods(n);
+  for (const c of m.UISizeConstraint || []) {
+    const mn = c.props.MinSize, mx = c.props.MaxSize;
+    if (mx) { w = Math.min(w, mx.x); h = Math.min(h, mx.y); }
+    if (mn) { w = Math.max(w, mn.x); h = Math.max(h, mn.y); }
+  }
+  for (const c of m.UIAspectRatioConstraint || []) {
+    const r = c.props.AspectRatio ?? 1;
+    if (w / h > r) w = h * r; else h = w / r;
+  }
+  return [Math.max(0, w), Math.max(0, h)];
+}
+
+function background(n, el, w, h) {
+  const p = n.props, m = mods(n);
+  const base = p.BackgroundColor3 || {r: 1, g: 1, b: 1};
+  const alpha = 1 - (p.BackgroundTransparency ?? 0);
+  if (alpha <= 0) return;
+  const grad = (m.UIGradient || [])[0];
+  if (!grad) { el.style.background = rgba(base, alpha); return; }
+  const ck = grad.props.Color ? grad.props.Color.k : [[0, 1, 1, 1], [1, 1, 1, 1]];
+  const tk = grad.props.Transparency ? grad.props.Transparency.k : [[0, 0], [1, 0]];
+  const times = [...new Set([...ck.map(k => k[0]), ...tk.map(k => k[0])])].sort((a, b) => a - b);
+  const stops = times.map(t => {
+    const [r, g, b] = sample(ck, t), [tr] = sample(tk, t);
+    return `${rgba({r: base.r * r, g: base.g * g, b: base.b * b}, alpha * (1 - tr))} ${(t * 100).toFixed(2)}%`;
+  });
+  el.style.background = `linear-gradient(${(grad.props.Rotation || 0) + 90}deg, ${stops.join(',')})`;
+}
+
+function fontFor(p) {
+  const fam = p.FontFace ? p.FontFace.family : (p.Font ? p.Font.name : '');
+  const weight = p.FontFace ? p.FontFace.weight : 'Regular';
+  const w = {Thin: 100, ExtraLight: 200, Light: 300, Regular: 400, Medium: 500, SemiBold: 600, Bold: 700, ExtraBold: 800, Heavy: 900}[weight] || 400;
+  let family = "'Noto Sans JP', sans-serif";
+  if (/Luckiest/i.test(fam)) family = "'Luckiest Guy', 'Arial Black', 'Noto Sans JP', sans-serif";
+  else if (/Fredoka/i.test(fam)) family = "'Fredoka One', 'Noto Sans JP', sans-serif";
+  else if (/Gotham/i.test(fam)) family = "'Montserrat', 'Arial', 'Noto Sans JP', sans-serif";
+  return {family, weight: /Gotham.*Bold|GothamBold/i.test(fam) ? 700 : w};
+}
+
+const pendingScaled = [];
+function text(n, el, w, h) {
+  const p = n.props, m = mods(n);
+  if (p.Text === undefined || p.Text === '') return;
+  const alpha = 1 - (p.TextTransparency ?? 0);
+  if (alpha <= 0) return;
+  const t = document.createElement('div'); t.className = 't';
+  const f = fontFor(p);
+  t.style.fontFamily = f.family; t.style.fontWeight = f.weight;
+  t.style.color = rgba(p.TextColor3 || {r: 0, g: 0, b: 0}, alpha);
+  const xa = p.TextXAlignment ? p.TextXAlignment.name : 'Center', ya = p.TextYAlignment ? p.TextYAlignment.name : 'Center';
+  t.style.justifyContent = {Left: 'flex-start', Right: 'flex-end', Center: 'center'}[xa];
+  t.style.textAlign = xa.toLowerCase();
+  t.style.alignItems = {Top: 'flex-start', Bottom: 'flex-end', Center: 'center'}[ya];
+  t.style.whiteSpace = (p.TextWrapped || p.TextScaled) ? 'normal' : 'nowrap';
+  const span = document.createElement('span'); span.textContent = p.Text; t.appendChild(span);
+  const strokes = (m.UIStroke || []).filter(s => !(s.props.ApplyStrokeMode && s.props.ApplyStrokeMode.name === 'Border'));
+  if (strokes.length) {
+    const s = strokes[0].props, th = s.Thickness ?? 1, a = 1 - (s.Transparency ?? 0);
+    if (a > 0) {
+      const shadows = [];
+      for (let i = 0; i < 16; i++) { const ang = i / 16 * Math.PI * 2; shadows.push(`${(Math.cos(ang) * th).toFixed(2)}px ${(Math.sin(ang) * th).toFixed(2)}px 0 ${rgba(s.Color, a)}`); }
+      t.style.textShadow = shadows.join(',');
+    }
+  }
+  const limit = (m.UITextSizeConstraint || [])[0];
+  if (p.TextScaled) pendingScaled.push({t, span, w, h, max: limit ? limit.props.MaxTextSize : 100, min: limit ? limit.props.MinTextSize : 1});
+  else t.style.fontSize = (p.TextSize || 14) + 'px';
+  el.appendChild(t);
+}
+
+function render(n, parentEl, pw, ph, forced) {
+  const p = n.props;
+  if (p.Visible === false) return;
+  const [w, h] = resolveSize(n, pw, ph);
+  const ap = p.AnchorPoint || {x: 0, y: 0};
+  let x, y;
+  if (forced) [x, y] = forced;
+  else { const pos = p.Position || {xs: 0, xo: 0, ys: 0, yo: 0}; x = pos.xs * pw + pos.xo - ap.x * w; y = pos.ys * ph + pos.yo - ap.y * h; }
+  const el = document.createElement('div'); el.className = 'n'; el.dataset.name = n.name;
+  Object.assign(el.style, {left: x + 'px', top: y + 'px', width: w + 'px', height: h + 'px', zIndex: p.ZIndex ?? 1});
+  const m = mods(n);
+  const s = (m.UIScale || []).reduce((acc, c) => acc * (c.props.Scale ?? 1), 1), rot = p.Rotation || 0;
+  if (s !== 1 || rot) {
+    const dx = (ap.x * w - w / 2) * (1 - s), dy = (ap.y * h - h / 2) * (1 - s);
+    el.style.transform = `translate(${dx}px, ${dy}px) rotate(${rot}deg) scale(${s})`;
+  }
+  background(n, el, w, h);
+  const corner = (m.UICorner || [])[0];
+  if (corner) el.style.borderRadius = Math.min(udim(corner.props.CornerRadius, Math.min(w, h)), Math.min(w, h) / 2) + 'px';
+  const isText = TEXT.has(n.class);
+  for (const st of m.UIStroke || []) {
+    const sp = st.props, border = (sp.ApplyStrokeMode && sp.ApplyStrokeMode.name === 'Border') || !isText;
+    const a = 1 - (sp.Transparency ?? 0);
+    if (border && a > 0) el.style.boxShadow = `0 0 0 ${sp.Thickness ?? 1}px ${rgba(sp.Color || {r: 0, g: 0, b: 0}, a)}`;
+  }
+  if (p.ClipsDescendants || n.class === 'ScrollingFrame') el.style.overflow = 'hidden';
+  if (isText) text(n, el, w, h);
+  parentEl.appendChild(el);
+
+  const pad = (m.UIPadding || [])[0];
+  const pl = pad ? udim(pad.props.PaddingLeft, w) : 0, pr = pad ? udim(pad.props.PaddingRight, w) : 0;
+  const pt = pad ? udim(pad.props.PaddingTop, h) : 0, pb = pad ? udim(pad.props.PaddingBottom, h) : 0;
+  const cw = w - pl - pr, ch = h - pt - pb;
+  const guiKids = kids(n).filter(c => GUI.has(c.class) && c.props.Visible !== false);
+  const list = (m.UIListLayout || [])[0];
+  if (list) {
+    const horizontal = list.props.FillDirection && list.props.FillDirection.name === 'Horizontal';
+    const gap = udim(list.props.Padding, horizontal ? cw : ch);
+    const ordered = guiKids.map((c, i) => [c, i]).sort((a, b) => ((a[0].props.LayoutOrder || 0) - (b[0].props.LayoutOrder || 0)) || (a[1] - b[1])).map(e => e[0]);
+    const sizes = ordered.map(c => resolveSize(c, cw, ch));
+    const total = sizes.reduce((acc, sz) => acc + (horizontal ? sz[0] : sz[1]), 0) + gap * Math.max(0, ordered.length - 1);
+    const ha = list.props.HorizontalAlignment ? list.props.HorizontalAlignment.name : 'Left';
+    const va = list.props.VerticalAlignment ? list.props.VerticalAlignment.name : 'Top';
+    let cursor = horizontal ? (ha === 'Center' ? (cw - total) / 2 : ha === 'Right' ? cw - total : 0) : (va === 'Center' ? (ch - total) / 2 : va === 'Bottom' ? ch - total : 0);
+    ordered.forEach((c, i) => {
+      const [cw2, ch2] = sizes[i];
+      const cross = horizontal ? (va === 'Center' ? (ch - ch2) / 2 : va === 'Bottom' ? ch - ch2 : 0) : (ha === 'Center' ? (cw - cw2) / 2 : ha === 'Right' ? cw - cw2 : 0);
+      render(c, el, cw, ch, horizontal ? [pl + cursor, pt + cross] : [pl + cross, pt + cursor]);
+      cursor += (horizontal ? cw2 : ch2) + gap;
+    });
+    for (const c of guiKids) if (!ordered.includes(c)) render(c, el, cw, ch);
+  } else {
+    const holder = pad ? Object.assign(document.createElement('div'), {className: 'n'}) : el;
+    if (pad) { Object.assign(holder.style, {left: pl + 'px', top: pt + 'px', width: cw + 'px', height: ch + 'px'}); el.appendChild(holder); }
+    for (const c of guiKids) render(c, holder, cw, ch);
+  }
+}
+
+function fitScaled() {
+  for (const job of pendingScaled) {
+    let lo = job.min, hi = Math.min(job.max, Math.max(job.h, 1));
+    for (let i = 0; i < 18; i++) {
+      const mid = (lo + hi) / 2;
+      job.t.style.fontSize = mid + 'px';
+      const fits = job.span.offsetWidth <= job.w + 0.5 && job.span.offsetHeight <= job.h + 0.5;
+      if (fits) lo = mid; else hi = mid;
+    }
+    job.t.style.fontSize = lo + 'px';
+  }
+}
+
+function main() {
+  const data = window.MENU, root = document.getElementById('root');
+  Object.assign(root.style, {width: data.viewport.x + 'px', height: data.viewport.y + 'px'});
+  // Stand-in for the 3D world behind the menu (only visible if the menu is translucent).
+  root.style.background = 'repeating-linear-gradient(45deg,#6a8a5a 0 40px,#5d7d50 40px 80px)';
+  for (const c of kids(data.tree)) if (GUI.has(c.class)) render(c, root, data.viewport.x, data.viewport.y);
+  if (params.get('insets') !== '0' && data.inset) { // Roblox core top bar area (menu / chat buttons), for reference.
+    const bar = document.createElement('div');
+    Object.assign(bar.style, {position: 'absolute', left: '12px', top: '10px', width: '96px', height: '40px', borderRadius: '20px', background: 'rgba(20,20,20,0.55)', zIndex: 99999});
+    root.appendChild(bar);
+  }
+  fitScaled();
+  document.title = 'rendered';
+}
+const fontLoads = document.fonts ? [
+  document.fonts.load('500 16px "Noto Sans JP"', 'あ'), document.fonts.load('700 16px "Noto Sans JP"', 'あ'),
+  document.fonts.load('900 16px "Noto Sans JP"', 'あ'), document.fonts.load('16px "Fredoka One"', 'A1'),
+  document.fonts.load('16px "Luckiest Guy"', 'A'),
+] : [];
+Promise.all(fontLoads).catch(() => null).then(() => setTimeout(main, 50));
+</script>
+</body>
+</html>

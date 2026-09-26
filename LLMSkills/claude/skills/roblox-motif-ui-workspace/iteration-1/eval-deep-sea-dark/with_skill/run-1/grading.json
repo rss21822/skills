@@ -1,0 +1,70 @@
+{
+  "expectations": [
+    {
+      "text": "Contract test (names, callbacks, pages, 48px targets) passes with the test files unmodified",
+      "passed": true,
+      "evidence": "exit 0, tests unchanged=True; PASS main menu contract: 29 checks, 0 failed"
+    },
+    {
+      "text": "Every Luau file under src compiles",
+      "passed": true,
+      "evidence": "6 files; exit 0; all OK"
+    },
+    {
+      "text": "No generic navy/slate fills: navy share of visible filled area < 5%",
+      "passed": true,
+      "evidence": "navy share 0.0%; navy colours []"
+    },
+    {
+      "text": "Palette variety: at least 4 distinct saturated hue families (30 deg bins) in visible fills",
+      "passed": true,
+      "evidence": "hue bins [0, 30, 150, 240, 300]"
+    },
+    {
+      "text": "Every FontFace family used is a real Roblox font family",
+      "passed": true,
+      "evidence": "families ['FredokaOne', 'LuckiestGuy', 'Nunito']; missing []"
+    },
+    {
+      "text": "Japanese text requests a bold (SemiBold+) weight so the CJK fallback does not render thin",
+      "passed": true,
+      "evidence": "23 Japanese texts; thin: []"
+    },
+    {
+      "text": "No Latin-only decorative display font is applied to Japanese text",
+      "passed": true,
+      "evidence": "none"
+    },
+    {
+      "text": "Every visible text reaches 3:1 against its fill (glyph or its outline)",
+      "passed": true,
+      "evidence": "29 texts checked; low: []"
+    },
+    {
+      "text": "Emoji-only labels get a box at least 1.4x their TextSize tall",
+      "passed": true,
+      "evidence": "ok"
+    },
+    {
+      "text": "No emoji newer than Unicode 12 (Roblox draws them as tofu boxes) in visible text",
+      "passed": true,
+      "evidence": "none"
+    },
+    {
+      "text": "Reduced motion: no infinite tween loops are created when GuiService.ReducedMotionEnabled is true",
+      "passed": true,
+      "evidence": "loops normal=16 reduced=0 (tweens 16/0)"
+    },
+    {
+      "text": "A visual preview (PNG/HTML) of the new look was produced for review",
+      "passed": true,
+      "evidence": "['preview-before-after.png', 'preview-pages.png', 'preview-phones.png', 'render-after_desktop_inventory.html']"
+    }
+  ],
+  "summary": {
+    "passed": 12,
+    "failed": 0,
+    "total": 12,
+    "pass_rate": 1.0
+  }
+}

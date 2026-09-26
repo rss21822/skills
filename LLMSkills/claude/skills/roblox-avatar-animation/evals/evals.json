@@ -1,0 +1,72 @@
+{
+  "skill_name": "roblox-avatar-animation",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Robloxでオープンワールドのアクションゲームを作ってる。プレイヤーはR15で、既定の Animate スクリプトのまま。坂を登るときに足が地面にめり込んで、階段では片足が宙に浮くのが気になる。あと走りながら曲がるときに体が全然傾かなくて棒立ちに見える。アニメーションのアップロードはしたくないので、LocalScript で足を地面に合わせて、旋回で体を内側に傾けるようにしてほしい。リグの計測値は rig-r15.json にある。NPC にも同じ見た目にしたい。オフラインで検証できるテストも付けて。",
+      "expected_output": "Client-side Luau pose layer (Transform written in PreSimulation, Motor6D+AnimationConstraint support) with per-foot ground raycasts started above the step, pelvis drop + two-bone IK, velocity-based bank with clamps/springs pivoting on the planted foot, no physics changes, NPC/remote support, rate-limited corrections; a Lune test using rig-r15.json that runs and passes; a Studio verification procedure with numbers to check.",
+      "files": [
+        "evals/files/rig-r15.json"
+      ],
+      "assertions": [
+        "All Luau files compile",
+        "The run's own offline tests run under Lune and pass",
+        "Finds AnimationConstraint joints too (Server Authority avatars have no Motor6D)",
+        "Joint Transforms are written from PreSimulation/Stepped, never from RenderStepped/PreRender",
+        "Never writes physics (root CFrame/velocity, HipHeight, Anchored, WalkSpeed)",
+        "Casts rays for the ground (per foot or per body)",
+        "Lean is computed from the body's velocity (works for NPCs without input)",
+        "Report gives a Studio verification procedure with numeric pass criteria",
+        "Lean follows the velocity direction (camera turns / shift-lock do not tilt the body)",
+        "Stairs behaviour is measured with a moving simulation and reported honestly"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "R15の剣の3連撃アニメーションを作って。1撃目は右上からの袈裟斬り、2撃目は横薙ぎ、3撃目は振りかぶって叩きつけ。予備動作・振り・フォロースルーをちゃんと入れて重さが出るように、ヒットした瞬間に一瞬止めたい（ヒットストップ）。既定の Animate とは共存させる。アップロードは後でやるので、まずはコード（Luau）で動くものと、各関節の角度とタイミングの仕様を出して。リグは rig-r15.json。",
+      "expected_output": "A spec per strike (anticipation/strike/follow-through timings, joint angles with the R15 sign conventions stated), Luau that renders the combo over Animate (Transform in PreSimulation or a KeyframeSequence with an Action+ priority) with feet kept planted, hit-stop that freezes only the pose clock (not physics/input), combo chaining without pops, notes that runtime KeyframeSequence registration is Studio-only, an offline test and a Studio verification procedure.",
+      "files": [
+        "evals/files/rig-r15.json"
+      ],
+      "assertions": [
+        "All Luau files compile",
+        "The run's own offline tests run under Lune and pass",
+        "Finds AnimationConstraint joints too (Server Authority avatars have no Motor6D)",
+        "SPEC covers anticipation / strike / follow-through for the strikes",
+        "SPEC states the joint sign conventions",
+        "Coexists with Animate: Action+ priority track or Transform written after the Animator (PreSimulation)",
+        "Transform writes (if any) are not in RenderStepped/PreRender",
+        "Hit-stop implemented",
+        "Hit-stop / combo never writes physics (root CFrame/velocity, Anchored, WalkSpeed)",
+        "If KeyframeSequences are registered at runtime, the report says it is Studio-only",
+        "Joint sign conventions are verified against the rig, not assumed",
+        "Other players / NPCs see the combo (replication path implemented)"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "mini-game フォルダのゲームで、着地のアニメがほとんど効いてない気がするし、待機の呼吸もロボットっぽい。改善して、最終的に places/Game.rbxlx（正本）に取り込める状態にしてほしい。NOTES.md も読んで。",
+      "expected_output": "Diagnoses that the existing Transform writes happen in RenderStepped (ignored) and moves them to PreSimulation with base restore; improves landing (impact-scaled knee absorption, both feet planted, anticipation before contact) and idle (asymmetric weight shift + breathing, non-repeating); keeps the teammate's uncommitted AnimConfig edit; works on a copy of the Studio-saved Place, merges only the changed scripts with a byte-level/reversibility check and backup instead of rebuilding from Rojo; does not publish; gives a Studio verification procedure.",
+      "files": [
+        "evals/files/mini-game/"
+      ],
+      "assertions": [
+        "All Luau files compile",
+        "The run's own offline tests run under Lune and pass",
+        "Finds AnimationConstraint joints too (Server Authority avatars have no Motor6D)",
+        "Teammate's uncommitted AnimConfig edit (IDLE_BREATH_SECONDS = 2.6) is preserved",
+        "Nothing committed in the user's repository",
+        "Report diagnoses that RenderStepped Transform writes are not rendered",
+        "New code writes Transforms from PreSimulation/Stepped",
+        "A Place carrying the improved scripts exists (canonical updated, or canonical + layer candidate)",
+        "That Place still contains the hand-placed map (not rebuilt from src)",
+        "Map parts in that Place are byte-identical to the original",
+        "Report proves the Place change (backup + hash/diff/reversal check)",
+        "Report gives a Studio verification procedure",
+        "Landing / idle also drawn on other players' bodies",
+        "Canonical Place is left intact until the user's Studio check (candidate + apply/revert)"
+      ]
+    }
+  ],
+  "grader": "~/.claude/skills/roblox-avatar-animation-workspace/grade.py (objective) + [judgment] items added by hand"
+}

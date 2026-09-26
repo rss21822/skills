@@ -1,0 +1,64 @@
+# Studioと成果物の経路
+
+環境調査、初回起動、保存、再開時に読む。以下のツール名は2026-09-26にClaude Code環境で確認した例。Roblox Studio MCPは`mcp__Roblox_Studio__<ツール名>`、Computer Useは`mcp__computer-use__<ツール名>`として現れる（遅延読込ならツール検索で読み込む）。利用時は現行スキーマを読み、存在しないツール・引数を作らない。
+
+## 編集正本を一つにする
+
+- Rojo管理: ソースとproject.jsonを編集する。Studioで調整した値・素材が必要なら、管理方法に沿ってソースや保存モデルへ取り込み、再ビルドで再現することを確認する。
+- Studio正本: 元Placeを残した別名の作業コピーを用意し、変更をローカル保存する。Rojo導入のためだけに既存のTerrain・アセット・マッピングを置換しない。
+- 両者併用: 管理するサブツリーを特定し、Rojo同期でStudio編集が消える領域を避ける。ビルドが既存の未管理内容を含められない場合、既存Placeを空のRojo生成物で上書きしない。
+- 新規: 名前付きの保存先を作り、文書に必要な最小構成で起動する。足場やSpawnを自作できるならその経路を使う。無関係なToolboxテンプレートは必須ではない。
+
+## Rojo経路
+
+プロジェクトのpinと実際の実行ファイルを確認し、そのバージョンの`--help`を読む。`PATH`の別バージョンを使っていた場合、環境全体を書き換えず実行ファイルを指定する。
+
+典型的な形は次のとおり。山括弧は説明用であり、実在する絶対パスへ置き換える。新規ファイルだけに出力し、開いている成果物を上書きしない。
+
+```text
+rojo build <project.json> -o <candidate.rbxlx>
+rojo serve <project.json> --port <空いているポート>
+```
+
+- 反復検証には、必要ならStudioプラグインと互換なCLIでlive syncを使う。初回接続前にプラグイン・ポート・対象Placeを確認する。`rojo serve`は常駐するため、Bashのバックグラウンド実行で起動し、終了時に自分が起動したタスクだけを止める。
+- ポート占有時は所有プロセスを識別し、他プロジェクトなら空きポートへ移る。全Rojoプロセスを止めない。接続・版不一致の切り分けは`rojo-serve-sync` Skillがあれば従う。
+- Rojo管理下のScriptを`multi_edit`などStudio MCPの編集ツールで直接書き換えない。次の同期で失われるため、ソースファイルを編集して同期する。
+- `/api/rojo`のHTTP応答は到達性の証拠。バージョンによって形式が異なるので、常にJSONだと仮定しない。正しいソースがStudioへ届いたことは別途InstanceとSourceで確認する。
+- 同期先は作業コピー。最終ビルドは別の固定された成果物にする。
+- Editモードの`require`はキャッシュされ得る。同期直後はSourceで更新を確認し、挙動は新しく開始したPlayで確認する。
+- Rojoのビルド成功はDataModelの構成証拠であり、Luauの全構文・型・実行時挙動を保証しない。利用できる解析とStudioの実行結果を別に確認する。
+
+## Studioの特定と操作
+
+1. `list_roblox_studios`相当で候補を列挙する。ファイル名・Place ID・今回開いた絶対パスと照合し、対象の`studio_id`を選ぶ。名前だけで特定できない作業中ウィンドウへ接続しない。
+2. `get_studio_state`でEdit／Client／Serverの利用可能状態を確認する。多重起動や新規起動後は再列挙する。既存の対象指定を使い、曖昧な場合だけ変更前に解消する。
+3. `search_game_tree`、`inspect_instance`、`script_read`等で構成を確認する。`execute_luau`では`studio_id`と`datamodel_type`を明示する。Editの変更とPlay中だけの変更を区別する。
+4. `start_stop_play`等で開始し、`get_studio_state`で目的のClient／Serverができたことを確認する。`get_console_output`で今回の試験区間のエラーを読む。過去ログを今回の失敗へ混ぜない。
+5. 実在するUIとキーを調べてから`user_keyboard_input`、`user_mouse_input`等で操作する。現在の例では両ツールはClient指定が必要。押下したキーは解放する。`character_navigation`のような位置移動ツールだけではプレイヤー入力の試験にならない。
+6. Clientの画面と、決定主体の状態を観測する。Studio MCPの`screen_capture`はEdit時の画面用なので、Play証拠にはComputer Useの`screenshot`（証拠として残すなら`save_to_disk`）など、Play中の画面を撮れる手段を使う。
+
+Studio MCPで呼出し不可な操作や、ファイル保存・ダイアログ・Test タブのServer & ClientsのようなGUI操作はComputer Useで行う。最初に`request_access`でRoblox Studio（インストール名で指定）を許可してもらい、画面を新しく取得して対象ウィンドウと表示された操作を確認してから操作する。予測できる連続操作は`computer_batch`でまとめてよい。ブラウザはComputer Useでは読取専用になるため、Creator Hub等の設定は内蔵ブラウザまたはClaude in Chromeで扱う。GUI手段も使えないときはその工程を記録し、必要な接続・画面操作を具体的に依頼する。対象が不明のまま別のStudioを改変して切り抜けない。
+
+## 保存・成果物検証
+
+- Rojoのみで再現可能な成果物は最終ソースからビルドする。Studioだけにある意図した変更は先にソースへ戻すか、Place正本としてGUIのローカル保存を行う。
+- Studioの保存はComputer Useで観測した`Save to File`等を使う。MCPの`execute_luau`に`game:Save()`や`plugin`グローバルがあると仮定しない。将来保存ツールが提供されればスキーマと保存先を確認して使ってよい。
+- Play中の一時InstanceはStopで消える。残すべきワールドはEdit側か製品の再現可能な生成コードへ移し、Play停止後の保存で再現するか確認する。
+- 保存ダイアログが閉じたことだけで成功としない。ファイルの存在・非ゼロサイズ・更新時刻・SHA-256（例: `sha256sum`、Windowsなら`certutil -hashfile <path> SHA256`も可）と、保存操作またはビルド結果を照合する。
+- 最終候補を開いて構成・起動・主操作を確かめる。live syncや試験ハーネスで足した状態に依存していないかも見る。ファイルを開き直すために未保存作業を閉じない。
+- GUI入力が権限差や切断セッションで拒否された場合、未保存のStudioを終了しない。ソースから復元可能な範囲とStudioにしかない範囲を記録し、必要な保存操作だけ依頼する。
+
+## 再開記録の最小形
+
+DEV.mdの既存欄へ、作業ごとに次の情報を残す。別の台帳は原則不要。
+
+`作業ID | 実装状態 | 確認した層・条件 | 結果と証拠パス | 残件`
+
+成果物はパス・hash・起動方法、次の作業はID・前提・必要なファイルを記す。時間計測なら観測対象、開始・終了の定義、測定方法を残す。実行していない手順は「未実施」。秘密情報や認証トークンは保存しない。
+
+## 公式参照
+
+- [Rojo: Creating a New Game](https://rojo.space/docs/v7/getting-started/new-game/)
+- [Roblox: Studio testing modes](https://create.roblox.com/docs/studio/testing-modes)
+
+リンクを2026-09-17確認。実際に使用するツールの版・APIは、そのプロジェクトで再確認する。

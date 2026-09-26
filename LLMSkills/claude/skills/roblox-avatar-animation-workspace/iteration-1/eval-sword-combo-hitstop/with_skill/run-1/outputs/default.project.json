@@ -1,0 +1,17 @@
+{
+  "name": "SwordCombo",
+  "tree": {
+    "$className": "DataModel",
+    "ReplicatedStorage": {
+      "SwordCombo": { "$path": "src/shared/SwordCombo" }
+    },
+    "StarterPlayer": {
+      "StarterPlayerScripts": {
+        "SwordComboClient": { "$path": "src/client/SwordComboClient.client.luau" }
+      }
+    },
+    "ServerScriptService": {
+      "SwordComboRelay": { "$path": "src/server/SwordComboRelay.server.luau" }
+    }
+  }
+}

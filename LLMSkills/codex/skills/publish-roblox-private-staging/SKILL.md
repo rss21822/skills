@@ -24,7 +24,16 @@ If the repository is Cavalry Rivals, also read [references/cavalry-rivals.md](re
 - Treat credentials as ephemeral. Never write API keys, cookies, reserved-server codes, or session tokens to the repository, logs, evidence, command history, or chat. Create the narrowest practical temporary key when needed, retain it only in process memory, delete it automatically after verification or abort, and confirm absence.
 - Do not request confirmations unless a higher-priority system or safety rule requires one. If such a rule prevents an action, preserve completed work and report the exact blocked step.
 
-## Outcome
+## Default: upload to completion without checkpoints
+
+- When invoked for publication (including a skill-only invocation with an unambiguous current project), proceed from discovery through upload of every in-scope staging Place and independent published-version verification in the same task. Do not stop at build completion, a prepared manifest, an open publish dialog, or completion of only one Place.
+- Do not end with "ready to upload", "shall I publish?", or a request for "OK" / "アップロード実行" / "残りを実行". Progress messages are non-blocking updates, not approval gates.
+- Prefer a working authenticated Studio publishing route or an already-authorized scoped publishing credential. New credential creation is not a prerequisite when Studio can complete the upload. If one route is unavailable, try safe authorized alternatives before reporting a blocker; never bypass tool-required confirmations or authentication controls.
+- Keep upload completion distinct from external-client smoke completion. Attempt the required smoke automatically after upload. If it is blocked, finish with the confirmed Place versions and the precise outstanding runtime check; do not label the upload pending or request another approval merely to continue it.
+- Stop only for a concrete unresolved target, failed validation, unavailable authorized access, a higher-priority confirmation requirement, or a failure that cannot be safely reconciled. Record completed steps and the exact blocker; never invent success or retry an ambiguous upload blindly.
+- A request to edit, review, or explain this skill does not itself authorize a game upload.
+
+## Completion evidence
 
 A successful run proves all of the following separately:
 

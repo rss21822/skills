@@ -1,0 +1,105 @@
+{
+  "expectations": [
+    {
+      "text": "Contract test (names, callbacks, pages, 48px targets) passes with the test files unmodified",
+      "passed": true,
+      "evidence": "exit 0, tests unchanged=True; PASS main menu contract: 29 checks, 0 failed"
+    },
+    {
+      "text": "Every Luau file under src compiles",
+      "passed": true,
+      "evidence": "6 files; exit 0; all OK"
+    },
+    {
+      "text": "No generic navy/slate fills: navy share of visible filled area < 5%",
+      "passed": true,
+      "evidence": "navy share 0.0%; navy colours []"
+    },
+    {
+      "text": "Motif colour from the prompt is present: amber fills (>0.3% of filled area)",
+      "passed": true,
+      "evidence": "amber share 27.06%"
+    },
+    {
+      "text": "Motif colour from the prompt is present: green fills (>0.3% of filled area)",
+      "passed": true,
+      "evidence": "green share 10.16%"
+    },
+    {
+      "text": "Every FontFace family used is a real Roblox font family",
+      "passed": true,
+      "evidence": "families ['Montserrat', 'Oswald', 'SpecialElite']; missing []"
+    },
+    {
+      "text": "Japanese text requests a bold (SemiBold+) weight so the CJK fallback does not render thin",
+      "passed": true,
+      "evidence": "23 Japanese texts; thin: []"
+    },
+    {
+      "text": "No Latin-only decorative display font is applied to Japanese text",
+      "passed": true,
+      "evidence": "none"
+    },
+    {
+      "text": "Every visible text reaches 3:1 against its fill (glyph or its outline)",
+      "passed": true,
+      "evidence": "36 texts checked; low: []"
+    },
+    {
+      "text": "Emoji-only labels get a box at least 1.4x their TextSize tall",
+      "passed": true,
+      "evidence": "ok"
+    },
+    {
+      "text": "No emoji newer than Unicode 12 (Roblox draws them as tofu boxes) in visible text",
+      "passed": true,
+      "evidence": "none"
+    },
+    {
+      "text": "Reduced motion: no infinite tween loops are created when GuiService.ReducedMotionEnabled is true",
+      "passed": true,
+      "evidence": "loops normal=4 reduced=0 (tweens 8/0)"
+    },
+    {
+      "text": "Nothing readable or pressable sits under Roblox's top-left buttons (x<200, y<58) on the IgnoreGuiInset screen",
+      "passed": true,
+      "evidence": "clear"
+    },
+    {
+      "text": "A visual preview (PNG/HTML) of the new look was produced for review",
+      "passed": true,
+      "evidence": "['preview-all-screens.png', 'preview-before-after.png', 'preview-home.png', 'preview-moodboard-vs-menu.png']"
+    },
+    {
+      "text": "Blind judge (screenshots only, 14 candidate motifs) names the posted motif as top-1",
+      "passed": true,
+      "evidence": "R09: top1=恐竜の化石発掘のジャングル conf=0.97; guess: Jungle fossil dig site on a paleontology expedition"
+    },
+    {
+      "text": "Blind judge rates theme strength >= 4/5 (unmistakably one specific world, not a recoloured generic menu)",
+      "passed": true,
+      "evidence": "R09: strength 5; generic parts: The pill-shaped play button and the lined shop list are somewhat cartoon/generic, but still tied to the theme"
+    },
+    {
+      "text": "Informed judge rates motif fidelity >= 4/5",
+      "passed": true,
+      "evidence": "R09: fidelity 5; CTA=Amber-with-insect pill inside a string-and-stake dig grid with survey flag and site tag"
+    },
+    {
+      "text": "Informed judge: every explicit constraint in the request is honored on screen",
+      "passed": true,
+      "evidence": "R09: 7/7 honored; missed: none"
+    },
+    {
+      "text": "Informed judge rates craft >= 4/5 (clear hero, readable text, no layout defects)",
+      "passed": true,
+      "evidence": "R09: craft 4; Very clear hero, strong layout; coin under the Roblox card; title clears the Roblox buttons; readable specimen rows but item icons are emoji; nav pills fairly generic."
+    }
+  ],
+  "summary": {
+    "passed": 19,
+    "failed": 0,
+    "total": 19,
+    "pass_rate": 1.0
+  }
+}

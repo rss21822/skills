@@ -1,0 +1,541 @@
+{
+  "metadata": {
+    "skill_name": "roblox-motif-ui",
+    "skill_path": "<path/to/skill>",
+    "executor_model": "<model-name>",
+    "analyzer_model": "<model-name>",
+    "timestamp": "2026-09-24T07:46:33Z",
+    "evals_run": [
+      1,
+      2,
+      3
+    ],
+    "runs_per_configuration": 3,
+    "model": "claude-opus-5-5"
+  },
+  "runs": [
+    {
+      "eval_id": 2,
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 12,
+        "failed": 0,
+        "total": 12,
+        "time_seconds": 1777.4,
+        "tokens": 785479,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Contract test (names, callbacks, pages, 48px targets) passes with the test files unmodified",
+          "passed": true,
+          "evidence": "exit 0, tests unchanged=True; PASS main menu contract: 29 checks, 0 failed"
+        },
+        {
+          "text": "Every Luau file under src compiles",
+          "passed": true,
+          "evidence": "6 files; exit 0; all OK"
+        },
+        {
+          "text": "No generic navy/slate fills: navy share of visible filled area < 5%",
+          "passed": true,
+          "evidence": "navy share 0.0%; navy colours []"
+        },
+        {
+          "text": "Palette variety: at least 4 distinct saturated hue families (30 deg bins) in visible fills",
+          "passed": true,
+          "evidence": "hue bins [0, 30, 150, 240, 300]"
+        },
+        {
+          "text": "Every FontFace family used is a real Roblox font family",
+          "passed": true,
+          "evidence": "families ['FredokaOne', 'LuckiestGuy', 'Nunito']; missing []"
+        },
+        {
+          "text": "Japanese text requests a bold (SemiBold+) weight so the CJK fallback does not render thin",
+          "passed": true,
+          "evidence": "23 Japanese texts; thin: []"
+        },
+        {
+          "text": "No Latin-only decorative display font is applied to Japanese text",
+          "passed": true,
+          "evidence": "none"
+        },
+        {
+          "text": "Every visible text reaches 3:1 against its fill (glyph or its outline)",
+          "passed": true,
+          "evidence": "29 texts checked; low: []"
+        },
+        {
+          "text": "Emoji-only labels get a box at least 1.4x their TextSize tall",
+          "passed": true,
+          "evidence": "ok"
+        },
+        {
+          "text": "No emoji newer than Unicode 12 (Roblox draws them as tofu boxes) in visible text",
+          "passed": true,
+          "evidence": "none"
+        },
+        {
+          "text": "Reduced motion: no infinite tween loops are created when GuiService.ReducedMotionEnabled is true",
+          "passed": true,
+          "evidence": "loops normal=16 reduced=0 (tweens 16/0)"
+        },
+        {
+          "text": "A visual preview (PNG/HTML) of the new look was produced for review",
+          "passed": true,
+          "evidence": "['preview-before-after.png', 'preview-pages.png', 'preview-phones.png', 'render-after_desktop_inventory.html']"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 1,
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 12,
+        "failed": 0,
+        "total": 12,
+        "time_seconds": 2180.2,
+        "tokens": 816798,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Contract test (names, callbacks, pages, 48px targets) passes with the test files unmodified",
+          "passed": true,
+          "evidence": "exit 0, tests unchanged=True; PASS main menu contract: 29 checks, 0 failed"
+        },
+        {
+          "text": "Every Luau file under src compiles",
+          "passed": true,
+          "evidence": "7 files; exit 0; all OK"
+        },
+        {
+          "text": "No generic navy/slate fills: navy share of visible filled area < 5%",
+          "passed": true,
+          "evidence": "navy share 0.0%; navy colours []"
+        },
+        {
+          "text": "Palette variety: at least 4 distinct saturated hue families (30 deg bins) in visible fills",
+          "passed": true,
+          "evidence": "hue bins [0, 30, 60, 120, 180, 330]"
+        },
+        {
+          "text": "Every FontFace family used is a real Roblox font family",
+          "passed": true,
+          "evidence": "families ['DenkOne', 'FredokaOne', 'Nunito', 'PermanentMarker']; missing []"
+        },
+        {
+          "text": "Japanese text requests a bold (SemiBold+) weight so the CJK fallback does not render thin",
+          "passed": true,
+          "evidence": "25 Japanese texts; thin: []"
+        },
+        {
+          "text": "No Latin-only decorative display font is applied to Japanese text",
+          "passed": true,
+          "evidence": "none"
+        },
+        {
+          "text": "Every visible text reaches 3:1 against its fill (glyph or its outline)",
+          "passed": true,
+          "evidence": "30 texts checked; low: []"
+        },
+        {
+          "text": "Emoji-only labels get a box at least 1.4x their TextSize tall",
+          "passed": true,
+          "evidence": "ok"
+        },
+        {
+          "text": "No emoji newer than Unicode 12 (Roblox draws them as tofu boxes) in visible text",
+          "passed": true,
+          "evidence": "none"
+        },
+        {
+          "text": "Reduced motion: no infinite tween loops are created when GuiService.ReducedMotionEnabled is true",
+          "passed": true,
+          "evidence": "loops normal=16 reduced=0 (tweens 16/0)"
+        },
+        {
+          "text": "A visual preview (PNG/HTML) of the new look was produced for review",
+          "passed": true,
+          "evidence": "['preview-before-main-1280x720.png', 'preview-before-shop-1280x720.png', 'preview-inventory-1280x720.html', 'preview-inventory-1280x720.png']"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 3,
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 12,
+        "failed": 0,
+        "total": 12,
+        "time_seconds": 1563.8,
+        "tokens": 761358,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Contract test (names, callbacks, pages, 48px targets) passes with the test files unmodified",
+          "passed": true,
+          "evidence": "exit 0, tests unchanged=True; PASS main menu contract: 29 checks, 0 failed"
+        },
+        {
+          "text": "Every Luau file under src compiles",
+          "passed": true,
+          "evidence": "6 files; exit 0; all OK"
+        },
+        {
+          "text": "No generic navy/slate fills: navy share of visible filled area < 5%",
+          "passed": true,
+          "evidence": "navy share 0.0%; navy colours []"
+        },
+        {
+          "text": "Palette variety: at least 4 distinct saturated hue families (30 deg bins) in visible fills",
+          "passed": true,
+          "evidence": "hue bins [0, 30, 120, 180]"
+        },
+        {
+          "text": "Every FontFace family used is a real Roblox font family",
+          "passed": true,
+          "evidence": "families ['FredokaOne', 'LuckiestGuy', 'Nunito']; missing []"
+        },
+        {
+          "text": "Japanese text requests a bold (SemiBold+) weight so the CJK fallback does not render thin",
+          "passed": true,
+          "evidence": "23 Japanese texts; thin: []"
+        },
+        {
+          "text": "No Latin-only decorative display font is applied to Japanese text",
+          "passed": true,
+          "evidence": "none"
+        },
+        {
+          "text": "Every visible text reaches 3:1 against its fill (glyph or its outline)",
+          "passed": true,
+          "evidence": "29 texts checked; low: []"
+        },
+        {
+          "text": "Emoji-only labels get a box at least 1.4x their TextSize tall",
+          "passed": true,
+          "evidence": "ok"
+        },
+        {
+          "text": "No emoji newer than Unicode 12 (Roblox draws them as tofu boxes) in visible text",
+          "passed": true,
+          "evidence": "none"
+        },
+        {
+          "text": "Reduced motion: no infinite tween loops are created when GuiService.ReducedMotionEnabled is true",
+          "passed": true,
+          "evidence": "loops normal=2 reduced=0 (tweens 10/0)"
+        },
+        {
+          "text": "A visual preview (PNG/HTML) of the new look was produced for review",
+          "passed": true,
+          "evidence": "['preview-before-after.png', 'preview-main_1280x720.png', 'preview-other-pages.png', 'preview-phone-sizes.png']"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 2,
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.75,
+        "passed": 9,
+        "failed": 3,
+        "total": 12,
+        "time_seconds": 1731.3,
+        "tokens": 701530,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Contract test (names, callbacks, pages, 48px targets) passes with the test files unmodified",
+          "passed": true,
+          "evidence": "exit 0, tests unchanged=True; PASS main menu contract: 29 checks, 0 failed"
+        },
+        {
+          "text": "Every Luau file under src compiles",
+          "passed": true,
+          "evidence": "4 files; exit 0; all OK"
+        },
+        {
+          "text": "No generic navy/slate fills: navy share of visible filled area < 5%",
+          "passed": true,
+          "evidence": "navy share 0.0%; navy colours []"
+        },
+        {
+          "text": "Palette variety: at least 4 distinct saturated hue families (30 deg bins) in visible fills",
+          "passed": true,
+          "evidence": "hue bins [30, 150, 240, 300]"
+        },
+        {
+          "text": "Every FontFace family used is a real Roblox font family",
+          "passed": true,
+          "evidence": "families ['FredokaOne', 'Nunito']; missing []"
+        },
+        {
+          "text": "Japanese text requests a bold (SemiBold+) weight so the CJK fallback does not render thin",
+          "passed": false,
+          "evidence": "25 Japanese texts; thin: ['Background.PlayButton=プレイ', 'InventoryPage.Title=持ち物', 'QuestsPage.Title=クエスト', 'SettingsPage.Title=設定', 'ShopPage.Title=ショップ']"
+        },
+        {
+          "text": "No Latin-only decorative display font is applied to Japanese text",
+          "passed": true,
+          "evidence": "none"
+        },
+        {
+          "text": "Every visible text reaches 3:1 against its fill (glyph or its outline)",
+          "passed": false,
+          "evidence": "30 texts checked; low: ['Background.NavBar.Nav_Inventory.Body.Caption 1.1:1']"
+        },
+        {
+          "text": "Emoji-only labels get a box at least 1.4x their TextSize tall",
+          "passed": true,
+          "evidence": "ok"
+        },
+        {
+          "text": "No emoji newer than Unicode 12 (Roblox draws them as tofu boxes) in visible text",
+          "passed": false,
+          "evidence": "['Background.TopBar.CoinLabel=🪙 1,250', 'ShopPage.ProductList.Product_double_jump.Price=🪙 800', 'ShopPage.ProductList.Product_rainbow_trail.Price=🪙 450', 'ShopPage.ProductList.Product_speed_coil.Price=🪙 300']"
+        },
+        {
+          "text": "Reduced motion: no infinite tween loops are created when GuiService.ReducedMotionEnabled is true",
+          "passed": true,
+          "evidence": "loops normal=0 reduced=0 (tweens 4/0)"
+        },
+        {
+          "text": "A visual preview (PNG/HTML) of the new look was produced for review",
+          "passed": true,
+          "evidence": "['preview_before_after.png', 'preview_before_home.html', 'preview_before_home.png', 'preview_before_shop.html']"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 1,
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.917,
+        "passed": 11,
+        "failed": 1,
+        "total": 12,
+        "time_seconds": 1938.0,
+        "tokens": 726654,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Contract test (names, callbacks, pages, 48px targets) passes with the test files unmodified",
+          "passed": true,
+          "evidence": "exit 0, tests unchanged=True; PASS main menu contract: 29 checks, 0 failed"
+        },
+        {
+          "text": "Every Luau file under src compiles",
+          "passed": true,
+          "evidence": "4 files; exit 0; all OK"
+        },
+        {
+          "text": "No generic navy/slate fills: navy share of visible filled area < 5%",
+          "passed": true,
+          "evidence": "navy share 0.0%; navy colours []"
+        },
+        {
+          "text": "Palette variety: at least 4 distinct saturated hue families (30 deg bins) in visible fills",
+          "passed": true,
+          "evidence": "hue bins [0, 30, 120, 180, 330]"
+        },
+        {
+          "text": "Every FontFace family used is a real Roblox font family",
+          "passed": true,
+          "evidence": "families ['FredokaOne', 'LuckiestGuy']; missing []"
+        },
+        {
+          "text": "Japanese text requests a bold (SemiBold+) weight so the CJK fallback does not render thin",
+          "passed": true,
+          "evidence": "44 Japanese texts; thin: []"
+        },
+        {
+          "text": "No Latin-only decorative display font is applied to Japanese text",
+          "passed": true,
+          "evidence": "none"
+        },
+        {
+          "text": "Every visible text reaches 3:1 against its fill (glyph or its outline)",
+          "passed": false,
+          "evidence": "49 texts checked; low: ['Background.LanternGarland.Hanger0.Lantern.Glyph 2.3:1', 'Background.LanternGarland.Hanger2.Lantern.Glyph 2.3:1', 'Background.LanternGarland.Hanger4.Lantern.Glyph 2.3:1', 'Background.LanternGarland.Hanger6.Lantern.Glyph 2.3:1', 'Background.LanternGarland.Hanger8.Lantern.Glyph 2.3:1']"
+        },
+        {
+          "text": "Emoji-only labels get a box at least 1.4x their TextSize tall",
+          "passed": true,
+          "evidence": "ok"
+        },
+        {
+          "text": "No emoji newer than Unicode 12 (Roblox draws them as tofu boxes) in visible text",
+          "passed": true,
+          "evidence": "none"
+        },
+        {
+          "text": "Reduced motion: no infinite tween loops are created when GuiService.ReducedMotionEnabled is true",
+          "passed": true,
+          "evidence": "loops normal=0 reduced=0 (tweens 4/0)"
+        },
+        {
+          "text": "A visual preview (PNG/HTML) of the new look was produced for review",
+          "passed": true,
+          "evidence": "['preview_before_main.png', 'preview_before_shop.png', 'preview_contact_sheet.png', 'preview_inventory.png']"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 3,
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.833,
+        "passed": 10,
+        "failed": 2,
+        "total": 12,
+        "time_seconds": 1648.4,
+        "tokens": 724154,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Contract test (names, callbacks, pages, 48px targets) passes with the test files unmodified",
+          "passed": true,
+          "evidence": "exit 0, tests unchanged=True; PASS main menu contract: 29 checks, 0 failed"
+        },
+        {
+          "text": "Every Luau file under src compiles",
+          "passed": true,
+          "evidence": "4 files; exit 0; all OK"
+        },
+        {
+          "text": "No generic navy/slate fills: navy share of visible filled area < 5%",
+          "passed": true,
+          "evidence": "navy share 0.0%; navy colours []"
+        },
+        {
+          "text": "Palette variety: at least 4 distinct saturated hue families (30 deg bins) in visible fills",
+          "passed": false,
+          "evidence": "hue bins [0, 30, 180]"
+        },
+        {
+          "text": "Every FontFace family used is a real Roblox font family",
+          "passed": true,
+          "evidence": "families []; missing []"
+        },
+        {
+          "text": "Japanese text requests a bold (SemiBold+) weight so the CJK fallback does not render thin",
+          "passed": false,
+          "evidence": "19 Japanese texts; thin: ['Background.PlayButton.Face.Window.Content.Label=プレイ', 'Background.NavBar.Nav_Shop.Face.Window.Content.Label=ショップ', 'Background.NavBar.Nav_Inventory.Face.Window.Content.Label=持ち物', 'Background.NavBar.Nav_Quests.Face.Window.Content.Label=クエスト', 'Background.NavBar.Nav_Settings.Face.Window.Content.Label=設定']"
+        },
+        {
+          "text": "No Latin-only decorative display font is applied to Japanese text",
+          "passed": true,
+          "evidence": "none"
+        },
+        {
+          "text": "Every visible text reaches 3:1 against its fill (glyph or its outline)",
+          "passed": true,
+          "evidence": "25 texts checked; low: []"
+        },
+        {
+          "text": "Emoji-only labels get a box at least 1.4x their TextSize tall",
+          "passed": true,
+          "evidence": "ok"
+        },
+        {
+          "text": "No emoji newer than Unicode 12 (Roblox draws them as tofu boxes) in visible text",
+          "passed": true,
+          "evidence": "none"
+        },
+        {
+          "text": "Reduced motion: no infinite tween loops are created when GuiService.ReducedMotionEnabled is true",
+          "passed": true,
+          "evidence": "loops normal=4 reduced=0 (tweens 8/0)"
+        },
+        {
+          "text": "A visual preview (PNG/HTML) of the new look was produced for review",
+          "passed": true,
+          "evidence": "['before_home_1280x720.png', 'before_shop_1280x720.png', 'preview.html', 'preview_home_1280x720.png']"
+        }
+      ],
+      "notes": []
+    }
+  ],
+  "run_summary": {
+    "with_skill": {
+      "pass_rate": {
+        "mean": 1.0,
+        "stddev": 0.0,
+        "min": 1.0,
+        "max": 1.0
+      },
+      "time_seconds": {
+        "mean": 1840.4667,
+        "stddev": 313.0021,
+        "min": 1563.8,
+        "max": 2180.2
+      },
+      "tokens": {
+        "mean": 787878.3333,
+        "stddev": 27797.7697,
+        "min": 761358,
+        "max": 816798
+      }
+    },
+    "without_skill": {
+      "pass_rate": {
+        "mean": 0.8333,
+        "stddev": 0.0835,
+        "min": 0.75,
+        "max": 0.917
+      },
+      "time_seconds": {
+        "mean": 1772.5667,
+        "stddev": 149.145,
+        "min": 1648.4,
+        "max": 1938.0
+      },
+      "tokens": {
+        "mean": 717446.0,
+        "stddev": 13840.2237,
+        "min": 701530,
+        "max": 726654
+      }
+    },
+    "delta": {
+      "pass_rate": "+0.17",
+      "time_seconds": "+67.9",
+      "tokens": "+70432"
+    }
+  },
+  "notes": [
+    "Non-discriminating: contract test, compile, real font families, no Latin-only display font on Japanese, emoji box size, reduced-motion loops and 'preview produced' passed for every run with or without the skill. Opus already keeps names/callbacks intact and self-previews.",
+    "Discriminating: Japanese bold weight (2/3 baselines requested Regular -> thin CJK), Unicode 13+ tofu emoji (deep-sea baseline kept the original 🪙 coin, which Roblox draws as a box), text contrast (2/3 baselines had a low-contrast label), hue variety (moodboard baseline stayed within 3 hue families).",
+    "Cost: with-skill runs took ~4% longer and ~10% more tokens (reading references, spec + style board + skin test).",
+    "Qualitative (Studio screenshots studio-home.png / studio-shop.png in every run): baselines are strong and sometimes richer in illustration (ennichi baseline: goldfish tub, candy apples, ramune; moodboard baseline: drawn shop icons). With-skill runs converge on one formula - tilted lemon pill CTA with a breathing halo and sticker type - across all three motifs: homogenisation risk inherited from the Pop Rink example.",
+    "With-skill titles sit under Roblox's top-left core buttons in 2/3 runs (IgnoreGuiInset); the ennichi baseline explicitly reserved the top-bar inset. The skill does not mention the topbar safe area yet.",
+    "Grader caveat: contrast and variety are measured on the Lune mock (no layout engine); rects under UIListLayout/ScrollingFrame fall back to ancestor fills."
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  "expectations": [
+    {
+      "text": "All Luau files compile",
+      "passed": true,
+      "evidence": "compiled 9 bad 0"
+    },
+    {
+      "text": "The run's own offline tests run under Lune and pass",
+      "passed": true,
+      "evidence": "test_terrain_pose.luau: PASS (PASS terrain pose checks=978)"
+    },
+    {
+      "text": "Finds AnimationConstraint joints too (Server Authority avatars have no Motor6D)",
+      "passed": true,
+      "evidence": "grep AnimationConstraint in shipped sources"
+    },
+    {
+      "text": "Joint Transforms are written from PreSimulation/Stepped, never from RenderStepped/PreRender",
+      "passed": true,
+      "evidence": "writers=['TerrainPoseLayer.luau'] renderstep_writers=[] presim_driver=True"
+    },
+    {
+      "text": "Never writes physics (root CFrame/velocity, HipHeight, Anchored, WalkSpeed)",
+      "passed": true,
+      "evidence": "none"
+    },
+    {
+      "text": "Casts rays for the ground (per foot or per body)",
+      "passed": true,
+      "evidence": "Raycast calls=4"
+    },
+    {
+      "text": "Lean is computed from the body's velocity (works for NPCs without input)",
+      "passed": true,
+      "evidence": "grep velocity"
+    },
+    {
+      "text": "Report gives a Studio verification procedure with numeric pass criteria",
+      "passed": true,
+      "evidence": "grep Studio + numbers"
+    },
+    {
+      "text": "Lean follows the velocity direction (camera turns / shift-lock do not tilt the body)",
+      "passed": true,
+      "evidence": "[judgment] Kit.Secondary measures omega from AssemblyLinearVelocity direction (TerrainPoseCore uses Kit.Secondary)"
+    },
+    {
+      "text": "Stairs behaviour is measured with a moving simulation and reported honestly",
+      "passed": true,
+      "evidence": "[judgment] REPORT: stairs table incl. down-stairs worse than OFF, KNOWN lines kept in the test"
+    }
+  ],
+  "summary": {
+    "passed": 10,
+    "failed": 0,
+    "total": 10,
+    "pass_rate": 1.0
+  }
+}

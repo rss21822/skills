@@ -1,0 +1,54 @@
+== Landing ==
+old: knee +35deg only -> toe moves dz=-0.578 dy=+0.497 studs (negative dz = FORWARD: knee bends backwards)
+[PASS] old knee sign bends the knee backwards (reproduces the bug)
+[PASS] old layer lifts/moves the planted foot  -- sole moved 0.762 studs
+v= 20 studs/s  strength=0.10 gain=0.45  dur=0.229s  peak knee= 15.5deg @0.067s  pelvis drop=0.016  max knee step/frame= 6.9deg  sole drift=0.00000
+[PASS] v=20 feet planted (sole drift < 0.005 studs)  -- 0.00000
+[PASS] v=20 ends at exactly 0 (done=true)
+[PASS] v=20 no snap (knee change per frame <= 16deg)  -- 6.9
+v= 50 studs/s  strength=0.46 gain=1.00  dur=0.299s  peak knee= 34.9deg @0.083s  pelvis drop=0.080  max knee step/frame=12.0deg  sole drift=0.00000
+[PASS] v=50 feet planted (sole drift < 0.005 studs)  -- 0.00000
+[PASS] v=50 ends at exactly 0 (done=true)
+[PASS] v=50 no snap (knee change per frame <= 16deg)  -- 12.0
+v= 70 studs/s  strength=0.70 gain=1.31  dur=0.346s  peak knee= 45.8deg @0.083s  pelvis drop=0.137  max knee step/frame=13.7deg  sole drift=0.00000
+[PASS] v=70 feet planted (sole drift < 0.005 studs)  -- 0.00000
+[PASS] v=70 ends at exactly 0 (done=true)
+[PASS] v=70 no snap (knee change per frame <= 16deg)  -- 13.7
+v= 95 studs/s  strength=1.00 gain=1.70  dur=0.405s  peak knee= 59.5deg @0.100s  pelvis drop=0.229  max knee step/frame=15.2deg  sole drift=0.00000
+[PASS] v=95 feet planted (sole drift < 0.005 studs)  -- 0.00000
+[PASS] v=95 ends at exactly 0 (done=true)
+[PASS] v=95 no snap (knee change per frame <= 16deg)  -- 15.2
+v=130 studs/s  strength=1.00 gain=1.70  dur=0.405s  peak knee= 59.5deg @0.100s  pelvis drop=0.229  max knee step/frame=15.2deg  sole drift=0.00000
+[PASS] v=130 feet planted (sole drift < 0.005 studs)  -- 0.00000
+[PASS] v=130 ends at exactly 0 (done=true)
+[PASS] v=130 no snap (knee change per frame <= 16deg)  -- 15.2
+[PASS] normal jump (50 studs/s) uses exactly LAND_KNEE_DEGREES
+[PASS] tiny step-off (10 studs/s) gives no squash
+old: knee jumps 0 -> 35.0deg in one frame, then linear to 0 (no ease, no impact scaling)
+[PASS] new knee rotation is negative X (foot goes back)
+[PASS] new hip rotation is positive X (knee goes forward)
+[PASS] trunk leans forward (waist negative X)
+t=0.06s: waist -9.0deg, neck 5.4deg, head world pitch -3.6deg
+== Idle breathing ==
+period knob 2.0s: 28 breaths/min, cycle mean 2.03s min 1.88s max 2.15s | inhale:exhale time 0.81 | chest pitch max 1.68deg | head world pitch max 0.25deg | chest step/frame max 0.057deg
+[PASS] period 2.0: mean cycle within 3% of knob
+[PASS] period 2.0: breaths vary (max-min > 10%)
+[PASS] period 2.0: inhale shorter than exhale
+[PASS] period 2.0: head stays level (< 0.4deg)  -- 0.25
+[PASS] period 2.0: continuous (< 0.1deg/frame)
+period knob 2.6s: 21 breaths/min, cycle mean 2.63s min 2.45s max 2.78s | inhale:exhale time 0.80 | chest pitch max 1.68deg | head world pitch max 0.25deg | chest step/frame max 0.044deg
+[PASS] period 2.6: mean cycle within 3% of knob
+[PASS] period 2.6: breaths vary (max-min > 10%)
+[PASS] period 2.6: inhale shorter than exhale
+[PASS] period 2.6: head stays level (< 0.4deg)  -- 0.25
+[PASS] period 2.6: continuous (< 0.1deg/frame)
+old: waist sine +-3.0deg (6.0deg peak-to-peak), head nods with it (+-3.0deg), always on, fixed period
+idle weight: fade out 0.133s, fade in 0.700s
+[PASS] breathing gone within 0.15s of moving
+[PASS] breathing eases back in (>= 0.5s)
+[PASS] no breathing while moving
+== Joint layer composition ==
+[PASS] static joint: 120 frames of +10deg stays +10deg  -- 10.000deg
+[PASS] static joint: nil delta restores the base
+[PASS] animated joint: result = animation + layer every frame
+ALL PASS

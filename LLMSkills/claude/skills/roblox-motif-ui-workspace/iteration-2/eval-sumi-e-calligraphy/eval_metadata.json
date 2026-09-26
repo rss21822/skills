@@ -1,0 +1,11 @@
+{
+  "eval_id": 9,
+  "eval_name": "sumi-e-calligraphy",
+  "prompt": "obby-rush のUIを水墨画と書道の世界にしたい。墨と和紙と、朱色の落款だけ。色は増やさないで。静かで余白のある画面がいい。テストは壊さないこと。",
+  "profile": {
+    "noGloss": true,
+    "noEmoji": true,
+    "palette": "only-red"
+  },
+  "assertions": []
+}

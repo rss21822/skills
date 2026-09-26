@@ -1,0 +1,53 @@
+{
+  "schema_version": "1.0.0",
+  "meta": {
+    "market_original": null,
+    "market_scope": {
+      "core": null,
+      "lineage": [],
+      "adjacent": [],
+      "geography": [],
+      "platforms": [],
+      "exclusions": [],
+      "assumptions": []
+    },
+    "analysis_as_of": null,
+    "timezone": "Asia/Tokyo",
+    "history_window": {
+      "requested_years": 25,
+      "requested_start": null,
+      "requested_end": null,
+      "observed_core_start": null,
+      "observed_core_end": null,
+      "prehistory_range": null
+    },
+    "current_window": {
+      "start": null,
+      "end": null,
+      "initial_lookback_days": 90,
+      "actual_coverage": null
+    },
+    "trend_window": {
+      "start": null,
+      "end": null,
+      "initial_lookback_months": 12,
+      "actual_coverage": null
+    },
+    "mode": "full",
+    "depth": "standard",
+    "status": "not_started",
+    "selection_method": null,
+    "capabilities": [],
+    "limitations": [],
+    "unresolved": []
+  },
+  "sources": [],
+  "claims": [],
+  "works": [],
+  "metrics": [],
+  "eras": [],
+  "features": [],
+  "codings": [],
+  "mainstream_biases": [],
+  "durable_needs": []
+}

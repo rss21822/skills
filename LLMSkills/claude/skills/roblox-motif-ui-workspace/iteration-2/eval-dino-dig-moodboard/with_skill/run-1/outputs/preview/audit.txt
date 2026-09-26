@@ -1,0 +1,19 @@
+[before-home-1280x720] TOPBAR Background.TopBar.Title
+TOPBAR Background.TopBar.CoinLabel
+[before-shop-1280x720] TOPBAR Background.TopBar.Title
+TOPBAR Background.TopBar.CoinLabel
+[after-home-1280x720] AUDIT PASS
+[after-shop-1280x720] AUDIT PASS
+[after-settings-1280x720] AUDIT PASS
+[after-inventory-1280x720] AUDIT PASS
+[after-quests-1280x720] AUDIT PASS
+[after-home-844x390] AUDIT PASS
+[after-shop-844x390] AUDIT PASS
+[after-settings-844x390] AUDIT PASS
+[after-inventory-844x390] AUDIT PASS
+[after-quests-844x390] AUDIT PASS
+[after-home-1024x768] AUDIT PASS
+[after-shop-1024x768] AUDIT PASS
+[after-settings-1024x768] AUDIT PASS
+[after-inventory-1024x768] AUDIT PASS
+[after-quests-1024x768] AUDIT PASS

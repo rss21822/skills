@@ -1,0 +1,4 @@
+interface:
+  display_name: "サイト投稿の下書き作成"
+  short_description: "サイト・本文草案・任意の動画パスから投稿画面の下書きを作成して確認"
+  default_prompt: "$site-post-draft を使い、指定サイトに本文草案と動画（パスがある場合のみ）を入れ、公開せず下書きを作成・確認して。"

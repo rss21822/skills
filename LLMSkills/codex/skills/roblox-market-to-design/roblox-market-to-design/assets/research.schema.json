@@ -1,0 +1,1367 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Roblox market-to-design research data v1.0.0",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "meta": {
+      "type": "object",
+      "properties": {
+        "project_title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "project_slug": {
+          "type": "string",
+          "minLength": 1
+        },
+        "started_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "timezone": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "mode": {
+          "type": "string",
+          "enum": [
+            "full",
+            "research-only",
+            "audit",
+            "refine"
+          ]
+        },
+        "depth": {
+          "type": "string",
+          "enum": [
+            "standard",
+            "deep"
+          ]
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "draft",
+            "partial",
+            "complete"
+          ]
+        },
+        "research_scope": {
+          "type": "string",
+          "minLength": 1
+        },
+        "capabilities": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "limitations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "unresolved": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "required": [
+        "project_title",
+        "project_slug",
+        "started_at",
+        "timezone",
+        "mode",
+        "depth",
+        "status",
+        "research_scope",
+        "capabilities",
+        "limitations",
+        "unresolved"
+      ],
+      "additionalProperties": false
+    },
+    "brief": {
+      "type": "object",
+      "properties": {
+        "concept": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "target_players": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "core_verbs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "desired_emotions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "success_definition": {
+          "type": "string",
+          "minLength": 1
+        },
+        "fixed_constraints": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "preferences": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "hypotheses": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "undecided": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "input_materials": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "production_constraints": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "excluded": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "required": [
+        "concept",
+        "target_players",
+        "core_verbs",
+        "desired_emotions",
+        "success_definition",
+        "fixed_constraints",
+        "preferences",
+        "hypotheses",
+        "undecided",
+        "input_materials",
+        "production_constraints",
+        "excluded"
+      ],
+      "additionalProperties": false
+    },
+    "sources": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/source"
+      }
+    },
+    "claims": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/claim"
+      }
+    },
+    "games": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/game"
+      }
+    },
+    "observations": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/observation"
+      }
+    },
+    "opportunities": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/opportunity"
+      }
+    },
+    "decisions": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/decision"
+      }
+    },
+    "hooks": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/hook"
+      }
+    },
+    "tests": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/test"
+      }
+    },
+    "platform_checks": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/platform_check"
+      }
+    },
+    "risks": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/risk"
+      }
+    },
+    "research_log": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "action": {
+            "type": "string",
+            "minLength": 1
+          },
+          "result": {
+            "type": "string",
+            "minLength": 1
+          },
+          "source_ids": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "pattern": "^S[0-9]{3,}$"
+            }
+          }
+        },
+        "required": [
+          "at",
+          "action",
+          "result",
+          "source_ids"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "changes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "change": {
+            "type": "string",
+            "minLength": 1
+          },
+          "affected_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "approval_evidence": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "at",
+          "change",
+          "affected_ids",
+          "approval_evidence"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "schema_version",
+    "meta",
+    "brief",
+    "sources",
+    "claims",
+    "games",
+    "observations",
+    "opportunities",
+    "decisions",
+    "hooks",
+    "tests",
+    "platform_checks",
+    "risks",
+    "research_log",
+    "changes"
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "metric": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "value": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "unit": {
+          "type": "string",
+          "minLength": 1
+        },
+        "definition": {
+          "type": "string",
+          "minLength": 1
+        },
+        "aggregation": {
+          "type": "string",
+          "enum": [
+            "cumulative",
+            "snapshot",
+            "period_total",
+            "period_average",
+            "peak",
+            "rate",
+            "other"
+          ]
+        },
+        "provenance": {
+          "type": "string",
+          "enum": [
+            "public_observed",
+            "creator_reported",
+            "third_party_estimate",
+            "authorized_internal",
+            "planning_assumption",
+            "unavailable"
+          ]
+        },
+        "observed_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "period_start": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "period_end": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "population": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^S[0-9]{3,}$"
+          }
+        },
+        "missing_reason": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "limitations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "required": [
+        "name",
+        "value",
+        "unit",
+        "definition",
+        "aggregation",
+        "provenance",
+        "observed_at",
+        "period_start",
+        "period_end",
+        "population",
+        "source_ids",
+        "missing_reason",
+        "limitations"
+      ],
+      "additionalProperties": false
+    },
+    "source": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^S[0-9]{3,}$"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "publisher": {
+          "type": "string",
+          "minLength": 1
+        },
+        "url": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "uri"
+        },
+        "local_path": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "published_at": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "retrieved_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "access_status": {
+          "type": "string",
+          "enum": [
+            "accessed",
+            "provided",
+            "snippet_only",
+            "inaccessible"
+          ]
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "official_doc",
+            "game_page",
+            "developer_statement",
+            "player_post",
+            "video",
+            "third_party_data",
+            "first_party_data",
+            "local_document",
+            "other"
+          ]
+        },
+        "locator": {
+          "type": "string",
+          "minLength": 1
+        },
+        "note": {
+          "type": "string",
+          "minLength": 1
+        },
+        "details": {
+          "type": "object"
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "publisher",
+        "url",
+        "local_path",
+        "published_at",
+        "retrieved_at",
+        "access_status",
+        "kind",
+        "locator",
+        "note"
+      ],
+      "additionalProperties": false
+    },
+    "claim": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^C[0-9]{3,}$"
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "fact",
+            "interpretation",
+            "hypothesis"
+          ]
+        },
+        "text": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^S[0-9]{3,}$"
+          }
+        },
+        "supporting_claim_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^C[0-9]{3,}$"
+          }
+        },
+        "confidence": {
+          "type": "string",
+          "enum": [
+            "high",
+            "medium",
+            "low",
+            "unknown"
+          ]
+        },
+        "confidence_reason": {
+          "type": "string",
+          "minLength": 1
+        },
+        "limitations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "alternative_explanations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "details": {
+          "type": "object"
+        }
+      },
+      "required": [
+        "id",
+        "kind",
+        "text",
+        "source_ids",
+        "supporting_claim_ids",
+        "confidence",
+        "confidence_reason",
+        "limitations",
+        "alternative_explanations"
+      ],
+      "additionalProperties": false
+    },
+    "game": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^G[0-9]{3,}$"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "platform": {
+          "type": "string",
+          "minLength": 1
+        },
+        "creator": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "official_url": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "uri"
+        },
+        "universe_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[0-9]+$"
+        },
+        "root_place_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[0-9]+$"
+        },
+        "identity_status": {
+          "type": "string",
+          "enum": [
+            "confirmed",
+            "provisional"
+          ]
+        },
+        "cohort": {
+          "type": "string",
+          "enum": [
+            "established",
+            "rising",
+            "comparison",
+            "historical",
+            "adjacent",
+            "unknown"
+          ]
+        },
+        "selection_reason": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^S[0-9]{3,}$"
+          }
+        },
+        "claim_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^C[0-9]{3,}$"
+          }
+        },
+        "metrics": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/metric"
+          }
+        },
+        "design_notes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "details": {
+          "type": "object"
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "platform",
+        "creator",
+        "official_url",
+        "universe_id",
+        "root_place_id",
+        "identity_status",
+        "cohort",
+        "selection_reason",
+        "source_ids",
+        "claim_ids",
+        "metrics",
+        "design_notes"
+      ],
+      "additionalProperties": false
+    },
+    "observation": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^OBS[0-9]{3,}$"
+        },
+        "game_id": {
+          "type": "string",
+          "pattern": "^G[0-9]{3,}$"
+        },
+        "source_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^S[0-9]{3,}$"
+          }
+        },
+        "method": {
+          "type": "string",
+          "enum": [
+            "client_play",
+            "video",
+            "official_text",
+            "user_provided",
+            "public_comment",
+            "other"
+          ]
+        },
+        "observed_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "locator": {
+          "type": "string",
+          "minLength": 1
+        },
+        "context": {
+          "type": "string",
+          "minLength": 1
+        },
+        "observed": {
+          "type": "string",
+          "minLength": 1
+        },
+        "limitations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "details": {
+          "type": "object"
+        }
+      },
+      "required": [
+        "id",
+        "game_id",
+        "source_ids",
+        "method",
+        "observed_at",
+        "locator",
+        "context",
+        "observed",
+        "limitations"
+      ],
+      "additionalProperties": false
+    },
+    "opportunity": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^OP[0-9]{3,}$"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "audience": {
+          "type": "string",
+          "minLength": 1
+        },
+        "unmet_need": {
+          "type": "string",
+          "minLength": 1
+        },
+        "current_alternatives": {
+          "type": "string",
+          "minLength": 1
+        },
+        "barrier": {
+          "type": "string",
+          "minLength": 1
+        },
+        "legacy_value": {
+          "type": "string",
+          "minLength": 1
+        },
+        "why_now": {
+          "type": "string",
+          "minLength": 1
+        },
+        "execution_advantage": {
+          "type": "string",
+          "minLength": 1
+        },
+        "evidence_claim_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^C[0-9]{3,}$"
+          }
+        },
+        "counterevidence": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "decision_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^D[0-9]{3,}$"
+          }
+        },
+        "test_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^T[0-9]{3,}$"
+          }
+        },
+        "details": {
+          "type": "object"
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "audience",
+        "unmet_need",
+        "current_alternatives",
+        "barrier",
+        "legacy_value",
+        "why_now",
+        "execution_advantage",
+        "evidence_claim_ids",
+        "counterevidence",
+        "decision_ids",
+        "test_ids"
+      ],
+      "additionalProperties": false
+    },
+    "option": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^D[0-9]{3,}-O[0-9]+$"
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1
+        },
+        "rationale": {
+          "type": "string",
+          "minLength": 1
+        },
+        "evidence_claim_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^C[0-9]{3,}$"
+          }
+        },
+        "tradeoffs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "implementation_notes": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "id",
+        "label",
+        "rationale",
+        "evidence_claim_ids",
+        "tradeoffs",
+        "implementation_notes"
+      ],
+      "additionalProperties": false
+    },
+    "decision": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^D[0-9]{3,}$"
+        },
+        "question": {
+          "type": "string",
+          "minLength": 1
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "draft",
+            "proposed",
+            "approved",
+            "rejected",
+            "deferred"
+          ]
+        },
+        "options": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/option"
+          }
+        },
+        "recommended_option_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^D[0-9]{3,}-O[0-9]+$"
+        },
+        "approved_option_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^D[0-9]{3,}-O[0-9]+$"
+        },
+        "approval_evidence": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "reasoning": {
+          "type": "string",
+          "minLength": 1
+        },
+        "claim_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^C[0-9]{3,}$"
+          }
+        },
+        "test_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^T[0-9]{3,}$"
+          }
+        },
+        "details": {
+          "type": "object"
+        }
+      },
+      "required": [
+        "id",
+        "question",
+        "status",
+        "options",
+        "recommended_option_id",
+        "approved_option_id",
+        "approval_evidence",
+        "reasoning",
+        "claim_ids",
+        "test_ids"
+      ],
+      "additionalProperties": false
+    },
+    "hook": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^H[0-9]{3,}$"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "premise": {
+          "type": "string",
+          "minLength": 1
+        },
+        "trigger": {
+          "type": "string",
+          "minLength": 1
+        },
+        "player_action": {
+          "type": "string",
+          "minLength": 1
+        },
+        "payoff": {
+          "type": "string",
+          "minLength": 1
+        },
+        "reaction": {
+          "type": "string",
+          "minLength": 1
+        },
+        "result": {
+          "type": "string",
+          "minLength": 1
+        },
+        "clip_value": {
+          "type": "string",
+          "minLength": 1
+        },
+        "naturalness": {
+          "type": "string",
+          "minLength": 1
+        },
+        "risks": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "decision_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^D[0-9]{3,}$"
+          }
+        },
+        "test_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^T[0-9]{3,}$"
+          }
+        },
+        "evidence_claim_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^C[0-9]{3,}$"
+          }
+        },
+        "details": {
+          "type": "object"
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "premise",
+        "trigger",
+        "player_action",
+        "payoff",
+        "reaction",
+        "result",
+        "clip_value",
+        "naturalness",
+        "risks",
+        "decision_ids",
+        "test_ids",
+        "evidence_claim_ids"
+      ],
+      "additionalProperties": false
+    },
+    "test": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^T[0-9]{3,}$"
+        },
+        "hypothesis": {
+          "type": "string",
+          "minLength": 1
+        },
+        "decision_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^D[0-9]{3,}$"
+          }
+        },
+        "design": {
+          "type": "string",
+          "minLength": 1
+        },
+        "cohort": {
+          "type": "string",
+          "minLength": 1
+        },
+        "metrics": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "duration": {
+          "type": "string",
+          "minLength": 1
+        },
+        "criteria": {
+          "type": "string",
+          "minLength": 1
+        },
+        "criteria_status": {
+          "type": "string",
+          "enum": [
+            "provisional",
+            "evidence_based",
+            "user_specified"
+          ]
+        },
+        "guardrails": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "planned",
+            "running",
+            "completed",
+            "not_run"
+          ]
+        },
+        "results": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "source_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^S[0-9]{3,}$"
+          }
+        },
+        "details": {
+          "type": "object"
+        }
+      },
+      "required": [
+        "id",
+        "hypothesis",
+        "decision_ids",
+        "design",
+        "cohort",
+        "metrics",
+        "duration",
+        "criteria",
+        "criteria_status",
+        "guardrails",
+        "status",
+        "results",
+        "source_ids"
+      ],
+      "additionalProperties": false
+    },
+    "platform_check": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^P[0-9]{3,}$"
+        },
+        "topic": {
+          "type": "string",
+          "minLength": 1
+        },
+        "checked_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "verified",
+            "partial",
+            "unverified",
+            "conflict"
+          ]
+        },
+        "source_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^S[0-9]{3,}$"
+          }
+        },
+        "findings": {
+          "type": "string",
+          "minLength": 1
+        },
+        "design_implications": {
+          "type": "string",
+          "minLength": 1
+        },
+        "decision_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^D[0-9]{3,}$"
+          }
+        },
+        "details": {
+          "type": "object"
+        }
+      },
+      "required": [
+        "id",
+        "topic",
+        "checked_at",
+        "status",
+        "source_ids",
+        "findings",
+        "design_implications",
+        "decision_ids"
+      ],
+      "additionalProperties": false
+    },
+    "risk": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^R[0-9]{3,}$"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "category": {
+          "type": "string",
+          "minLength": 1
+        },
+        "evidence_claim_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^C[0-9]{3,}$"
+          }
+        },
+        "decision_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^D[0-9]{3,}$"
+          }
+        },
+        "mitigation": {
+          "type": "string",
+          "minLength": 1
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "open",
+            "reduced",
+            "accepted",
+            "unresolved"
+          ]
+        },
+        "details": {
+          "type": "object"
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "category",
+        "evidence_claim_ids",
+        "decision_ids",
+        "mitigation",
+        "status"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "eval_id": 4,
+  "eval_name": "horror-hospital",
+  "prompt": "obby-rush を「夜の廃病院から脱出する」ホラー obby にリブランドする。メインメニューとショップ・設定などのUIもそれに合わせて作り直して。怖い雰囲気にしたいけど小学生も遊ぶから、グロいのは無しで。他のスクリプトがUIの名前で探してるから tests/test_main_menu.luau は通るままにしてね。",
+  "profile": {
+    "dark": true,
+    "noGloss": true,
+    "palette": "any"
+  },
+  "assertions": []
+}

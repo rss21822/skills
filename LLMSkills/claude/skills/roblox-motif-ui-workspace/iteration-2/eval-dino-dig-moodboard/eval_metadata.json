@@ -1,0 +1,13 @@
+{
+  "eval_id": 8,
+  "eval_name": "dino-dig-moodboard",
+  "prompt": "添付の画像（moodboard-dino-dig.png）が今回のモチーフ。恐竜の発掘調査をするジャングルって感じ。obby-rush のメインメニューとショップ画面をこの雰囲気にして。名前で参照してるスクリプトがあるからテストは通るままで。",
+  "profile": {
+    "hues": [
+      "amber",
+      "green"
+    ],
+    "palette": "any"
+  },
+  "assertions": []
+}

@@ -1,0 +1,70 @@
+{
+  "expectations": [
+    {
+      "text": "Contract test (names, callbacks, pages, 48px targets) passes with the test files unmodified",
+      "passed": true,
+      "evidence": "exit 0, tests unchanged=True; PASS main menu contract: 29 checks, 0 failed"
+    },
+    {
+      "text": "Every Luau file under src compiles",
+      "passed": true,
+      "evidence": "4 files; exit 0; all OK"
+    },
+    {
+      "text": "No generic navy/slate fills: navy share of visible filled area < 5%",
+      "passed": true,
+      "evidence": "navy share 0.0%; navy colours []"
+    },
+    {
+      "text": "Palette variety: at least 4 distinct saturated hue families (30 deg bins) in visible fills",
+      "passed": false,
+      "evidence": "hue bins [0, 30, 180]"
+    },
+    {
+      "text": "Every FontFace family used is a real Roblox font family",
+      "passed": true,
+      "evidence": "families []; missing []"
+    },
+    {
+      "text": "Japanese text requests a bold (SemiBold+) weight so the CJK fallback does not render thin",
+      "passed": false,
+      "evidence": "19 Japanese texts; thin: ['Background.PlayButton.Face.Window.Content.Label=プレイ', 'Background.NavBar.Nav_Shop.Face.Window.Content.Label=ショップ', 'Background.NavBar.Nav_Inventory.Face.Window.Content.Label=持ち物', 'Background.NavBar.Nav_Quests.Face.Window.Content.Label=クエスト', 'Background.NavBar.Nav_Settings.Face.Window.Content.Label=設定']"
+    },
+    {
+      "text": "No Latin-only decorative display font is applied to Japanese text",
+      "passed": true,
+      "evidence": "none"
+    },
+    {
+      "text": "Every visible text reaches 3:1 against its fill (glyph or its outline)",
+      "passed": true,
+      "evidence": "25 texts checked; low: []"
+    },
+    {
+      "text": "Emoji-only labels get a box at least 1.4x their TextSize tall",
+      "passed": true,
+      "evidence": "ok"
+    },
+    {
+      "text": "No emoji newer than Unicode 12 (Roblox draws them as tofu boxes) in visible text",
+      "passed": true,
+      "evidence": "none"
+    },
+    {
+      "text": "Reduced motion: no infinite tween loops are created when GuiService.ReducedMotionEnabled is true",
+      "passed": true,
+      "evidence": "loops normal=4 reduced=0 (tweens 8/0)"
+    },
+    {
+      "text": "A visual preview (PNG/HTML) of the new look was produced for review",
+      "passed": true,
+      "evidence": "['before_home_1280x720.png', 'before_shop_1280x720.png', 'preview.html', 'preview_home_1280x720.png']"
+    }
+  ],
+  "summary": {
+    "passed": 10,
+    "failed": 2,
+    "total": 12,
+    "pass_rate": 0.833
+  }
+}

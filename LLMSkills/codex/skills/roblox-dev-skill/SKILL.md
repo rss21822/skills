@@ -19,10 +19,20 @@ Complete the user's scoped Roblox change as far as the available local and inter
 1. Use local search, patching, tests, and Rojo builds for source-controlled work. When the source is Rojo-managed and the task needs more than one Studio check, keep a connected `rojo serve` session instead of building a candidate Place per change. See *Iterate with Rojo live sync*.
 2. Use Roblox Studio MCP for DataModel inspection, exact instance properties, Luau execution, Play control, simulated player input, console output, and screenshots.
 3. Launch a local `rbxl` or `rbxlx` directly when the built artifact itself must be verified, then select the exact Studio instance ID rather than relying on window focus.
-4. When an OS-level dialog or Studio control is unavailable through MCP, invoke the available Computer Use skill and operate the UI. Restore focus and re-inspect state after GUI actions. **Saving a Place and closing one are both such controls**: `game:Save()` does not exist on `DataModel`, MCP script execution has no `plugin` global, and nothing in MCP closes a Place. See *Save a Place to disk* and *Close a Place without saving* below. Do these yourself; do not hand them back to the user as a prerequisite.
+4. When an OS-level dialog or Studio control is unavailable through MCP, invoke the available Computer Use skill and operate the UI. Restore focus and re-inspect state after GUI actions. **Saving a Place is one of these controls**: `game:Save()` does not exist on `DataModel` and MCP script execution has no `plugin` global, so File → Save to File through the GUI is the only path. See *Save a Place to disk* below.
 5. When Creator Dashboard or another web setting is necessary, invoke the available in-app Browser or Chrome skill. Prefer an authenticated connector or API when it provides the same operation more reliably.
 
 Read [references/studio-workflows.md](references/studio-workflows.md) whenever the task opens a Place, performs Studio Play verification, changes Creator settings, or investigates a Studio-only failure.
+
+## Recover a new Place with no playable ground
+
+When testing a newly created Place, watch the first player spawn. If the character falls immediately and is killed by the void or `Workspace.FallenPartsDestroyHeight`, first confirm that the Place has no supporting ground under the spawn and that the fall is not intentional game behavior.
+
+1. Stop Play before changing the DataModel.
+2. Open Toolbox and search for the exact model name `Base Template`. Insert the project-authorized or otherwise trustworthy exact-title result into the Place. If multiple results cannot be distinguished by a pinned asset ID, creator, or project instruction, do not guess; report the ambiguity.
+3. Treat the inserted model as untrusted until inspected. Record its asset ID and creator, inspect every descendant and source container, remove unneeded or untrusted scripts, and retain only the base content required by the Place.
+4. Confirm the base is positioned beneath the initial spawn and its supporting parts are anchored and collidable. Do not alter an intentional fall mechanic or invent unrelated layout.
+5. Run Play again with a real spawned character and verify that the player remains supported instead of receiving the same immediate fall death. Save the Place only when the inserted base is intended project content, then record the saved artifact evidence described below.
 
 ## Implement and verify the real path
 
@@ -51,7 +61,7 @@ Save when unsaved DataModel state is the only copy of real work: modules applied
 1. Confirm the desktop session is interactive. If `quser` reports `Disc`, no screen exists, screen capture fails with `desktopCapturer returned no screen sources`, and input cannot land. Report the blocker and ask the user to reconnect rather than switching sessions yourself.
 2. Take an **unscaled** screenshot and read the menu coordinates from it. Coordinates from a scaled capture do not map to click coordinates. Never reuse hard-coded coordinates; they shift with Studio version, window position, DPI, and UI language.
 3. Confirm the target window by its title bar path, then click `File` (`ファイル`), wait, and screenshot again.
-4. Read the item position from the **opened menu** screenshot, then click `Save to File` (`ファイルに保存`). Do not click `Save to Roblox` (`Roblox に保存`); it publishes and sits adjacent in the same menu.
+4. Read the item position from the **opened menu** screenshot, then click `Save to File` (`ファイルに保存`). This saves a local file.
 5. Prove the save from the file, not from the closed menu. Read `Length`, `LastWriteTime`, and SHA-256, and confirm the timestamp matches this action.
 
 ```powershell
@@ -64,30 +74,16 @@ $f = Get-Item $p
 
 If input is rejected with `blocked by UIPI`, Studio is running elevated and the lower-integrity input path cannot reach it. Report it and ask for a manual `Ctrl+S`. Do not restart Studio to work around it; that discards the unsaved DataModel you were trying to preserve.
 
-## Close a Place without saving
-
-A Place open in Studio holds a lock, so `rojo build` cannot write that file. When the next step needs the artifact rebuilt, close the Place yourself through Computer Use rather than asking the user to do it. Closing without saving is safe whenever the tracked source is authoritative — a live-synced or test-mutated DataModel is not work worth keeping.
-
-Read [references/studio-workflows.md](references/studio-workflows.md) for the procedure. Two traps make this fail if you improvise:
-
-- **Do not use `open_application` to switch between Studio windows.** It opens a new Studio start screen and takes focus, which also breaks simulated keyboard input into the Place you were testing.
-- **A closed window is not proof.** Confirm from the absent lock file and from the instance disappearing from the Studio instance list, then rebuild.
-
-## Give a new Place ground before judging a fall
-
-A Place built from a Rojo project usually has no baseplate, so the character spawns over nothing and dies in a loop. Before inserting anything, read the console: a script that builds the arena at runtime may have aborted, and adding ground would hide that. Fix an initialization error first. If there is genuinely no ground, insert the Toolbox baseplate by asset id (`9261840032`, "Grass base plate") with the asset-insert MCP tool, inspect it for scripts as any imported asset, then Play again.
-
 ## External-change boundary
 
 - Local implementation and local Studio testing are allowed when they are within the user's requested project.
-- Publishing, changing live Creator settings, creating credentials, spending currency, or affecting production data requires explicit authorization for that external mutation.
+- Cloud saves, publishing, changing live Creator settings, creating credentials, spending currency, or affecting production data requires explicit authorization for that external mutation.
 - If private staging publication is explicitly requested and the dedicated staging skill is available, use it rather than improvising a production-like workflow.
 - Before a browser mutation, inspect the current setting and exact target. Afterward, verify the saved value or platform receipt.
 
 ## Finish cleanly
 
 - Stop Play sessions and restore any entry script, attribute, mock, or test instrumentation changed only for verification. Do not save test-only mutations into the Place. Revert probe edits made only to prove a live sync, and stop a `rojo serve` session you started.
-- Decide explicitly whether the Place must be saved. If it must, save it through the GUI path above and record the path, byte size, SHA-256, and save time. If it could not be saved, say why and state whether the work is reproducible from tracked source. If it must be closed so the artifact can be rebuilt, close it yourself without saving and prove it from the absent lock.
-- Remove test scaffolding such as an inserted baseplate before recording results, and say so if any remains.
+- Decide explicitly whether the Place must be saved. If it must, save it through the GUI path above and record the path, byte size, SHA-256, and save time. If it could not be saved, say why and state whether the work is reproducible from tracked source.
 - Report which exact artifact and Studio instance were tested, what input was performed, and what authoritative evidence resulted.
 - Audit every requested requirement. State partial failures plainly; passing asset presence does not prove usability, and passing Studio does not prove published multi-Place behavior.

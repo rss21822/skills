@@ -1,0 +1,4 @@
+interface:
+  display_name: "Runway Video Generator with Multi-Prompt"
+  short_description: "Generate and stitch coherent Runway multi-clip videos"
+  default_prompt: "Use $runway-video-generator-with-multi-prompt to generate a coherent Runway video from chained prompts and stitch any number of clips."

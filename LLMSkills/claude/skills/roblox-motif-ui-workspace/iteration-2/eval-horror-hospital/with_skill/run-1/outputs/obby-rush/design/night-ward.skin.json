@@ -1,0 +1,59 @@
+{
+  "name": "NIGHT WARD",
+  "motif": "夜の廃病院から脱出するホラー obby。怖い雰囲気、でも小学生も遊ぶのでグロは無し",
+  "tone": "scary but kid-safe: dim, uneasy, slow; no gore, no jump scares, no fast flashing",
+  "concept": "a dark hospital corridor at 2 a.m.: the glowing green 非常口 exit sign is the CTA, yellowed charts on clipboards are the panels, enamel room-number door plates are the dock; slow fluorescent flicker and a drifting flashlight pool",
+  "palette": {
+    "ink": "#2B2A22",
+    "paper": "#E3D9B8",
+    "panel": "#EFE7CB",
+    "quiet": "#D6CCA8",
+    "primary": "#087A3F",
+    "danger": "#B23A26",
+    "success": "#3C7430",
+    "muted": "#5E5A48",
+    "disabled": "#B9B29A",
+    "dim": "#06100D",
+    "white": "#F1EEE0",
+    "night": "#0B1512",
+    "wall": "#17241F",
+    "edge": "#4A6153",
+    "subtext": "#9FB2A6",
+    "plate": "#C5CCB8",
+    "board": "#6B563E",
+    "steel": "#A9B2AD",
+    "glow": "#39E27D",
+    "fluoro": "#8FD6A8",
+    "flashlight": "#F2E3A6",
+    "amber": "#F2C04C",
+    "stamp": "#9A3F1E",
+    "lampOff": "#34403A",
+    "candies": [
+      ["exitGlow", "#39E27D"],
+      ["fluoro", "#8FD6A8"],
+      ["amber", "#F2C04C"],
+      ["stamp", "#9A3F1E"]
+    ]
+  },
+  "pastels": ["#EFE7CB", "#E8DFC0", "#DDE2D0"],
+  "fonts": {
+    "display": ["SpecialElite", "Regular"],
+    "title": ["Oswald", "Bold"],
+    "button": ["Oswald", "Bold"],
+    "body": ["Arimo", "Bold"],
+    "strong": ["Arimo", "Heavy"],
+    "mono": ["RobotoMono", "Bold"]
+  },
+  "latinOnly": ["display"],
+  "shape": {
+    "corner": 3,
+    "panelCorner": 2,
+    "stroke": 2,
+    "lip": 0,
+    "gloss": false,
+    "textOutline": false,
+    "press": "none",
+    "tilt": 0,
+    "cta": "rounded"
+  }
+}

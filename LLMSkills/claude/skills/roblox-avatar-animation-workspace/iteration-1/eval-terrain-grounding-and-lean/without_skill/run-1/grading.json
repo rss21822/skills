@@ -1,0 +1,60 @@
+{
+  "expectations": [
+    {
+      "text": "All Luau files compile",
+      "passed": true,
+      "evidence": "compiled 5 bad 0"
+    },
+    {
+      "text": "The run's own offline tests run under Lune and pass",
+      "passed": true,
+      "evidence": "grounding.spec.luau: PASS (RESULT: 32 passed, 0 failed)"
+    },
+    {
+      "text": "Finds AnimationConstraint joints too (Server Authority avatars have no Motor6D)",
+      "passed": false,
+      "evidence": "grep AnimationConstraint in shipped sources"
+    },
+    {
+      "text": "Joint Transforms are written from PreSimulation/Stepped, never from RenderStepped/PreRender",
+      "passed": true,
+      "evidence": "writers=['init.luau'] renderstep_writers=[] presim_driver=True"
+    },
+    {
+      "text": "Never writes physics (root CFrame/velocity, HipHeight, Anchored, WalkSpeed)",
+      "passed": true,
+      "evidence": "none"
+    },
+    {
+      "text": "Casts rays for the ground (per foot or per body)",
+      "passed": true,
+      "evidence": "Raycast calls=1"
+    },
+    {
+      "text": "Lean is computed from the body's velocity (works for NPCs without input)",
+      "passed": true,
+      "evidence": "grep velocity"
+    },
+    {
+      "text": "Report gives a Studio verification procedure with numeric pass criteria",
+      "passed": true,
+      "evidence": "grep Studio + numbers"
+    },
+    {
+      "text": "Lean follows the velocity direction (camera turns / shift-lock do not tilt the body)",
+      "passed": false,
+      "evidence": "[judgment] REPORT: lean from HRP yaw angular velocity; limitation 'シフトロックでカメラを回すと移動方向に関係なく傾く'"
+    },
+    {
+      "text": "Stairs behaviour is measured with a moving simulation and reported honestly",
+      "passed": true,
+      "evidence": "[judgment] REPORT: static stair cases 0.000 plus a synthetic compass gait with p95/max and ~90 deg joint jumps flagged"
+    }
+  ],
+  "summary": {
+    "passed": 8,
+    "failed": 2,
+    "total": 10,
+    "pass_rate": 0.8
+  }
+}

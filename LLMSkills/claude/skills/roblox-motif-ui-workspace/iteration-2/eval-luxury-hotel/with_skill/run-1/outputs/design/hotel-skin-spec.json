@@ -1,0 +1,41 @@
+{
+  "name": "Grand Hotel Lobby",
+  "motif": "obby-rush の舞台を高級ホテル（黒い大理石と金の装飾、シャンデリアのあるロビー）に。UIも上品で大人っぽく。可愛い・ポップは要らない",
+  "tone": "elegant, adult, quiet luxury (Art Deco grand hotel at night)",
+  "concept": "Nero Marquina black marble with white veins, hairline opaque gold double rules and corner diamonds, a crystal chandelier over the lobby; CTA = brass elevator doors under an Art Deco floor dial, panels = gold-framed marble plaques (shop = room-service menu card with dot leaders), nav = engraved hotel directory plaques",
+  "palette": {
+    "ink": "#EFE6D2",
+    "paper": "#141012",
+    "panel": "#1A1517",
+    "quiet": "#231C1F",
+    "primary": "#D2AE62",
+    "danger": "#8C2635",
+    "success": "#2E6E55",
+    "muted": "#A69884",
+    "disabled": "#2A2326",
+    "dim": "#070506",
+    "outline": "#0C090A",
+    "onLight": "#1A130F",
+    "white": "#F6EFE1",
+    "gold": "#C9A45C",
+    "goldLight": "#F0D79C",
+    "goldDeep": "#7C6034",
+    "plaque": "#110D0F",
+    "floor": "#0C0A0B",
+    "vein": "#E9E2D6",
+    "candle": "#FFE6AE",
+    "glow": "#FFC266",
+    "crystal": "#FFF6E6",
+    "candies": [["gold", "#C9A45C"], ["velvet", "#8C2635"], ["emerald", "#2E6E55"]]
+  },
+  "pastels": ["#1C1719", "#191416"],
+  "fonts": {
+    "display": ["RomanAntique", "Regular"],
+    "title": ["AccanthisADFStd", "Bold"],
+    "button": ["Merriweather", "Bold"],
+    "body": ["Merriweather", "Bold"],
+    "strong": ["Merriweather", "Heavy"]
+  },
+  "latinOnly": ["display"],
+  "shape": {"corner": 2, "panelCorner": 2, "stroke": 1, "lip": 0, "gloss": false, "textOutline": false, "press": "none", "tilt": 0, "cta": "rounded"}
+}

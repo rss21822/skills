@@ -1,0 +1,55 @@
+{
+  "name": "Sumi & Washi",
+  "motif": "obby-rush のUIを水墨画と書道の世界に。墨と和紙と、朱色の落款だけ。色は増やさないで。静かで余白のある画面。",
+  "tone": "quiet, still, ink on paper",
+  "concept": "山水の余白: 和紙の地に薄墨の遠山と円相の月、CTA は朱の遊印（落款）、ページは掛軸、ナビは墨書きの題字と筆の払い。色は墨の濃淡・和紙・朱の印だけ",
+  "palette": {
+    "ink": "#1E1A16",
+    "paper": "#F1EBDF",
+    "panel": "#F8F4EA",
+    "quiet": "#E6DFD1",
+    "primary": "#BE3A26",
+    "danger": "#3A332C",
+    "success": "#1E1A16",
+    "muted": "#645C52",
+    "disabled": "#DED7C9",
+    "dim": "#1E1A16",
+    "white": "#F8F4EA",
+    "outline": "#1E1A16",
+    "onLight": "#1E1A16",
+    "nakazumi": "#4A433B",
+    "usuzumi": "#8A8277",
+    "mount": "#DDD4C2",
+    "ichimonji": "#BDB39F",
+    "futai": "#A99F8C",
+    "candies": [
+      ["sumi", "#1E1A16"],
+      ["usuzumi", "#8A8277"],
+      ["shu", "#BE3A26"]
+    ]
+  },
+  "pastels": ["#F8F4EA", "#EFE8DA"],
+  "fonts": {
+    "display": ["AccanthisADFStd", "Bold"],
+    "title": ["Merriweather", "Bold"],
+    "button": ["Merriweather", "Bold"],
+    "body": ["Merriweather", "Bold"],
+    "strong": ["Merriweather", "Heavy"]
+  },
+  "latinOnly": ["display"],
+  "shape": {
+    "corner": 2,
+    "panelCorner": 0,
+    "stroke": 0,
+    "lip": 0,
+    "gloss": false,
+    "textOutline": false,
+    "press": "none",
+    "tilt": 0,
+    "cta": "rounded"
+  },
+  "allow": {
+    "monochrome": "ユーザー指定: 墨と和紙と朱色の落款だけ、色を増やさない。アクセントは墨の濃淡と朱の印のみ"
+  },
+  "icons": {}
+}

@@ -1,0 +1,100 @@
+{
+  "expectations": [
+    {
+      "text": "Contract test (names, callbacks, pages, 48px targets) passes with the test files unmodified",
+      "passed": true,
+      "evidence": "exit 0, tests unchanged=True; PASS main menu contract: 29 checks, 0 failed"
+    },
+    {
+      "text": "Every Luau file under src compiles",
+      "passed": true,
+      "evidence": "5 files; exit 0; all OK"
+    },
+    {
+      "text": "Navy is the posted motif and is kept: navy fills cover at least 10% of the filled area",
+      "passed": true,
+      "evidence": "navy share 97.5%; navy colours ['#030711', '#040813', '#0A142B', '#0B152E', '#0C1833', '#112147']"
+    },
+    {
+      "text": "Motif colour from the prompt is present: red fills (>0.3% of filled area)",
+      "passed": true,
+      "evidence": "red share 1.17%"
+    },
+    {
+      "text": "Every FontFace family used is a real Roblox font family",
+      "passed": true,
+      "evidence": "families ['Oswald', 'SourceSansPro']; missing []"
+    },
+    {
+      "text": "Japanese text requests a bold (SemiBold+) weight so the CJK fallback does not render thin",
+      "passed": true,
+      "evidence": "29 Japanese texts; thin: []"
+    },
+    {
+      "text": "No Latin-only decorative display font is applied to Japanese text",
+      "passed": true,
+      "evidence": "none"
+    },
+    {
+      "text": "Every visible text reaches 3:1 against its fill (glyph or its outline)",
+      "passed": true,
+      "evidence": "41 texts checked; low: []"
+    },
+    {
+      "text": "Emoji-only labels get a box at least 1.4x their TextSize tall",
+      "passed": true,
+      "evidence": "ok"
+    },
+    {
+      "text": "No emoji newer than Unicode 12 (Roblox draws them as tofu boxes) in visible text",
+      "passed": true,
+      "evidence": "none"
+    },
+    {
+      "text": "Reduced motion: no infinite tween loops are created when GuiService.ReducedMotionEnabled is true",
+      "passed": true,
+      "evidence": "loops normal=34 reduced=0 (tweens 34/0)"
+    },
+    {
+      "text": "Nothing readable or pressable sits under Roblox's top-left buttons (x<200, y<58) on the IgnoreGuiInset screen",
+      "passed": false,
+      "evidence": "['Background.TopBar.Title @(46,16)']"
+    },
+    {
+      "text": "A visual preview (PNG/HTML) of the new look was produced for review",
+      "passed": true,
+      "evidence": "['preview.html', 'preview_before_after.png', 'preview_home.png', 'preview_inventory.png']"
+    },
+    {
+      "text": "Blind judge (screenshots only, 14 candidate motifs) names the posted motif as top-1",
+      "passed": true,
+      "evidence": "R06: top1=夜の港と海軍 conf=0.95; guess: Night naval harbour decorated with international maritime signal flags"
+    },
+    {
+      "text": "Blind judge rates theme strength >= 4/5 (unmistakably one specific world, not a recoloured generic menu)",
+      "passed": true,
+      "evidence": "R06: strength 5; generic parts: The shop panel's empty navy lower area feels like a template modal"
+    },
+    {
+      "text": "Informed judge rates motif fidelity >= 4/5",
+      "passed": true,
+      "evidence": "R06: fidelity 5; CTA=Rope-bordered red button with a Blue Peter flag on a staff"
+    },
+    {
+      "text": "Informed judge: every explicit constraint in the request is honored on screen",
+      "passed": true,
+      "evidence": "R06: 7/7 honored; missed: none"
+    },
+    {
+      "text": "Informed judge rates craft >= 4/5 (clear hero, readable text, no layout defects)",
+      "passed": false,
+      "evidence": "R06: craft 3; Rich and well themed with a clear CTA, but the title is under the Roblox top-left buttons (only a 'B' peeks out); busy top edge; katakana initials in shop portholes are filler; shop bottom half empty."
+    }
+  ],
+  "summary": {
+    "passed": 16,
+    "failed": 2,
+    "total": 18,
+    "pass_rate": 0.889
+  }
+}

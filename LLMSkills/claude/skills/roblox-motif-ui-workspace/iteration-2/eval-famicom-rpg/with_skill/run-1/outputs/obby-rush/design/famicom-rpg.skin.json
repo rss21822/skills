@@ -1,0 +1,49 @@
+{
+  "name": "Famicom Quest",
+  "motif": "ファミコン時代のRPGっぽく。黒い画面に白い枠のウィンドウ、▶のカーソル、ドット文字みたいな感じ。",
+  "tone": "nostalgic, crisp, 8-bit JRPG (stepwise motion, no bounce)",
+  "concept": "CRT pixel screen: opaque black windows with a white pixel frame (notched corners), a blinking pixel ▶ cursor as the only selection mark, PressStart2P for Latin/numbers, kana-only Heavy Japanese, NES-palette gold for the one CTA",
+  "palette": {
+    "ink": "#FCFCFC",
+    "paper": "#000000",
+    "panel": "#000000",
+    "quiet": "#000000",
+    "primary": "#F8B800",
+    "danger": "#F83800",
+    "success": "#58D854",
+    "muted": "#BCBCBC",
+    "disabled": "#7C7C7C",
+    "dim": "#000000",
+    "outline": "#000000",
+    "onLight": "#000000",
+    "candies": [
+      ["ember", "#A81000"],
+      ["straw", "#F8D878"],
+      ["cobalt", "#0058F8"],
+      ["leaf", "#00A800"],
+      ["brick", "#E45C10"],
+      ["sky", "#3CBCFC"]
+    ]
+  },
+  "pastels": ["#000000"],
+  "fonts": {
+    "display": ["PressStart2P", "Regular"],
+    "title": ["RobotoMono", "Heavy"],
+    "button": ["RobotoMono", "Heavy"],
+    "body": ["RobotoMono", "Bold"],
+    "strong": ["RobotoMono", "Heavy"]
+  },
+  "latinOnly": ["display"],
+  "shape": {
+    "corner": 0,
+    "panelCorner": 0,
+    "stroke": 4,
+    "lip": 0,
+    "gloss": false,
+    "textOutline": false,
+    "press": "none",
+    "tilt": 0,
+    "cta": "rounded",
+    "dot": 4
+  }
+}

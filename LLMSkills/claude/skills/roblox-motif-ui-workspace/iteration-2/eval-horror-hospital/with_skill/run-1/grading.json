@@ -1,0 +1,105 @@
+{
+  "expectations": [
+    {
+      "text": "Contract test (names, callbacks, pages, 48px targets) passes with the test files unmodified",
+      "passed": true,
+      "evidence": "exit 0, tests unchanged=True; PASS main menu contract: 29 checks, 0 failed"
+    },
+    {
+      "text": "Every Luau file under src compiles",
+      "passed": true,
+      "evidence": "6 files; exit 0; all OK"
+    },
+    {
+      "text": "No generic navy/slate fills: navy share of visible filled area < 5%",
+      "passed": true,
+      "evidence": "navy share 0.0%; navy colours []"
+    },
+    {
+      "text": "Every FontFace family used is a real Roblox font family",
+      "passed": true,
+      "evidence": "families ['Arimo', 'RobotoMono', 'SpecialElite']; missing []"
+    },
+    {
+      "text": "Japanese text requests a bold (SemiBold+) weight so the CJK fallback does not render thin",
+      "passed": true,
+      "evidence": "27 Japanese texts; thin: []"
+    },
+    {
+      "text": "No Latin-only decorative display font is applied to Japanese text",
+      "passed": true,
+      "evidence": "none"
+    },
+    {
+      "text": "Every visible text reaches 3:1 against its fill (glyph or its outline)",
+      "passed": true,
+      "evidence": "51 texts checked; low: []"
+    },
+    {
+      "text": "Emoji-only labels get a box at least 1.4x their TextSize tall",
+      "passed": true,
+      "evidence": "ok"
+    },
+    {
+      "text": "No emoji newer than Unicode 12 (Roblox draws them as tofu boxes) in visible text",
+      "passed": true,
+      "evidence": "none"
+    },
+    {
+      "text": "Reduced motion: no infinite tween loops are created when GuiService.ReducedMotionEnabled is true",
+      "passed": true,
+      "evidence": "loops normal=2 reduced=0 (tweens 6/0)"
+    },
+    {
+      "text": "Nothing readable or pressable sits under Roblox's top-left buttons (x<200, y<58) on the IgnoreGuiInset screen",
+      "passed": true,
+      "evidence": "clear"
+    },
+    {
+      "text": "Material honesty: no sticker gloss bands or pressable lips on a motif that is not plastic or candy",
+      "passed": true,
+      "evidence": "none"
+    },
+    {
+      "text": "Dark screen: the largest opaque backdrop has lightness < 0.22",
+      "passed": true,
+      "evidence": "backdrop #0B1512 lightness 0.06"
+    },
+    {
+      "text": "A visual preview (PNG/HTML) of the new look was produced for review",
+      "passed": true,
+      "evidence": "['preview-home-phone-landscape.html', 'preview-home-phone-landscape.png', 'preview-home-phone-portrait.html', 'preview-home-phone-portrait.png']"
+    },
+    {
+      "text": "Blind judge (screenshots only, 14 candidate motifs) names the posted motif as top-1",
+      "passed": true,
+      "evidence": "R08: top1=夜の廃病院からの脱出（ホラー） conf=0.97; guess: Escape from an abandoned hospital ward at night, with an emergency-exit sign"
+    },
+    {
+      "text": "Blind judge rates theme strength >= 4/5 (unmistakably one specific world, not a recoloured generic menu)",
+      "passed": true,
+      "evidence": "R08: strength 5; generic parts: none"
+    },
+    {
+      "text": "Informed judge rates motif fidelity >= 4/5",
+      "passed": true,
+      "evidence": "R08: fidelity 5; CTA=Green emergency-exit sign with running-man pictogram"
+    },
+    {
+      "text": "Informed judge: every explicit constraint in the request is honored on screen",
+      "passed": true,
+      "evidence": "R08: 4/4 honored; missed: none"
+    },
+    {
+      "text": "Informed judge rates craft >= 4/5 (clear hero, readable text, no layout defects)",
+      "passed": true,
+      "evidence": "R08: craft 4; Emergency-exit sign is an excellent readable hero; glow rings show slight banding; coin under the Roblox card; title clears the Roblox buttons; clipboard shop legible and well structured."
+    }
+  ],
+  "summary": {
+    "passed": 19,
+    "failed": 0,
+    "total": 19,
+    "pass_rate": 1.0
+  }
+}

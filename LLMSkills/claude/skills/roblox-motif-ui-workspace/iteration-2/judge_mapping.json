@@ -1,0 +1,24 @@
+{
+  "blind": {
+    "R01": "eval-navy-harbor/with_skill",
+    "R02": "eval-sumi-e-calligraphy/with_skill",
+    "R03": "eval-famicom-rpg/with_skill",
+    "R04": "eval-luxury-hotel/with_skill",
+    "R05": "eval-sumi-e-calligraphy/without_skill",
+    "R06": "eval-navy-harbor/without_skill",
+    "R07": "eval-luxury-hotel/without_skill",
+    "R08": "eval-horror-hospital/with_skill",
+    "R09": "eval-dino-dig-moodboard/with_skill"
+  },
+  "diversity": {
+    "A1.png": "eval-dino-dig-moodboard/with_skill",
+    "A2.png": "eval-famicom-rpg/with_skill",
+    "A3.png": "eval-horror-hospital/with_skill",
+    "A4.png": "eval-luxury-hotel/with_skill",
+    "A5.png": "eval-navy-harbor/with_skill",
+    "A6.png": "eval-sumi-e-calligraphy/with_skill",
+    "B1.png": "eval-deep-sea-dark/with_skill",
+    "B2.png": "eval-ennichi-festival/with_skill",
+    "B3.png": "eval-moodboard-retro-toys/with_skill"
+  }
+}

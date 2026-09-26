@@ -1,0 +1,74 @@
+{
+ "before-lobby": {
+  "scene": "lobby",
+  "size": [
+   1280,
+   720
+  ],
+  "issues": []
+ },
+ "before-shop": {
+  "scene": "shop",
+  "size": [
+   1280,
+   720
+  ],
+  "issues": []
+ },
+ "preview-lobby-hover": {
+  "scene": "hover",
+  "size": [
+   1280,
+   720
+  ],
+  "issues": []
+ },
+ "preview-lobby": {
+  "scene": "lobby",
+  "size": [
+   1280,
+   720
+  ],
+  "issues": []
+ },
+ "preview-phone-landscape": {
+  "scene": "lobby",
+  "size": [
+   844,
+   390
+  ],
+  "issues": []
+ },
+ "preview-quests": {
+  "scene": "quests",
+  "size": [
+   1280,
+   720
+  ],
+  "issues": []
+ },
+ "preview-settings": {
+  "scene": "settings",
+  "size": [
+   1280,
+   720
+  ],
+  "issues": []
+ },
+ "preview-shop": {
+  "scene": "shop",
+  "size": [
+   1280,
+   720
+  ],
+  "issues": []
+ },
+ "preview-tablet": {
+  "scene": "lobby",
+  "size": [
+   1024,
+   768
+  ],
+  "issues": []
+ }
+}

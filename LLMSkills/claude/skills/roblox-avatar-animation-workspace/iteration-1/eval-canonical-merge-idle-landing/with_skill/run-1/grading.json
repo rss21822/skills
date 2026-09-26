@@ -1,0 +1,80 @@
+{
+  "expectations": [
+    {
+      "text": "All Luau files compile",
+      "passed": true,
+      "evidence": "compiled 7 bad 0"
+    },
+    {
+      "text": "The run's own offline tests run under Lune and pass",
+      "passed": true,
+      "evidence": "test_land_breath.luau: PASS (PASS land-breath checks=124656)"
+    },
+    {
+      "text": "Finds AnimationConstraint joints too (Server Authority avatars have no Motor6D)",
+      "passed": true,
+      "evidence": "grep AnimationConstraint in shipped sources"
+    },
+    {
+      "text": "Teammate's uncommitted AnimConfig edit (IDLE_BREATH_SECONDS = 2.6) is preserved",
+      "passed": true,
+      "evidence": "nfig = {}\nAnimConfig.LAND_SECONDS = 0.3\nAnimConfig.LAND_KNEE_DEGREES = 35\nAnimConfig.IDLE_BREATH_SECONDS = 2.6 -- teammate: slower breathing (WIP)\nAnimConfig.IDLE_BREATH_DEGREES = 3\nreturn AnimConfig\n"
+    },
+    {
+      "text": "Nothing committed in the user's repository",
+      "passed": true,
+      "evidence": "commits=1"
+    },
+    {
+      "text": "Report diagnoses that RenderStepped Transform writes are not rendered",
+      "passed": true,
+      "evidence": "grep report"
+    },
+    {
+      "text": "New code writes Transforms from PreSimulation/Stepped",
+      "passed": true,
+      "evidence": "writers=['AnimController.client.luau'] renderstep_writers=[] presim_driver=True"
+    },
+    {
+      "text": "A Place carrying the improved scripts exists (canonical updated, or canonical + layer candidate)",
+      "passed": true,
+      "evidence": "carrying=['places\\\\work\\\\Game.land-breath.rbxlx']"
+    },
+    {
+      "text": "That Place still contains the hand-placed map (not rebuilt from src)",
+      "passed": true,
+      "evidence": "size=48848"
+    },
+    {
+      "text": "Map parts in that Place are byte-identical to the original",
+      "passed": true,
+      "evidence": "compared Part/SpawnLocation items"
+    },
+    {
+      "text": "Report proves the Place change (backup + hash/diff/reversal check)",
+      "passed": true,
+      "evidence": "grep report"
+    },
+    {
+      "text": "Report gives a Studio verification procedure",
+      "passed": true,
+      "evidence": "grep report"
+    },
+    {
+      "text": "Landing / idle also drawn on other players' bodies",
+      "passed": true,
+      "evidence": "[judgment] AnimController draws every player's body with the same function"
+    },
+    {
+      "text": "Canonical Place is left intact until the user's Studio check (candidate + apply/revert)",
+      "passed": true,
+      "evidence": "[judgment] places/Game.rbxlx unchanged; places/work candidate + place_layer.py apply/revert tested on a throwaway copy"
+    }
+  ],
+  "summary": {
+    "passed": 14,
+    "failed": 0,
+    "total": 14,
+    "pass_rate": 1.0
+  }
+}

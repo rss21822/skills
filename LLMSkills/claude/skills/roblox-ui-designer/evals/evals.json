@@ -1,0 +1,124 @@
+{
+  "skill_name": "roblox-ui-designer",
+  "evals": [
+    {
+      "id": 1,
+      "name": "ennichi-festival",
+      "prompt": "obby-rush（Robloxのobbyゲーム、Rojo構成）のメインメニューUIが紺色でいかにもAIが作ったUIって感じなので作り直してほしい。モチーフは「夏祭りの縁日」— 提灯、金魚すくい、りんご飴、ラムネ。他のスクリプトがUIの名前で探してるから tests/test_main_menu.luau は通るままにしてね。",
+      "expected_output": "A festival-themed reskin of every screen (menu, nav, shop, settings, inventory, quests) with warm washi/lantern palette, bold readable Japanese, working names/callbacks, passing contract test.",
+      "files": [
+        "evals/files/obby-rush"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "deep-sea-dark",
+      "prompt": "obby-rush のUIを「深海探検」モチーフにしたい。チョウチンアンコウの光とか、光るクラゲとか泡の感じ。暗い画面でいいけど、よくある紺色のダッシュボードっぽさは出さないで。テストは壊さないこと。",
+      "expected_output": "A dark but motif-specific (teal/abyss + bioluminescent accents) reskin that avoids generic navy, keeps text readable, passes the contract test.",
+      "files": [
+        "evals/files/obby-rush"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "moodboard-retro-toys",
+      "prompt": "添付のムードボード（moodboard-retro-toys.png）の雰囲気で、obby-rush のメインメニューとショップ画面をかわいくして。名前で参照してる他のスクリプトがあるからテストは通るままで。",
+      "expected_output": "A reskin whose palette and shapes are derived from the mood board (cream, mustard, teal, coral, cocoa outlines, stars/dots, toy robot), passing the contract test.",
+      "files": [
+        "evals/files/obby-rush",
+        "evals/files/moodboard-retro-toys.png"
+      ]
+    },
+    {
+      "id": 4,
+      "name": "horror-hospital",
+      "prompt": "obby-rush を「夜の廃病院から脱出する」ホラー obby にリブランドする。メインメニューとショップ・設定などのUIもそれに合わせて作り直して。怖い雰囲気にしたいけど小学生も遊ぶから、グロいのは無しで。他のスクリプトがUIの名前で探してるから tests/test_main_menu.luau は通るままにしてね。",
+      "expected_output": "A dark, unsettling-but-kid-safe abandoned-hospital look (sickly greens/rust, clipboard charts, flickering light done slowly, no gore), readable, contract test passing.",
+      "files": [
+        "evals/files/obby-rush"
+      ],
+      "profile": {
+        "dark": true,
+        "noGloss": true,
+        "palette": "any"
+      }
+    },
+    {
+      "id": 5,
+      "name": "luxury-hotel",
+      "prompt": "obby-rush の舞台を高級ホテル（黒い大理石と金の装飾、シャンデリアのあるロビー）に変える。UIも上品で大人っぽい感じにしてほしい。可愛い感じやポップな感じは要らない。テストは壊さないで。",
+      "expected_output": "An elegant black-marble-and-gold look: restrained palette, thin gold rules, serif type, no candy colours, no emoji, no bouncy stickers; contract test passing.",
+      "files": [
+        "evals/files/obby-rush"
+      ],
+      "profile": {
+        "noGloss": true,
+        "noEmoji": true,
+        "palette": "restrained"
+      }
+    },
+    {
+      "id": 6,
+      "name": "famicom-rpg",
+      "prompt": "obby-rush のUIをファミコン時代のRPGっぽくしたい。黒い画面に白い枠のウィンドウ、▶のカーソル、ドット文字みたいな感じ。名前で参照してるスクリプトがあるからテストは通るままで。",
+      "expected_output": "An 8-bit RPG look: square windows with pixel borders, a ▶ cursor, PressStart2P for Latin text, bold Japanese, no rounded corners or gradients; contract test passing.",
+      "files": [
+        "evals/files/obby-rush"
+      ],
+      "profile": {
+        "square": true,
+        "noGloss": true,
+        "font": "PressStart2P",
+        "palette": "any"
+      }
+    },
+    {
+      "id": 7,
+      "name": "navy-harbor",
+      "prompt": "obby-rush のテーマを「夜の港と海軍」にする。セーラー服、信号旗、真鍮の舷窓、ロープ。色は紺と白と赤でまとめたい。メインメニューとショップをこの世界観にして、テストは通るままで。",
+      "expected_output": "A navy/white/red naval-harbour look where navy is the motif: opaque deep navy with brass, rope and signal-flag details, not a generic dashboard; contract test passing.",
+      "files": [
+        "evals/files/obby-rush"
+      ],
+      "profile": {
+        "navyOk": true,
+        "navyRequired": true,
+        "hues": [
+          "red"
+        ],
+        "palette": "any"
+      }
+    },
+    {
+      "id": 8,
+      "name": "dino-dig-moodboard",
+      "prompt": "添付の画像（moodboard-dino-dig.png）が今回のモチーフ。恐竜の発掘調査をするジャングルって感じ。obby-rush のメインメニューとショップ画面をこの雰囲気にして。名前で参照してるスクリプトがあるからテストは通るままで。",
+      "expected_output": "A dig-site look derived from the mood board (jungle greens, amber, bone, soil brown, field-notes labels, fossils, vines); contract test passing.",
+      "files": [
+        "evals/files/obby-rush",
+        "evals/files/moodboard-dino-dig.png"
+      ],
+      "profile": {
+        "hues": [
+          "amber",
+          "green"
+        ],
+        "palette": "any"
+      }
+    },
+    {
+      "id": 9,
+      "name": "sumi-e-calligraphy",
+      "prompt": "obby-rush のUIを水墨画と書道の世界にしたい。墨と和紙と、朱色の落款だけ。色は増やさないで。静かで余白のある画面がいい。テストは壊さないこと。",
+      "expected_output": "A quiet ink-wash look: ink blacks and greys on washi, a single vermilion seal accent, generous empty space, brush strokes; no extra hues, no emoji, no gloss; contract test passing.",
+      "files": [
+        "evals/files/obby-rush"
+      ],
+      "profile": {
+        "noGloss": true,
+        "noEmoji": true,
+        "palette": "only-red"
+      }
+    }
+  ]
+}

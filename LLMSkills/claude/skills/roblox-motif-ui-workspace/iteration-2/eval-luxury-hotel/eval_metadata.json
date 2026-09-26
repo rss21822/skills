@@ -1,0 +1,11 @@
+{
+  "eval_id": 5,
+  "eval_name": "luxury-hotel",
+  "prompt": "obby-rush の舞台を高級ホテル（黒い大理石と金の装飾、シャンデリアのあるロビー）に変える。UIも上品で大人っぽい感じにしてほしい。可愛い感じやポップな感じは要らない。テストは壊さないで。",
+  "profile": {
+    "noGloss": true,
+    "noEmoji": true,
+    "palette": "restrained"
+  },
+  "assertions": []
+}

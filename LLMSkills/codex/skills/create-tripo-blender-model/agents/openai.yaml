@@ -1,0 +1,4 @@
+interface:
+  display_name: "Tripo P2・Blender 3D制作"
+  short_description: "参考画像を三面図にし、Tripo P2生成とBlender画面操作で3Dモデルを制作"
+  default_prompt: "$create-tripo-blender-model を使い、参考画像から整合した三面図を作り、Tripo Smart Mesh P2.0で必要なパーツを生成し、BlenderをComputer Use中心で操作して組み立ててください。テクスチャ付きで保存・書き出しし、別シーンへの再読み込みまで検証してください。"

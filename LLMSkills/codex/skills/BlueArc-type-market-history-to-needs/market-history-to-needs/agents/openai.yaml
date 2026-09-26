@@ -1,0 +1,6 @@
+interface:
+  display_name: "市場史・主流の偏り・普遍的ニーズ分析"
+  short_description: "指定市場の20〜30年史と現在の人気作を調べ、主流の偏りと時代を超えるニーズを解釈する"
+  default_prompt: "$market-history-to-needs を使い、指定した市場の長期史・現在のプレイヤー集中先・主流の偏り・持続的ニーズを、出典と反証を分けて分析してください。企画案や仕様作成には進まないでください。"
+policy:
+  allow_implicit_invocation: true

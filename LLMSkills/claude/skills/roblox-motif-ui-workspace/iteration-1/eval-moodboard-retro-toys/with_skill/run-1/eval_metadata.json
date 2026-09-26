@@ -1,0 +1,6 @@
+{
+  "eval_id": 3,
+  "eval_name": "moodboard-retro-toys",
+  "prompt": "添付のムードボード（moodboard-retro-toys.png）の雰囲気で、obby-rush のメインメニューとショップ画面をかわいくして。名前で参照してる他のスクリプトがあるからテストは通るままで。",
+  "assertions": []
+}

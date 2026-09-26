@@ -1,0 +1,4 @@
+interface:
+  display_name: "multi-view-valuation"
+  short_description: "Robloxゲーム案に関連する視点を選び、評価と改善案を統合する"
+  default_prompt: "$multi-view-valuation を使い、このRobloxゲーム案に関連性の高い視点を選択して、各視点で評価・改善し、優先順位を付けた改良案を示してください。"

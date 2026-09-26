@@ -1,0 +1,6 @@
+{
+  "eval_id": 3,
+  "eval_name": "canonical-merge-idle-landing",
+  "prompt": "mini-game フォルダのゲームで、着地のアニメがほとんど効いてない気がするし、待機の呼吸もロボットっぽい。改善して、最終的に places/Game.rbxlx（正本）に取り込める状態にしてほしい。NOTES.md も読んで。",
+  "assertions": []
+}

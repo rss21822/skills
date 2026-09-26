@@ -1,0 +1,44 @@
+terrain contact (planted foot = lower gap over grounded frames; sink = frames < -0.05, float = frames > +0.10)
+  flat         walk OFF min -0.000 mean +0.006 max +0.020 sink   0 float   0 | ON min -0.000 mean +0.000 max +0.005 sink 0 float 0 pop 0.0deg (n=150)
+  flat         run  OFF min -0.000 mean +0.018 max +0.060 sink   0 float   0 | ON min -0.000 mean +0.003 max +0.025 sink 0 float 0 pop 0.0deg (n=150)
+KNOWN slopeUp walk x1.0: planted foot -0.062..+0.005, sink 4 float 0 of 150 frames (OFF -0.577..+0.020 sink 113 float 0)
+  slopeUp      walk OFF min -0.577 mean -0.289 max +0.020 sink 113 float   0 | ON min -0.062 mean -0.002 max +0.005 sink 4 float 0 pop 0.0deg (n=150)
+KNOWN slopeUp walk x1.3: planted foot -0.074..+0.007, sink 3 float 0 of 150 frames (OFF -0.751..+0.020 sink 131 float 0)
+KNOWN slopeUp run x1.0: planted foot -0.072..+0.236, sink 3 float 46 of 150 frames (OFF -0.773..+0.000 sink 148 float 0)
+  slopeUp      run  OFF min -0.773 mean -0.490 max +0.000 sink 148 float   0 | ON min -0.072 mean +0.078 max +0.236 sink 3 float 46 pop 0.0deg (n=150)
+KNOWN slopeUp run x1.3: planted foot -0.000..+0.363, sink 0 float 68 of 150 frames (OFF -1.006..-0.111 sink 150 float 0)
+KNOWN slopeDown walk x1.0: planted foot -0.023..+0.048, sink 0 float 0 of 150 frames (OFF -0.422..-0.181 sink 150 float 0)
+  slopeDown    walk OFF min -0.422 mean -0.341 max -0.181 sink 150 float   0 | ON min -0.023 mean +0.012 max +0.048 sink 0 float 0 pop 0.0deg (n=150)
+KNOWN slopeDown walk x1.3: planted foot -0.077..+0.080, sink 12 float 0 of 150 frames (OFF -0.549..-0.223 sink 150 float 0)
+KNOWN slopeDown run x1.0: planted foot -0.069..+0.119, sink 7 float 10 of 150 frames (OFF -0.462..+0.104 sink 128 float 1)
+  slopeDown    run  OFF min -0.462 mean -0.241 max +0.104 sink 128 float   1 | ON min -0.069 mean +0.031 max +0.119 sink 7 float 10 pop 0.0deg (n=150)
+KNOWN slopeDown run x1.3: planted foot -0.139..+0.169, sink 13 float 27 of 150 frames (OFF -0.597..+0.172 sink 98 float 3)
+  slopeAcross  walk OFF min -0.143 mean -0.118 max -0.070 sink 150 float   0 | ON min -0.000 mean +0.000 max +0.005 sink 0 float 0 pop 0.0deg (n=150)
+  slopeAcross  run  OFF min -0.143 mean -0.026 max +0.173 sink  77 float  35 | ON min -0.000 mean +0.002 max +0.026 sink 0 float 0 pop 0.0deg (n=150)
+KNOWN stairsUp walk x1.0: planted foot -0.673..+1.000, sink 14 float 2 of 126 frames (OFF -1.007..+0.020 sink 65 float 0)
+  stairsUp     walk OFF min -1.007 mean -0.324 max +0.020 sink  65 float   0 | ON min -0.673 mean -0.032 max +1.000 sink 14 float 2 pop 0.0deg (n=126)
+KNOWN stairsUp walk x1.3: planted foot -0.828..+0.110, sink 17 float 1 of 126 frames (OFF -1.054..+0.020 sink 89 float 0)
+KNOWN stairsUp run x1.0: planted foot -0.273..+1.000, sink 8 float 44 of 126 frames (OFF -1.126..+0.025 sink 110 float 0)
+  stairsUp     run  OFF min -1.126 mean -0.497 max +0.025 sink 110 float   0 | ON min -0.273 mean +0.099 max +1.000 sink 8 float 44 pop 0.0deg (n=126)
+KNOWN stairsUp run x1.3: planted foot -0.198..+1.000, sink 2 float 58 of 126 frames (OFF -1.303..+0.004 sink 118 float 0)
+KNOWN stairsDown walk x1.0: planted foot -0.854..+0.055, sink 56 float 0 of 126 frames (OFF -0.978..+0.062 sink 43 float 0)
+  stairsDown   walk OFF min -0.978 mean -0.195 max +0.062 sink  43 float   0 | ON min -0.854 mean -0.201 max +0.055 sink 56 float 0 pop 0.0deg (n=126)
+KNOWN stairsDown walk x1.3: planted foot -0.724..+0.078, sink 62 float 0 of 126 frames (OFF -0.972..+0.076 sink 58 float 0)
+KNOWN stairsDown run x1.0: planted foot -0.880..+0.726, sink 44 float 14 of 126 frames (OFF -0.895..+0.510 sink 31 float 42)
+  stairsDown   run  OFF min -0.895 mean +0.006 max +0.510 sink  31 float  42 | ON min -0.880 mean -0.075 max +0.726 sink 44 float 14 pop 0.0deg (n=126)
+KNOWN stairsDown run x1.3: planted foot -0.992..+1.000, sink 40 float 18 of 126 frames (OFF -0.869..+0.639 sink 32 float 52)
+swing foot: lowest corner of EITHER foot vs its own floor (run, x1.0, 60 fps)
+  slopeUp      OFF -0.773  ON -0.072
+  stairsUp     OFF -1.126  ON -0.273
+  stairsDown   OFF -0.982  ON -0.880
+  slopeAcross  OFF -0.143  ON -0.000
+turn bank (flat, run 16 stud/s): expected vs drawn Root roll after 2.5 s
+  R=5   w=3.20 rad/s  expected 20.00 deg  drawn 20.00 deg  head -11.00 deg  planted -0.000..+0.022
+  R=8   w=2.00 rad/s  expected 12.86 deg  drawn 12.86 deg  head -7.07 deg  planted -0.000..+0.024
+  R=16  w=1.00 rad/s  expected  6.51 deg  drawn  6.51 deg  head -3.58 deg  planted -0.000..+0.025
+  R=40  w=0.40 rad/s  expected  2.61 deg  drawn  2.61 deg  head -1.44 deg  planted -0.000..+0.025
+straight run roll 0.000 deg; slow pivot turn max roll 0.000 deg
+KNOWN bank on cross-slope circle: planted foot hovers up to +0.214 (9 frames > 0.10)
+bank on a cross-slope circle R=10: planted -0.036..+0.214, sink 0 float 9
+suspend after 1 s: residual 0.000 deg at 2.5 s, fade within budget (0.000 deg over)
+PASS terrain pose checks=978

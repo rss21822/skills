@@ -1,0 +1,14 @@
+[PASS] AnimController is a LocalScript
+[PASS] AnimLayers is a ModuleScript next to it
+[PASS] AnimController == src
+[PASS] AnimLayers == src
+[PASS] AnimConfig == committed HEAD (teammate WIP not pushed into the Place)
+[PASS] AnimConfig keeps IDLE_BREATH_SECONDS = 2
+[PASS] compiles: ReplicatedStorage.Shared.AnimConfig
+[PASS] compiles: StarterPlayer.StarterPlayerScripts.Anim.AnimLayers
+[PASS] compiles: StarterPlayer.StarterPlayerScripts.Anim.AnimController
+[PASS] map part intact: SpawnLocation
+[PASS] map part intact: Baseplate
+[PASS] map part intact: Ledge
+descendants: 12
+ALL PASS

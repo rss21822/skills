@@ -1,0 +1,12 @@
+old  landing: added knee flexion peak   0.0deg, pelvis drop 0.000, max knee step  0.0deg/frame, sole drift 0.0000 | idle: chest 0.00deg head 0.00deg | walking: chest layer 0.00deg
+new  landing: added knee flexion peak  31.5deg, pelvis drop 0.065, max knee step 11.3deg/frame, sole drift 0.0205 | idle: chest 1.51deg head 0.23deg | walking: chest layer 0.00deg
+[PASS] old: landing layer is erased by the Animator (RenderStepped runs first)  -- 0.000deg
+[PASS] old: breathing layer is erased too  -- 0.000deg
+[PASS] new: landing visible on top of the animation (>= 30deg added knee flexion)  -- 31.5deg
+[PASS] new: pelvis drops  -- 0.065
+[PASS] new: feet stay planted on an animated (non-straight) base pose (< 0.03 studs)  -- 0.0205
+[PASS] new: no snap (<= 16deg/frame)  -- 11.3
+[PASS] new: breathing visible while idle  -- 1.51deg
+[PASS] new: head stays level while breathing (< 0.5deg)  -- 0.23deg
+[PASS] new: no breathing while walking  -- 0.0000deg
+ALL PASS

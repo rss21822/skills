@@ -1,0 +1,80 @@
+{
+  "name": "Abyss Lantern",
+  "motif": "deep-sea expedition: anglerfish lure light, glowing jellyfish, rising bubbles (obby-rush, 2026-09)",
+  "concept": "dark teal sea-glass lit by bioluminescence: jelly tiles with dangling tentacles, a lemon lure-light CTA held by an anglerfish, bubbles and marine snow",
+  "palette": {
+    "ink": "#E8FFF7",
+    "paper": "#0B3A3B",
+    "panel": "#12504F",
+    "quiet": "#0F4747",
+    "primary": "#FFE04D",
+    "danger": "#FF5470",
+    "success": "#3DE39B",
+    "muted": "#8FCFC4",
+    "disabled": "#23494A",
+    "dim": "#021C1D",
+    "outline": "#03181A",
+    "onLight": "#03181A",
+    "rim": "#57EBD8",
+    "surface": "#0F5D58",
+    "abyss": "#031517",
+    "gold": "#F6B93B",
+    "angler": "#7B579A",
+    "anglerBelly": "#A283BC",
+    "anglerRim": "#D2B2F0",
+    "stalk": "#B597D1",
+    "candies": [
+      ["kurage", "#FF62C6"],
+      ["umibotaru", "#34EFDA"],
+      ["mendako", "#FF8B4E"],
+      ["murasaki", "#B27BFF"],
+      ["umiushi", "#AEEF5C"]
+    ]
+  },
+  "pastels": ["#542041", "#114F48", "#542E1A", "#3B2954", "#394F1E"],
+  "fonts": {
+    "display": ["LuckiestGuy", "Regular"],
+    "title": ["FredokaOne", "Bold"],
+    "button": ["FredokaOne", "Bold"],
+    "body": ["Nunito", "Bold"],
+    "strong": ["Nunito", "Heavy"]
+  },
+  "latinOnly": ["display"],
+  "shape": {"corner": 18, "panelCorner": 24, "stroke": 3, "lip": 6, "tilt": -2},
+  "icons": {
+    "play": "🤿", "shop": "🐚", "inventory": "💎", "quests": "🗺️", "settings": "⚙️", "title": "🐡", "coins": "💰"
+  },
+  "mascot": {
+    "name": "Anglerfish",
+    "aspect": 0.8,
+    "blink": ["Eye"],
+    "parts": [
+      ["LureGlowFar", 1.1, -0.08, 1.6, 2.0, "primary", {"transparency": 0.94}],
+      ["LureGlowWide", 1.1, -0.08, 1.0, 1.25, "primary", {"transparency": 0.9}],
+      ["LureGlowOuter", 1.1, -0.08, 0.56, 0.7, "primary", {"transparency": 0.84}],
+      ["LureGlow", 1.1, -0.08, 0.32, 0.4, "primary", {"transparency": 0.7}],
+      ["Tail", 0.13, 0.52, 0.28, 0.46, "angler", {"stroke": true, "rotation": 45, "corner": 0.3}],
+      ["FinTop", 0.42, 0.18, 0.2, 0.22, "angler", {"stroke": true, "rotation": 45, "corner": 0.3}],
+      ["StalkA", 0.68, -0.04, 0.034, 0.353, "stalk", {"rotation": 25.1}],
+      ["StalkB", 0.86, -0.23, 0.034, 0.306, "stalk", {"rotation": 78.7}],
+      ["StalkC", 1.04, -0.17, 0.034, 0.234, "stalk", {"rotation": 140.2}],
+      ["JointA", 0.74, -0.2, 0.034, 0.042, "stalk"],
+      ["JointB", 0.98, -0.26, 0.034, 0.042, "stalk"],
+      ["Body", 0.52, 0.54, 0.76, 0.8, "angler", {"stroke": true}],
+      ["Belly", 0.56, 0.72, 0.5, 0.36, "anglerBelly"],
+      ["Mouth", 0.78, 0.66, 0.34, 0.3, "outline", {"corner": 0.45}],
+      ["ToothT1", 0.68, 0.53, 0.06, 0.075, "white", {"rotation": 45, "corner": 0.15}],
+      ["ToothT2", 0.79, 0.52, 0.06, 0.075, "white", {"rotation": 45, "corner": 0.15}],
+      ["ToothT3", 0.9, 0.54, 0.06, 0.075, "white", {"rotation": 45, "corner": 0.15}],
+      ["ToothB1", 0.73, 0.79, 0.06, 0.075, "white", {"rotation": 45, "corner": 0.15}],
+      ["ToothB2", 0.85, 0.78, 0.06, 0.075, "white", {"rotation": 45, "corner": 0.15}],
+      ["FinSide", 0.4, 0.7, 0.18, 0.14, "angler", {"stroke": true, "rotation": -25, "corner": 0.5}],
+      ["Eye", 0.66, 0.34, 0.2, 0.25, "white", {"stroke": true}],
+      ["Pupil", 0.62, 0.56, 0.52, 0.52, "outline", {"parent": "Eye"}],
+      ["Glint", 0.32, 0.3, 0.38, 0.38, "white", {"parent": "Pupil"}],
+      ["Cheek", 0.5, 0.52, 0.12, 0.09, "kurage", {"transparency": 0.45}],
+      ["Bulb", 1.1, -0.08, 0.147, 0.183, "primary", {"stroke": true}],
+      ["BulbShine", 0.34, 0.32, 0.36, 0.36, "white", {"parent": "Bulb", "transparency": 0.2}]
+    ]
+  }
+}

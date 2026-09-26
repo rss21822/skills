@@ -1,0 +1,245 @@
+{
+  "eval-navy-harbor/with_skill": [
+    {
+      "text": "Blind judge (screenshots only, 14 candidate motifs) names the posted motif as top-1",
+      "passed": true,
+      "evidence": "R01: top1=夜の港と海軍 conf=0.93; guess: Night harbour with a lighthouse and a ship's store under naval signal flags"
+    },
+    {
+      "text": "Blind judge rates theme strength >= 4/5 (unmistakably one specific world, not a recoloured generic menu)",
+      "passed": true,
+      "evidence": "R01: strength 4; generic parts: Shop list rows are a plain cream list with red 購入 buttons; the shop panel's empty lower half looks like a template modal"
+    },
+    {
+      "text": "Informed judge rates motif fidelity >= 4/5",
+      "passed": true,
+      "evidence": "R01: fidelity 4; CTA=Red pennant banner on a rope pole with brass rings (出航)"
+    },
+    {
+      "text": "Informed judge: every explicit constraint in the request is honored on screen",
+      "passed": false,
+      "evidence": "R01: 6/7 honored; missed: ['Sailor uniform: Only a faint nod (double white rules and a red knot on the shop frame); nothing uniform-like on the main menu']"
+    },
+    {
+      "text": "Informed judge rates craft >= 4/5 (clear hero, readable text, no layout defects)",
+      "passed": true,
+      "evidence": "R01: craft 4; Red 出航 banner is the clear hero and the lighthouse beam leads to it, but it is small and left of centre; nav labels tiny; shop bottom half empty; coin under the Roblox card; title plate clears the top-left buttons."
+    }
+  ],
+  "eval-sumi-e-calligraphy/with_skill": [
+    {
+      "text": "Blind judge (screenshots only, 14 candidate motifs) names the posted motif as top-1",
+      "passed": true,
+      "evidence": "R02: top1=水墨画と書道 conf=0.92; guess: Sumi-e ink wash landscape with an ensō circle and a hanging scroll"
+    },
+    {
+      "text": "Blind judge rates theme strength >= 4/5 (unmistakably one specific world, not a recoloured generic menu)",
+      "passed": true,
+      "evidence": "R02: strength 4; generic parts: Bottom nav is plain text labels with underlines; the shop rows inside the scroll are a basic list"
+    },
+    {
+      "text": "Informed judge rates motif fidelity >= 4/5",
+      "passed": true,
+      "evidence": "R02: fidelity 4; CTA=Vermilion 落款-style stamp with a rough white inner border"
+    },
+    {
+      "text": "Informed judge: every explicit constraint in the request is honored on screen",
+      "passed": true,
+      "evidence": "R02: 4/4 honored; missed: none"
+    },
+    {
+      "text": "Informed judge rates craft >= 4/5 (clear hero, readable text, no layout defects)",
+      "passed": true,
+      "evidence": "R02: craft 4; Vermilion stamp CTA is the clear hero, text readable. The ensō is a smooth shaded grey torus rather than a brush stroke and floats top-right, disconnected from the CTA. Coin under the Roblox card. Title clears the Roblox buttons."
+    }
+  ],
+  "eval-famicom-rpg/with_skill": [
+    {
+      "text": "Blind judge (screenshots only, 14 candidate motifs) names the posted motif as top-1",
+      "passed": true,
+      "evidence": "R03: top1=ファミコン時代のRPG conf=0.95; guess: 8-bit NES-style retro RPG title screen"
+    },
+    {
+      "text": "Blind judge rates theme strength >= 4/5 (unmistakably one specific world, not a recoloured generic menu)",
+      "passed": true,
+      "evidence": "R03: strength 5; generic parts: none"
+    },
+    {
+      "text": "Informed judge rates motif fidelity >= 4/5",
+      "passed": true,
+      "evidence": "R03: fidelity 4; CTA=DQ-style command window reading START"
+    },
+    {
+      "text": "Informed judge: every explicit constraint in the request is honored on screen",
+      "passed": false,
+      "evidence": "R03: 3/5 honored; missed: ['▶ cursor: Only appears next to おみせ in the shop view; no cursor at START on the main menu', 'Dot/pixel text: Latin title, START and prices are pixel; all Japanese labels are smooth gothic']"
+    },
+    {
+      "text": "Informed judge rates craft >= 4/5 (clear hero, readable text, no layout defects)",
+      "passed": false,
+      "evidence": "R03: craft 3; START is the hero but the screen is very sparse; coin window sits under the Roblox card; big gap between name and price in shop rows; Japanese small and thin; title nicely drawn."
+    }
+  ],
+  "eval-luxury-hotel/with_skill": [
+    {
+      "text": "Blind judge (screenshots only, 14 candidate motifs) names the posted motif as top-1",
+      "passed": true,
+      "evidence": "R04: top1=高級ホテル（黒大理石と金） conf=0.95; guess: Grand hotel lobby with black marble, a gold chandelier and art-deco frames"
+    },
+    {
+      "text": "Blind judge rates theme strength >= 4/5 (unmistakably one specific world, not a recoloured generic menu)",
+      "passed": true,
+      "evidence": "R04: strength 5; generic parts: Shop rows are a dotted price list with outline buttons, which is fairly standard"
+    },
+    {
+      "text": "Informed judge rates motif fidelity >= 4/5",
+      "passed": true,
+      "evidence": "R04: fidelity 5; CTA=Brass plaque under an elevator floor-indicator dial (L-5)"
+    },
+    {
+      "text": "Informed judge: every explicit constraint in the request is honored on screen",
+      "passed": true,
+      "evidence": "R04: 5/5 honored; missed: none"
+    },
+    {
+      "text": "Informed judge rates craft >= 4/5 (clear hero, readable text, no layout defects)",
+      "passed": true,
+      "evidence": "R04: craft 4; Strong hierarchy: glowing gold plaque under an elevator floor dial. Radial glow shows banding; marble veins read like cracks; nav text tiny; coin partly under the Roblox card; title clears the top-left buttons."
+    }
+  ],
+  "eval-sumi-e-calligraphy/without_skill": [
+    {
+      "text": "Blind judge (screenshots only, 14 candidate motifs) names the posted motif as top-1",
+      "passed": true,
+      "evidence": "R05: top1=水墨画と書道 conf=0.88; guess: Minimal Japanese zen with an ensō circle, a hanko seal and faint mountains"
+    },
+    {
+      "text": "Blind judge rates theme strength >= 4/5 (unmistakably one specific world, not a recoloured generic menu)",
+      "passed": false,
+      "evidence": "R05: strength 3; generic parts: The shop page is a plain bordered white-ish modal with thin outline buttons and no ink or scroll treatment; the nav is plain text"
+    },
+    {
+      "text": "Informed judge rates motif fidelity >= 4/5",
+      "passed": true,
+      "evidence": "R05: fidelity 4; CTA=Tilted vermilion 落款 seal (出走) inside a brush ensō"
+    },
+    {
+      "text": "Informed judge: every explicit constraint in the request is honored on screen",
+      "passed": true,
+      "evidence": "R05: 4/4 honored; missed: none"
+    },
+    {
+      "text": "Informed judge rates craft >= 4/5 (clear hero, readable text, no layout defects)",
+      "passed": false,
+      "evidence": "R05: craft 3; Main menu excellent (seal inside the brush ensō as a clear hero), but the OBBY RUSH title is hidden under the Roblox top-left buttons; the shop is a plain thin-ruled box; the プレイ caption is tiny."
+    }
+  ],
+  "eval-navy-harbor/without_skill": [
+    {
+      "text": "Blind judge (screenshots only, 14 candidate motifs) names the posted motif as top-1",
+      "passed": true,
+      "evidence": "R06: top1=夜の港と海軍 conf=0.95; guess: Night naval harbour decorated with international maritime signal flags"
+    },
+    {
+      "text": "Blind judge rates theme strength >= 4/5 (unmistakably one specific world, not a recoloured generic menu)",
+      "passed": true,
+      "evidence": "R06: strength 5; generic parts: The shop panel's empty navy lower area feels like a template modal"
+    },
+    {
+      "text": "Informed judge rates motif fidelity >= 4/5",
+      "passed": true,
+      "evidence": "R06: fidelity 5; CTA=Rope-bordered red button with a Blue Peter flag on a staff"
+    },
+    {
+      "text": "Informed judge: every explicit constraint in the request is honored on screen",
+      "passed": true,
+      "evidence": "R06: 7/7 honored; missed: none"
+    },
+    {
+      "text": "Informed judge rates craft >= 4/5 (clear hero, readable text, no layout defects)",
+      "passed": false,
+      "evidence": "R06: craft 3; Rich and well themed with a clear CTA, but the title is under the Roblox top-left buttons (only a 'B' peeks out); busy top edge; katakana initials in shop portholes are filler; shop bottom half empty."
+    }
+  ],
+  "eval-luxury-hotel/without_skill": [
+    {
+      "text": "Blind judge (screenshots only, 14 candidate motifs) names the posted motif as top-1",
+      "passed": true,
+      "evidence": "R07: top1=高級ホテル（黒大理石と金） conf=0.9; guess: Upscale grand hotel lobby with a crystal chandelier and check-in desk"
+    },
+    {
+      "text": "Blind judge rates theme strength >= 4/5 (unmistakably one specific world, not a recoloured generic menu)",
+      "passed": true,
+      "evidence": "R07: strength 4; generic parts: Dark teal-green gradient background rather than clear black marble; plain dotted shop list"
+    },
+    {
+      "text": "Informed judge rates motif fidelity >= 4/5",
+      "passed": true,
+      "evidence": "R07: fidelity 4; CTA=Gold reception plate CHECK IN / プレイ"
+    },
+    {
+      "text": "Informed judge: every explicit constraint in the request is honored on screen",
+      "passed": false,
+      "evidence": "R07: 4/5 honored; missed: ['Black marble: Background is dark teal-green with faint veins, not black marble']"
+    },
+    {
+      "text": "Informed judge rates craft >= 4/5 (clear hero, readable text, no layout defects)",
+      "passed": false,
+      "evidence": "R07: craft 3; Refined typography, but the 3D avatar shows through the translucent backdrop behind the chandelier and CTA; tiny text throughout; modest CTA; empty shop area; title centred and clear of the Roblox buttons."
+    }
+  ],
+  "eval-horror-hospital/with_skill": [
+    {
+      "text": "Blind judge (screenshots only, 14 candidate motifs) names the posted motif as top-1",
+      "passed": true,
+      "evidence": "R08: top1=夜の廃病院からの脱出（ホラー） conf=0.97; guess: Escape from an abandoned hospital ward at night, with an emergency-exit sign"
+    },
+    {
+      "text": "Blind judge rates theme strength >= 4/5 (unmistakably one specific world, not a recoloured generic menu)",
+      "passed": true,
+      "evidence": "R08: strength 5; generic parts: none"
+    },
+    {
+      "text": "Informed judge rates motif fidelity >= 4/5",
+      "passed": true,
+      "evidence": "R08: fidelity 5; CTA=Green emergency-exit sign with running-man pictogram"
+    },
+    {
+      "text": "Informed judge: every explicit constraint in the request is honored on screen",
+      "passed": true,
+      "evidence": "R08: 4/4 honored; missed: none"
+    },
+    {
+      "text": "Informed judge rates craft >= 4/5 (clear hero, readable text, no layout defects)",
+      "passed": true,
+      "evidence": "R08: craft 4; Emergency-exit sign is an excellent readable hero; glow rings show slight banding; coin under the Roblox card; title clears the Roblox buttons; clipboard shop legible and well structured."
+    }
+  ],
+  "eval-dino-dig-moodboard/with_skill": [
+    {
+      "text": "Blind judge (screenshots only, 14 candidate motifs) names the posted motif as top-1",
+      "passed": true,
+      "evidence": "R09: top1=恐竜の化石発掘のジャングル conf=0.97; guess: Jungle fossil dig site on a paleontology expedition"
+    },
+    {
+      "text": "Blind judge rates theme strength >= 4/5 (unmistakably one specific world, not a recoloured generic menu)",
+      "passed": true,
+      "evidence": "R09: strength 5; generic parts: The pill-shaped play button and the lined shop list are somewhat cartoon/generic, but still tied to the theme"
+    },
+    {
+      "text": "Informed judge rates motif fidelity >= 4/5",
+      "passed": true,
+      "evidence": "R09: fidelity 5; CTA=Amber-with-insect pill inside a string-and-stake dig grid with survey flag and site tag"
+    },
+    {
+      "text": "Informed judge: every explicit constraint in the request is honored on screen",
+      "passed": true,
+      "evidence": "R09: 7/7 honored; missed: none"
+    },
+    {
+      "text": "Informed judge rates craft >= 4/5 (clear hero, readable text, no layout defects)",
+      "passed": true,
+      "evidence": "R09: craft 4; Very clear hero, strong layout; coin under the Roblox card; title clears the Roblox buttons; readable specimen rows but item icons are emoji; nav pills fairly generic."
+    }
+  ]
+}

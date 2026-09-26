@@ -1,0 +1,26 @@
+{
+  "skill_name": "roblox-motif-ui",
+  "evals": [
+    {
+      "id": 1,
+      "name": "ennichi-festival",
+      "prompt": "obby-rush（Robloxのobbyゲーム、Rojo構成）のメインメニューUIが紺色でいかにもAIが作ったUIって感じなので作り直してほしい。モチーフは「夏祭りの縁日」— 提灯、金魚すくい、りんご飴、ラムネ。他のスクリプトがUIの名前で探してるから tests/test_main_menu.luau は通るままにしてね。",
+      "expected_output": "A festival-themed reskin of every screen (menu, nav, shop, settings, inventory, quests) with warm washi/lantern palette, bold readable Japanese, working names/callbacks, passing contract test.",
+      "files": ["evals/files/obby-rush"]
+    },
+    {
+      "id": 2,
+      "name": "deep-sea-dark",
+      "prompt": "obby-rush のUIを「深海探検」モチーフにしたい。チョウチンアンコウの光とか、光るクラゲとか泡の感じ。暗い画面でいいけど、よくある紺色のダッシュボードっぽさは出さないで。テストは壊さないこと。",
+      "expected_output": "A dark but motif-specific (teal/abyss + bioluminescent accents) reskin that avoids generic navy, keeps text readable, passes the contract test.",
+      "files": ["evals/files/obby-rush"]
+    },
+    {
+      "id": 3,
+      "name": "moodboard-retro-toys",
+      "prompt": "添付のムードボード（moodboard-retro-toys.png）の雰囲気で、obby-rush のメインメニューとショップ画面をかわいくして。名前で参照してる他のスクリプトがあるからテストは通るままで。",
+      "expected_output": "A reskin whose palette and shapes are derived from the mood board (cream, mustard, teal, coral, cocoa outlines, stars/dots, toy robot), passing the contract test.",
+      "files": ["evals/files/obby-rush", "evals/files/moodboard-retro-toys.png"]
+    }
+  ]
+}

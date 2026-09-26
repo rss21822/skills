@@ -1,0 +1,7 @@
+interface:
+  display_name: "Roblox Dev Docs Creator"
+  short_description: "Roblox開発文書を企画からD5承認まで一貫運用"
+  default_prompt: "Use $claude-roblox-dev-docs-creator to create and validate the Roblox development documentation for this project."
+
+policy:
+  allow_implicit_invocation: true

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Roblox最小開発ドキュメント・Astra"
+  short_description: "数値つきRoblox企画からAstraが実装を進める最小の仕様・手順を作成"
+  default_prompt: "$roblox-astra-dev-docs を使い、直前の $roblox-concept-to-plan の企画から、Codex GPT-6 Astra向けに必要最低限の開発ドキュメントを作成して。"

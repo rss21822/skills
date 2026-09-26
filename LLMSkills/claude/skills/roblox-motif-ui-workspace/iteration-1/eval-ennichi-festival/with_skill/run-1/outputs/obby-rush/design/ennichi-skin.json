@@ -1,0 +1,65 @@
+{
+  "name": "Ennichi Night Stall",
+  "motif": "summer-festival fair (縁日): paper lanterns, goldfish scooping, candy apples, ramune soda",
+  "concept": "dusk fair: washi-paper signs with soot-brown edges, glowing lantern CTA, stall-front tiles in candy-apple / goldfish / target / ramune colours, a goldfish mascot",
+  "palette": {
+    "ink": "#3A1E14",
+    "paper": "#FFF4DE",
+    "panel": "#FFFBF2",
+    "quiet": "#FBE7C6",
+    "primary": "#FFC02E",
+    "danger": "#E23B2E",
+    "success": "#34B45A",
+    "muted": "#7B5444",
+    "disabled": "#E9DCC8",
+    "dim": "#4A1830",
+    "dusk": "#4B1E45",
+    "akane": "#C2405A",
+    "yuyake": "#F7924F",
+    "wood": "#A9602C",
+    "woodTop": "#E0A15C",
+    "glow": "#FFE7A0",
+    "lanternRed": "#F2502E",
+    "water": "#8FDDF5",
+    "kingyoPale": "#FFB47E",
+    "candies": [
+      ["ringoame", "#E8304F"],
+      ["kingyo", "#FF7A2F"],
+      ["wakaba", "#45B84A"],
+      ["ramune", "#23AEE0"],
+      ["fuji", "#9A6BE0"],
+      ["wataame", "#FF7EB6"]
+    ]
+  },
+  "fonts": {
+    "display": ["PermanentMarker", "Regular"],
+    "title": ["DenkOne", "Bold"],
+    "button": ["FredokaOne", "Bold"],
+    "body": ["Nunito", "Bold"],
+    "strong": ["Nunito", "Heavy"]
+  },
+  "latinOnly": ["display"],
+  "shape": {"corner": 18, "panelCorner": 24, "stroke": 3, "lip": 7, "tilt": -2},
+  "icons": {
+    "play": "🏮", "shop": "🍎", "inventory": "🐠", "quests": "🎯", "settings": "🎐",
+    "coins": "💰", "music": "🥁", "sfx": "🔔", "close": "✖️"
+  },
+  "mascot": {
+    "name": "Kingyo",
+    "aspect": 0.78,
+    "blink": ["Eye"],
+    "parts": [
+      ["TailUp", 0.2, 0.34, 0.34, 0.28, "kingyoPale", {"stroke": true, "rotation": -32}],
+      ["TailDown", 0.2, 0.68, 0.34, 0.28, "kingyoPale", {"stroke": true, "rotation": 32}],
+      ["Dorsal", 0.56, 0.2, 0.3, 0.24, "kingyo", {"stroke": true, "rotation": -12}],
+      ["Body", 0.58, 0.52, 0.6, 0.66, "kingyo", {"stroke": true}],
+      ["Belly", 0.63, 0.66, 0.38, 0.26, "kingyoPale"],
+      ["Fin", 0.5, 0.76, 0.18, 0.12, "kingyoPale", {"stroke": true, "rotation": 35}],
+      ["Eye", 0.74, 0.42, 0.17, 0.218, "white", {"stroke": true}],
+      ["Pupil", 0.6, 0.55, 0.56, 0.56, "ink", {"parent": "Eye"}],
+      ["Shine", 0.32, 0.3, 0.38, 0.38, "white", {"parent": "Pupil"}],
+      ["Cheek", 0.8, 0.62, 0.1, 0.08, "wataame", {"transparency": 0.3}],
+      ["Mouth", 0.9, 0.53, 0.06, 0.08, "ringoame"]
+    ]
+  }
+}

@@ -1,0 +1,90 @@
+{
+ "main-1280x720": {
+  "fit": [],
+  "small": [],
+  "offscreen": [],
+  "overlap": [],
+  "fontsLoaded": "loaded",
+  "luau_warnings": {}
+ },
+ "shop-1280x720": {
+  "fit": [],
+  "small": [],
+  "offscreen": [],
+  "overlap": [],
+  "fontsLoaded": "loaded",
+  "luau_warnings": {}
+ },
+ "settings-1280x720": {
+  "fit": [],
+  "small": [],
+  "offscreen": [],
+  "overlap": [],
+  "fontsLoaded": "loaded",
+  "luau_warnings": {}
+ },
+ "inventory-1280x720": {
+  "fit": [],
+  "small": [],
+  "offscreen": [],
+  "overlap": [],
+  "fontsLoaded": "loaded",
+  "luau_warnings": {}
+ },
+ "quests-1280x720": {
+  "fit": [],
+  "small": [],
+  "offscreen": [],
+  "overlap": [],
+  "fontsLoaded": "loaded",
+  "luau_warnings": {}
+ },
+ "main-828x369": {
+  "fit": [],
+  "small": [],
+  "offscreen": [],
+  "overlap": [],
+  "fontsLoaded": "loaded",
+  "luau_warnings": {}
+ },
+ "shop-828x369": {
+  "fit": [],
+  "small": [],
+  "offscreen": [],
+  "overlap": [],
+  "fontsLoaded": "loaded",
+  "luau_warnings": {}
+ },
+ "settings-828x369": {
+  "fit": [],
+  "small": [],
+  "offscreen": [],
+  "overlap": [],
+  "fontsLoaded": "loaded",
+  "luau_warnings": {}
+ },
+ "main-366x820": {
+  "fit": [],
+  "small": [],
+  "offscreen": [],
+  "overlap": [],
+  "fontsLoaded": "loaded",
+  "luau_warnings": {}
+ },
+ "shop-366x820": {
+  "fit": [],
+  "small": [],
+  "offscreen": [],
+  "overlap": [],
+  "fontsLoaded": "loaded",
+  "luau_warnings": {}
+ },
+ "inventory-366x820": {
+  "fit": [],
+  "small": [],
+  "offscreen": [],
+  "overlap": [],
+  "fontsLoaded": "loaded",
+  "luau_warnings": {}
+ }
+}

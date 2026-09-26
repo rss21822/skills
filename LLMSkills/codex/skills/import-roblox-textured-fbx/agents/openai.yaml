@@ -1,0 +1,4 @@
+interface:
+  display_name: "Roblox テクスチャ付きFBXインポート"
+  short_description: "FBXをテクスチャ付きでStudioへ取り込み、表示確認とPlace保存まで行う"
+  default_prompt: "$import-roblox-textured-fbx を使い、指定したFBXをテクスチャ付きで対象のRoblox Placeに取り込み、表示と保存を確認してください。"

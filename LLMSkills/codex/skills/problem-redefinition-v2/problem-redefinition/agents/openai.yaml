@@ -1,0 +1,6 @@
+interface:
+  display_name: "問題再定義"
+  short_description: "既存の価値を残し、中心前提と周辺設計を変える企画・比較分析"
+  default_prompt: "Use $problem-redefinition to analyze this concept. 問題再定義SkillのStandardで、残す価値、変える前提、必要な設計変更、代償、反証テストを示してください。"
+policy:
+  allow_implicit_invocation: true

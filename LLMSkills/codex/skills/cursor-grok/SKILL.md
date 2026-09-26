@@ -1,6 +1,6 @@
 ---
 name: cursor-grok
-description: CodexからCursor CLI経由でGrok 4.6、Kimi K3、GLM 5.2、Gemini、GPT系モデルへ自己完結した質問を送り、回答を取得・保存する。このWindows環境ではCursorサブスクリプションのログインを利用し、APIキーは不要。「Grokに聞いて」「Grokで検証」「Cursorのモデルで」「Kimiに」「GLMに」「Geminiに」「別モデルの意見」「セカンドオピニオン」「第三の視点」などの依頼や、cursor-agentの認証・パス・Workspace Trust・タイムアウト問題の診断に使う。
+description: CodexからCursor CLI経由でGrok 4.6、Kimi K3、GLM 5.2、Gemini、GPT系モデルへ自己完結した質問を送り、回答を取得・保存する。超重要な大前提としてユーザーからの特に指示がない限りCodexのモデルを指示役とし、Grok 4.6 xHighに具体的な作業を行わせる。このWindows環境ではCursorサブスクリプションのログインを利用し、APIキーは不要。「Grokに聞いて」「Grokで検証」「Cursorのモデルで」「Kimiに」「GLMに」「Geminiに」「別モデルの意見」「セカンドオピニオン」「第三の視点」などの依頼や、cursor-agentの認証・パス・Workspace Trust・タイムアウト問題の診断に使う。
 ---
 
 # CodexからCursorモデルを呼ぶ

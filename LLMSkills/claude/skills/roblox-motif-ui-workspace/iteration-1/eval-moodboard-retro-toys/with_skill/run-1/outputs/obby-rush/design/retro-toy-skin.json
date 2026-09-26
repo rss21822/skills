@@ -1,0 +1,230 @@
+{
+  "name": "Retro Toy Box",
+  "motif": "mood board moodboard-retro-toys.png: cream card, cocoa outlines, mustard stripes, teal donut ring, coral frame, mustard/sky/coral stars, confetti dots, boxy sky-blue toy robot, cocoa 'RETRO TOY BOX' label",
+  "concept": "printed cardboard toy box + painted wooden blocks: flat matte fills (no gloss), thick cocoa outlines, chunky block lips, coral 'picture frame' panels with cream windows, cocoa label tape, stars/dots/donuts, a tin robot",
+  "palette": {
+    "ink": "#563426",
+    "paper": "#F6ECD6",
+    "panel": "#FFF4DE",
+    "quiet": "#FBE3B6",
+    "primary": "#F2B630",
+    "danger": "#C8402F",
+    "success": "#3E9E68",
+    "muted": "#86624E",
+    "disabled": "#E6D9C2",
+    "dim": "#563426",
+    "stripe": "#EEC66A",
+    "candies": [
+      [
+        "tincar",
+        "#EE6C54"
+      ],
+      [
+        "ring",
+        "#269696"
+      ],
+      [
+        "robot",
+        "#78BEDC"
+      ],
+      [
+        "gumdrop",
+        "#96CDA0"
+      ]
+    ],
+    "coin": "#F7C640"
+  },
+  "pastels": [
+    "#FBD5C8",
+    "#CDEAE4",
+    "#D5ECF6",
+    "#DDF0DE"
+  ],
+  "fonts": {
+    "display": [
+      "LuckiestGuy",
+      "Regular"
+    ],
+    "title": [
+      "FredokaOne",
+      "Bold"
+    ],
+    "button": [
+      "FredokaOne",
+      "Bold"
+    ],
+    "body": [
+      "Nunito",
+      "Bold"
+    ],
+    "strong": [
+      "Nunito",
+      "Heavy"
+    ]
+  },
+  "latinOnly": [
+    "display"
+  ],
+  "shape": {
+    "corner": 16,
+    "panelCorner": 28,
+    "stroke": 3,
+    "lip": 7,
+    "tilt": -3
+  },
+  "icons": {
+    "shop": "🎁",
+    "inventory": "🧸",
+    "quests": "⭐",
+    "settings": "🔧",
+    "speed_coil": "🌀",
+    "rainbow_trail": "🌈",
+    "double_jump": "🦘"
+  },
+  "mascot": {
+    "name": "TinRobot",
+    "aspect": 1.35,
+    "blink": [
+      "EyeL",
+      "EyeR"
+    ],
+    "parts": [
+      [
+        "Antenna",
+        0.5,
+        0.15,
+        0.07,
+        0.2,
+        "ink",
+        {
+          "corner": 0.3
+        }
+      ],
+      [
+        "AntennaBall",
+        0.5,
+        0.075,
+        0.2,
+        0.148,
+        "tincar",
+        {
+          "stroke": true
+        }
+      ],
+      [
+        "BoltL",
+        0.05,
+        0.6,
+        0.12,
+        0.16,
+        "primary",
+        {
+          "stroke": true,
+          "corner": 0.35
+        }
+      ],
+      [
+        "BoltR",
+        0.95,
+        0.6,
+        0.12,
+        0.16,
+        "primary",
+        {
+          "stroke": true,
+          "corner": 0.35
+        }
+      ],
+      [
+        "Body",
+        0.5,
+        0.6,
+        0.86,
+        0.7,
+        "robot",
+        {
+          "stroke": true,
+          "corner": 0.22
+        }
+      ],
+      [
+        "EyeL",
+        0.34,
+        0.52,
+        0.26,
+        0.193,
+        "white",
+        {
+          "stroke": true
+        }
+      ],
+      [
+        "EyeR",
+        0.66,
+        0.52,
+        0.26,
+        0.193,
+        "white",
+        {
+          "stroke": true
+        }
+      ],
+      [
+        "PupilL",
+        0.56,
+        0.56,
+        0.46,
+        0.46,
+        "ink",
+        {
+          "parent": "EyeL"
+        }
+      ],
+      [
+        "PupilR",
+        0.56,
+        0.56,
+        0.46,
+        0.46,
+        "ink",
+        {
+          "parent": "EyeR"
+        }
+      ],
+      [
+        "CheekL",
+        0.22,
+        0.68,
+        0.13,
+        0.06,
+        "tincar",
+        {
+          "transparency": 0.35
+        }
+      ],
+      [
+        "CheekR",
+        0.78,
+        0.68,
+        0.13,
+        0.06,
+        "tincar",
+        {
+          "transparency": 0.35
+        }
+      ],
+      [
+        "Mouth",
+        0.5,
+        0.78,
+        0.34,
+        0.085,
+        "primary",
+        {
+          "stroke": true,
+          "corner": 0.45
+        }
+      ]
+    ]
+  }
+}

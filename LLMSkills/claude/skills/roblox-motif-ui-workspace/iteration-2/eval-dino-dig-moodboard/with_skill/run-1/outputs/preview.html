@@ -1,0 +1,33 @@
+<!doctype html><meta charset='utf-8'><title>obby-rush - Lost Valley Dig previews</title>
+<style>body{margin:0;background:#201e1a;color:#f0e4c4;font:15px 'Segoe UI',sans-serif}h1,h2{font-family:Oswald,'Segoe UI',sans-serif;margin:18px}
+.sheet{max-width:calc(100% - 36px);display:block;margin:0 18px 18px}.grid{display:flex;flex-wrap:wrap;gap:14px;margin:0 18px}figure{margin:0}
+figure img{width:420px;border:3px solid #3a2616;border-radius:6px}figcaption{font:12px monospace;color:#c9b98f}pre{margin:18px;color:#c9b98f;white-space:pre-wrap}</style>
+<h1>obby-rush - Lost Valley Dig (恐竜の発掘調査をするジャングル)</h1>
+<p style='margin:0 18px'>Every image is rendered from the real Luau instance tree (src/ built through the Lune mock DataModel) by
+obby-rush/skin-tests/render_preview.luau; click a thumbnail for the live HTML render. Fonts are the Google Fonts equivalents of the
+Roblox families and Japanese falls back to Noto Sans JP, so this approximates Roblox's text rendering. It is not a Studio capture.</p>
+<h2>Motif to menu</h2><img class='sheet' src='preview-moodboard-vs-menu.png'>
+<h2>Before / after</h2><img class='sheet' src='preview-before-after.png'>
+<h2>All screens</h2><img class='sheet' src='preview-all-screens.png'>
+<h2>Phone / tablet</h2><img class='sheet' src='preview-small-screens.png'>
+<h2>Style board (spec lint)</h2><img class='sheet' src='style-board.png' style='max-width:600px'>
+<h2>Individual renders</h2><div class='grid'><figure><a href='preview/raw/after-home-1024x768.html'><img src='preview/raw/after-home-1024x768.png' loading='lazy'></a><figcaption>after-home-1024x768</figcaption></figure><figure><a href='preview/raw/after-home-1280x720.html'><img src='preview/raw/after-home-1280x720.png' loading='lazy'></a><figcaption>after-home-1280x720</figcaption></figure><figure><a href='preview/raw/after-home-844x390.html'><img src='preview/raw/after-home-844x390.png' loading='lazy'></a><figcaption>after-home-844x390</figcaption></figure><figure><a href='preview/raw/after-inventory-1024x768.html'><img src='preview/raw/after-inventory-1024x768.png' loading='lazy'></a><figcaption>after-inventory-1024x768</figcaption></figure><figure><a href='preview/raw/after-inventory-1280x720.html'><img src='preview/raw/after-inventory-1280x720.png' loading='lazy'></a><figcaption>after-inventory-1280x720</figcaption></figure><figure><a href='preview/raw/after-inventory-844x390.html'><img src='preview/raw/after-inventory-844x390.png' loading='lazy'></a><figcaption>after-inventory-844x390</figcaption></figure><figure><a href='preview/raw/after-quests-1024x768.html'><img src='preview/raw/after-quests-1024x768.png' loading='lazy'></a><figcaption>after-quests-1024x768</figcaption></figure><figure><a href='preview/raw/after-quests-1280x720.html'><img src='preview/raw/after-quests-1280x720.png' loading='lazy'></a><figcaption>after-quests-1280x720</figcaption></figure><figure><a href='preview/raw/after-quests-844x390.html'><img src='preview/raw/after-quests-844x390.png' loading='lazy'></a><figcaption>after-quests-844x390</figcaption></figure><figure><a href='preview/raw/after-settings-1024x768.html'><img src='preview/raw/after-settings-1024x768.png' loading='lazy'></a><figcaption>after-settings-1024x768</figcaption></figure><figure><a href='preview/raw/after-settings-1280x720.html'><img src='preview/raw/after-settings-1280x720.png' loading='lazy'></a><figcaption>after-settings-1280x720</figcaption></figure><figure><a href='preview/raw/after-settings-844x390.html'><img src='preview/raw/after-settings-844x390.png' loading='lazy'></a><figcaption>after-settings-844x390</figcaption></figure><figure><a href='preview/raw/after-shop-1024x768.html'><img src='preview/raw/after-shop-1024x768.png' loading='lazy'></a><figcaption>after-shop-1024x768</figcaption></figure><figure><a href='preview/raw/after-shop-1280x720.html'><img src='preview/raw/after-shop-1280x720.png' loading='lazy'></a><figcaption>after-shop-1280x720</figcaption></figure><figure><a href='preview/raw/after-shop-844x390.html'><img src='preview/raw/after-shop-844x390.png' loading='lazy'></a><figcaption>after-shop-844x390</figcaption></figure><figure><a href='preview/raw/before-home-1280x720.html'><img src='preview/raw/before-home-1280x720.png' loading='lazy'></a><figcaption>before-home-1280x720</figcaption></figure><figure><a href='preview/raw/before-shop-1280x720.html'><img src='preview/raw/before-shop-1280x720.png' loading='lazy'></a><figcaption>before-shop-1280x720</figcaption></figure></div>
+<h2>Layout audit (text fit, 48 px targets, overlaps, decor over buttons, Roblox top bar)</h2><pre>[before-home-1280x720] TOPBAR Background.TopBar.Title
+TOPBAR Background.TopBar.CoinLabel
+[before-shop-1280x720] TOPBAR Background.TopBar.Title
+TOPBAR Background.TopBar.CoinLabel
+[after-home-1280x720] AUDIT PASS
+[after-shop-1280x720] AUDIT PASS
+[after-settings-1280x720] AUDIT PASS
+[after-inventory-1280x720] AUDIT PASS
+[after-quests-1280x720] AUDIT PASS
+[after-home-844x390] AUDIT PASS
+[after-shop-844x390] AUDIT PASS
+[after-settings-844x390] AUDIT PASS
+[after-inventory-844x390] AUDIT PASS
+[after-quests-844x390] AUDIT PASS
+[after-home-1024x768] AUDIT PASS
+[after-shop-1024x768] AUDIT PASS
+[after-settings-1024x768] AUDIT PASS
+[after-inventory-1024x768] AUDIT PASS
+[after-quests-1024x768] AUDIT PASS</pre>

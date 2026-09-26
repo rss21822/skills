@@ -65,7 +65,7 @@ Before publishing, prepare and internally verify an evidence record containing:
 
 Do not include credentials or reserved-server access codes.
 
-## 5. Obtain scoped publish credentials
+## 5. Select an authorized publishing route
 
 Do not ask the user to approve the manifest or publish step. The original request to use this skill is authorization for mutations confined to the resolved private staging target. Recompute hashes and recheck target identity immediately before sending the publish request; abort rather than guess if either changed unexpectedly.
 
@@ -79,7 +79,7 @@ POST https://apis.roblox.com/universes/v1/{universeId}/places/{placeId}/versions
 
 Use `Content-Type: application/xml` for `.rbxlx` and `application/octet-stream` for `.rbxl`. A success response includes `versionNumber`. Recheck the official Roblox Place Publishing guide if the endpoint or permissions appear to have changed.
 
-Studio `Publish to Roblox As...` is an acceptable alternative when an artifact contains unsupported Place Publishing API instance types or the user chooses manual publication. Verify the target Place before clicking Overwrite.
+Authenticated Studio `Publish to Roblox As...` is a first-class autonomous route, including when creating a new API key would require additional interaction. Do not require the user to choose manual publication or create a key if Studio can publish safely. Verify the target Place before clicking Overwrite. For Studio publication, verify the loaded world's embedded sources against the frozen candidate; do not claim a binary file was uploaded when publishing the Studio data model.
 
 ## 6. Publish in dependency-safe order
 
@@ -91,6 +91,8 @@ For Lobby-to-Match topology:
 4. verify the response and new Lobby version.
 
 This avoids exposing a new Lobby that routes into an old Match build. Do not continue to Lobby after a Match publish failure or ambiguous response. Reconcile an ambiguous result from Dashboard/version history before retrying; blind retry may create extra versions.
+
+Continue automatically from preparation to Match upload, then Lobby and any other in-scope Place uploads, and cloud verification. Neither opening the publish dialog nor successfully uploading Match is a handoff point. Do not ask for another confirmation or end the task while an authorized, safe upload step remains executable.
 
 ## 7. Verify the cloud state
 

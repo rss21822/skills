@@ -1,0 +1,99 @@
+{
+  "name": "Night Harbour Navy",
+  "motif": "夜の港と海軍 — セーラー服、信号旗、真鍮の舷窓、ロープ。色は紺と白と赤でまとめたい",
+  "tone": "crisp naval, calm night (凛々しい・夜の静けさ)",
+  "concept": "opaque navy serge with white sailor-collar piping, red signal-flag CTA on a rope halyard, brass portholes and nameplate, a dressing line of signal flags as the nav, harbour lights and a lighthouse beam behind",
+  "palette": {
+    "ink": "#F4EFE4",
+    "paper": "#142850",
+    "panel": "#1B3260",
+    "quiet": "#1D3564",
+    "primary": "#C4202F",
+    "danger": "#9E1B2B",
+    "success": "#E4B84E",
+    "muted": "#B8B09C",
+    "disabled": "#2A3858",
+    "dim": "#060E20",
+    "outline": "#0E1C3D",
+    "onLight": "#0E1C3D",
+    "night": "#08122A",
+    "sea": "#0B1A38",
+    "brass": "#C9A24A",
+    "brassLight": "#F0D48A",
+    "brassDark": "#7A5A1C",
+    "rope": "#E7DDC5",
+    "ropeShade": "#A89C7E",
+    "flagBlue": "#2456A8",
+    "lamp": "#FFC766",
+    "canvas": "#F1EBDD",
+    "candies": [
+      [
+        "signalRed",
+        "#C4202F"
+      ],
+      [
+        "brass",
+        "#C9A24A"
+      ],
+      [
+        "flagBlue",
+        "#2456A8"
+      ],
+      [
+        "canvas",
+        "#F1EBDD"
+      ]
+    ]
+  },
+  "pastels": [
+    "#F1EBDD",
+    "#E9E1CD"
+  ],
+  "fonts": {
+    "display": [
+      "Oswald",
+      "Bold"
+    ],
+    "title": [
+      "Oswald",
+      "Bold"
+    ],
+    "button": [
+      "Oswald",
+      "Bold"
+    ],
+    "body": [
+      "Montserrat",
+      "Bold"
+    ],
+    "strong": [
+      "Montserrat",
+      "ExtraBold"
+    ]
+  },
+  "latinOnly": [
+    "display"
+  ],
+  "shape": {
+    "corner": 4,
+    "panelCorner": 6,
+    "stroke": 2,
+    "lip": 0,
+    "gloss": false,
+    "textOutline": false,
+    "press": "none",
+    "tilt": 0,
+    "cta": "rounded"
+  },
+  "allow": {
+    "navy": "The posted motif is a navy (海軍) at a night harbour and the user asked for 紺・白・赤: navy serge is the uniform cloth, kept opaque and paired with white collar piping, brass and signal-flag red",
+    "monochrome": "User limited the colours to navy, white and red; brass is the only extra and comes from the motif (真鍮の舷窓)"
+  },
+  "icons": {
+    "play": "▶",
+    "shop": "S",
+    "inventory": "N",
+    "quests": "X",
+    "settings": "C"
+  }
+}

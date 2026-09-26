@@ -1,0 +1,541 @@
+{
+  "metadata": {
+    "skill_name": "roblox-avatar-animation",
+    "skill_path": "<path/to/skill>",
+    "executor_model": "<model-name>",
+    "analyzer_model": "<model-name>",
+    "timestamp": "2026-09-25T15:46:51Z",
+    "evals_run": [
+      1,
+      2,
+      3
+    ],
+    "runs_per_configuration": 3,
+    "model": "claude-opus-5-5 (subagents: opus)"
+  },
+  "runs": [
+    {
+      "eval_id": 3,
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 14,
+        "failed": 0,
+        "total": 14,
+        "time_seconds": 864.6,
+        "tokens": 644653,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "All Luau files compile",
+          "passed": true,
+          "evidence": "compiled 7 bad 0"
+        },
+        {
+          "text": "The run's own offline tests run under Lune and pass",
+          "passed": true,
+          "evidence": "test_land_breath.luau: PASS (PASS land-breath checks=124656)"
+        },
+        {
+          "text": "Finds AnimationConstraint joints too (Server Authority avatars have no Motor6D)",
+          "passed": true,
+          "evidence": "grep AnimationConstraint in shipped sources"
+        },
+        {
+          "text": "Teammate's uncommitted AnimConfig edit (IDLE_BREATH_SECONDS = 2.6) is preserved",
+          "passed": true,
+          "evidence": "nfig = {}\nAnimConfig.LAND_SECONDS = 0.3\nAnimConfig.LAND_KNEE_DEGREES = 35\nAnimConfig.IDLE_BREATH_SECONDS = 2.6 -- teammate: slower breathing (WIP)\nAnimConfig.IDLE_BREATH_DEGREES = 3\nreturn AnimConfig\n"
+        },
+        {
+          "text": "Nothing committed in the user's repository",
+          "passed": true,
+          "evidence": "commits=1"
+        },
+        {
+          "text": "Report diagnoses that RenderStepped Transform writes are not rendered",
+          "passed": true,
+          "evidence": "grep report"
+        },
+        {
+          "text": "New code writes Transforms from PreSimulation/Stepped",
+          "passed": true,
+          "evidence": "writers=['AnimController.client.luau'] renderstep_writers=[] presim_driver=True"
+        },
+        {
+          "text": "A Place carrying the improved scripts exists (canonical updated, or canonical + layer candidate)",
+          "passed": true,
+          "evidence": "carrying=['places\\\\work\\\\Game.land-breath.rbxlx']"
+        },
+        {
+          "text": "That Place still contains the hand-placed map (not rebuilt from src)",
+          "passed": true,
+          "evidence": "size=48848"
+        },
+        {
+          "text": "Map parts in that Place are byte-identical to the original",
+          "passed": true,
+          "evidence": "compared Part/SpawnLocation items"
+        },
+        {
+          "text": "Report proves the Place change (backup + hash/diff/reversal check)",
+          "passed": true,
+          "evidence": "grep report"
+        },
+        {
+          "text": "Report gives a Studio verification procedure",
+          "passed": true,
+          "evidence": "grep report"
+        },
+        {
+          "text": "Landing / idle also drawn on other players' bodies",
+          "passed": true,
+          "evidence": "[judgment] AnimController draws every player's body with the same function"
+        },
+        {
+          "text": "Canonical Place is left intact until the user's Studio check (candidate + apply/revert)",
+          "passed": true,
+          "evidence": "[judgment] places/Game.rbxlx unchanged; places/work candidate + place_layer.py apply/revert tested on a throwaway copy"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 2,
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 12,
+        "failed": 0,
+        "total": 12,
+        "time_seconds": 1525.9,
+        "tokens": 751107,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "All Luau files compile",
+          "passed": true,
+          "evidence": "compiled 11 bad 0"
+        },
+        {
+          "text": "The run's own offline tests run under Lune and pass",
+          "passed": true,
+          "evidence": "test_layer_runtime.luau: PASS (PASS layer runtime checks=11); test_sword_combo.luau: PASS (PASS sword combo checks=486)"
+        },
+        {
+          "text": "Finds AnimationConstraint joints too (Server Authority avatars have no Motor6D)",
+          "passed": true,
+          "evidence": "grep AnimationConstraint in shipped sources"
+        },
+        {
+          "text": "SPEC covers anticipation / strike / follow-through for the strikes",
+          "passed": true,
+          "evidence": "phase mentions=22"
+        },
+        {
+          "text": "SPEC states the joint sign conventions",
+          "passed": true,
+          "evidence": "grep +X/-X and Shoulder"
+        },
+        {
+          "text": "Coexists with Animate: Action+ priority track or Transform written after the Animator (PreSimulation)",
+          "passed": true,
+          "evidence": "actionPriority=True; writers=['Layer.luau'] renderstep_writers=[] presim_driver=True"
+        },
+        {
+          "text": "Transform writes (if any) are not in RenderStepped/PreRender",
+          "passed": true,
+          "evidence": "writers=['Layer.luau'] renderstep_writers=[] presim_driver=True"
+        },
+        {
+          "text": "Hit-stop implemented",
+          "passed": true,
+          "evidence": "grep hitstop"
+        },
+        {
+          "text": "Hit-stop / combo never writes physics (root CFrame/velocity, Anchored, WalkSpeed)",
+          "passed": true,
+          "evidence": "none"
+        },
+        {
+          "text": "If KeyframeSequences are registered at runtime, the report says it is Studio-only",
+          "passed": true,
+          "evidence": "registers=False"
+        },
+        {
+          "text": "Joint sign conventions are verified against the rig, not assumed",
+          "passed": true,
+          "evidence": "[judgment] SPEC: elbow +X derived by FK on rig-r15.json, conflict with the skill doc flagged"
+        },
+        {
+          "text": "Other players / NPCs see the combo (replication path implemented)",
+          "passed": true,
+          "evidence": "[judgment] SwordComboRelay.server.luau + SwordComboSeq / SwordComboHitSeq attributes"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 1,
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 10,
+        "failed": 0,
+        "total": 10,
+        "time_seconds": 1448.4,
+        "tokens": 697157,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "All Luau files compile",
+          "passed": true,
+          "evidence": "compiled 9 bad 0"
+        },
+        {
+          "text": "The run's own offline tests run under Lune and pass",
+          "passed": true,
+          "evidence": "test_terrain_pose.luau: PASS (PASS terrain pose checks=978)"
+        },
+        {
+          "text": "Finds AnimationConstraint joints too (Server Authority avatars have no Motor6D)",
+          "passed": true,
+          "evidence": "grep AnimationConstraint in shipped sources"
+        },
+        {
+          "text": "Joint Transforms are written from PreSimulation/Stepped, never from RenderStepped/PreRender",
+          "passed": true,
+          "evidence": "writers=['TerrainPoseLayer.luau'] renderstep_writers=[] presim_driver=True"
+        },
+        {
+          "text": "Never writes physics (root CFrame/velocity, HipHeight, Anchored, WalkSpeed)",
+          "passed": true,
+          "evidence": "none"
+        },
+        {
+          "text": "Casts rays for the ground (per foot or per body)",
+          "passed": true,
+          "evidence": "Raycast calls=4"
+        },
+        {
+          "text": "Lean is computed from the body's velocity (works for NPCs without input)",
+          "passed": true,
+          "evidence": "grep velocity"
+        },
+        {
+          "text": "Report gives a Studio verification procedure with numeric pass criteria",
+          "passed": true,
+          "evidence": "grep Studio + numbers"
+        },
+        {
+          "text": "Lean follows the velocity direction (camera turns / shift-lock do not tilt the body)",
+          "passed": true,
+          "evidence": "[judgment] Kit.Secondary measures omega from AssemblyLinearVelocity direction (TerrainPoseCore uses Kit.Secondary)"
+        },
+        {
+          "text": "Stairs behaviour is measured with a moving simulation and reported honestly",
+          "passed": true,
+          "evidence": "[judgment] REPORT: stairs table incl. down-stairs worse than OFF, KNOWN lines kept in the test"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 3,
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.786,
+        "passed": 11,
+        "failed": 3,
+        "total": 14,
+        "time_seconds": 777.8,
+        "tokens": 599761,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "All Luau files compile",
+          "passed": true,
+          "evidence": "compiled 7 bad 0"
+        },
+        {
+          "text": "The run's own offline tests run under Lune and pass",
+          "passed": true,
+          "evidence": "anim_layers.spec.luau: PASS (ALL PASS); controller_harness.spec.luau: PASS (ALL PASS); place_scripts.spec.luau: PASS (ALL PASS)"
+        },
+        {
+          "text": "Finds AnimationConstraint joints too (Server Authority avatars have no Motor6D)",
+          "passed": false,
+          "evidence": "grep AnimationConstraint in shipped sources"
+        },
+        {
+          "text": "Teammate's uncommitted AnimConfig edit (IDLE_BREATH_SECONDS = 2.6) is preserved",
+          "passed": true,
+          "evidence": "nfig = {}\nAnimConfig.LAND_SECONDS = 0.3\nAnimConfig.LAND_KNEE_DEGREES = 35\nAnimConfig.IDLE_BREATH_SECONDS = 2.6 -- teammate: slower breathing (WIP)\nAnimConfig.IDLE_BREATH_DEGREES = 3\nreturn AnimConfig\n"
+        },
+        {
+          "text": "Nothing committed in the user's repository",
+          "passed": true,
+          "evidence": "commits=1"
+        },
+        {
+          "text": "Report diagnoses that RenderStepped Transform writes are not rendered",
+          "passed": true,
+          "evidence": "grep report"
+        },
+        {
+          "text": "New code writes Transforms from PreSimulation/Stepped",
+          "passed": true,
+          "evidence": "writers=['AnimLayers.luau'] renderstep_writers=[] presim_driver=True"
+        },
+        {
+          "text": "A Place carrying the improved scripts exists (canonical updated, or canonical + layer candidate)",
+          "passed": true,
+          "evidence": "carrying=['places\\\\Game.rbxlx']"
+        },
+        {
+          "text": "That Place still contains the hand-placed map (not rebuilt from src)",
+          "passed": true,
+          "evidence": "size=20889"
+        },
+        {
+          "text": "Map parts in that Place are byte-identical to the original",
+          "passed": true,
+          "evidence": "compared Part/SpawnLocation items"
+        },
+        {
+          "text": "Report proves the Place change (backup + hash/diff/reversal check)",
+          "passed": true,
+          "evidence": "grep report"
+        },
+        {
+          "text": "Report gives a Studio verification procedure",
+          "passed": true,
+          "evidence": "grep report"
+        },
+        {
+          "text": "Landing / idle also drawn on other players' bodies",
+          "passed": false,
+          "evidence": "[judgment] REPORT: Transform はローカル専用で他プレイヤーからは見えない (local player only)"
+        },
+        {
+          "text": "Canonical Place is left intact until the user's Studio check (candidate + apply/revert)",
+          "passed": false,
+          "evidence": "[judgment] splice applied to places/Game.rbxlx directly (reversible via git; no separate candidate)"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 2,
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.833,
+        "passed": 10,
+        "failed": 2,
+        "total": 12,
+        "time_seconds": 1662.4,
+        "tokens": 665964,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "All Luau files compile",
+          "passed": true,
+          "evidence": "compiled 11 bad 0"
+        },
+        {
+          "text": "The run's own offline tests run under Lune and pass",
+          "passed": true,
+          "evidence": "run_tests.luau: PASS (42 passed, 0 failed)"
+        },
+        {
+          "text": "Finds AnimationConstraint joints too (Server Authority avatars have no Motor6D)",
+          "passed": false,
+          "evidence": "grep AnimationConstraint in shipped sources"
+        },
+        {
+          "text": "SPEC covers anticipation / strike / follow-through for the strikes",
+          "passed": true,
+          "evidence": "phase mentions=24"
+        },
+        {
+          "text": "SPEC states the joint sign conventions",
+          "passed": true,
+          "evidence": "grep +X/-X and Shoulder"
+        },
+        {
+          "text": "Coexists with Animate: Action+ priority track or Transform written after the Animator (PreSimulation)",
+          "passed": true,
+          "evidence": "actionPriority=True; writers=['SwordComboLayer.luau'] renderstep_writers=[] presim_driver=True"
+        },
+        {
+          "text": "Transform writes (if any) are not in RenderStepped/PreRender",
+          "passed": true,
+          "evidence": "writers=['SwordComboLayer.luau'] renderstep_writers=[] presim_driver=True"
+        },
+        {
+          "text": "Hit-stop implemented",
+          "passed": true,
+          "evidence": "grep hitstop"
+        },
+        {
+          "text": "Hit-stop / combo never writes physics (root CFrame/velocity, Anchored, WalkSpeed)",
+          "passed": true,
+          "evidence": "none"
+        },
+        {
+          "text": "If KeyframeSequences are registered at runtime, the report says it is Studio-only",
+          "passed": true,
+          "evidence": "registers=False"
+        },
+        {
+          "text": "Joint sign conventions are verified against the rig, not assumed",
+          "passed": true,
+          "evidence": "[judgment] angles baked by offline IK from grip targets with rig FK"
+        },
+        {
+          "text": "Other players / NPCs see the combo (replication path implemented)",
+          "passed": false,
+          "evidence": "[judgment] REPORT: 他のプレイヤーには見えない (local only; RemoteEvent suggested, not implemented)"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 1,
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.8,
+        "passed": 8,
+        "failed": 2,
+        "total": 10,
+        "time_seconds": 1123.8,
+        "tokens": 644697,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "All Luau files compile",
+          "passed": true,
+          "evidence": "compiled 5 bad 0"
+        },
+        {
+          "text": "The run's own offline tests run under Lune and pass",
+          "passed": true,
+          "evidence": "grounding.spec.luau: PASS (RESULT: 32 passed, 0 failed)"
+        },
+        {
+          "text": "Finds AnimationConstraint joints too (Server Authority avatars have no Motor6D)",
+          "passed": false,
+          "evidence": "grep AnimationConstraint in shipped sources"
+        },
+        {
+          "text": "Joint Transforms are written from PreSimulation/Stepped, never from RenderStepped/PreRender",
+          "passed": true,
+          "evidence": "writers=['init.luau'] renderstep_writers=[] presim_driver=True"
+        },
+        {
+          "text": "Never writes physics (root CFrame/velocity, HipHeight, Anchored, WalkSpeed)",
+          "passed": true,
+          "evidence": "none"
+        },
+        {
+          "text": "Casts rays for the ground (per foot or per body)",
+          "passed": true,
+          "evidence": "Raycast calls=1"
+        },
+        {
+          "text": "Lean is computed from the body's velocity (works for NPCs without input)",
+          "passed": true,
+          "evidence": "grep velocity"
+        },
+        {
+          "text": "Report gives a Studio verification procedure with numeric pass criteria",
+          "passed": true,
+          "evidence": "grep Studio + numbers"
+        },
+        {
+          "text": "Lean follows the velocity direction (camera turns / shift-lock do not tilt the body)",
+          "passed": false,
+          "evidence": "[judgment] REPORT: lean from HRP yaw angular velocity; limitation 'シフトロックでカメラを回すと移動方向に関係なく傾く'"
+        },
+        {
+          "text": "Stairs behaviour is measured with a moving simulation and reported honestly",
+          "passed": true,
+          "evidence": "[judgment] REPORT: static stair cases 0.000 plus a synthetic compass gait with p95/max and ~90 deg joint jumps flagged"
+        }
+      ],
+      "notes": []
+    }
+  ],
+  "run_summary": {
+    "with_skill": {
+      "pass_rate": {
+        "mean": 1.0,
+        "stddev": 0.0,
+        "min": 1.0,
+        "max": 1.0
+      },
+      "time_seconds": {
+        "mean": 1279.6333,
+        "stddev": 361.5122,
+        "min": 864.6,
+        "max": 1525.9
+      },
+      "tokens": {
+        "mean": 697639.0,
+        "stddev": 53228.6368,
+        "min": 644653,
+        "max": 751107
+      }
+    },
+    "without_skill": {
+      "pass_rate": {
+        "mean": 0.8063,
+        "stddev": 0.0241,
+        "min": 0.786,
+        "max": 0.833
+      },
+      "time_seconds": {
+        "mean": 1188.0,
+        "stddev": 445.7808,
+        "min": 777.8,
+        "max": 1662.4
+      },
+      "tokens": {
+        "mean": 636807.3333,
+        "stddev": 33799.3259,
+        "min": 599761,
+        "max": 665964
+      }
+    },
+    "delta": {
+      "pass_rate": "+0.19",
+      "time_seconds": "+91.6",
+      "tokens": "+60832"
+    }
+  },
+  "notes": [
+    "Most objective assertions (compile, own tests pass, PreSimulation timing, no physics writes, teammate edit preserved, map intact) pass in BOTH configurations: a strong baseline already knows these. They are regression guards, not discriminators.",
+    "The decisive discriminator is AnimationConstraint support: with-skill 3/3, baseline 0/3. Verified in Studio (AnimSandbox): this account's R15 avatar has 0 Motor6D and 15 AnimationConstraint, so baseline code that only looks for Motor6D animates nothing.",
+    "Judgment discriminators: turn lean from velocity direction (baseline used HRP yaw rate -> tilts on camera/shift-lock turns), replication to other players (baseline sword/merge: local-only), canonical Place left intact behind a candidate + apply/revert tool (baseline spliced the canonical directly, reversible only via git).",
+    "Cost: with-skill +92 s (+8%) and +61k tokens (+10%) per run on average; runs read references and copy the kit.",
+    "The with-skill sword run caught a wrong sign in the skill (Elbow flex is +X, not -X) by FK-checking the rig as the skill instructs; fixed in references/r15-rig.md and memory.",
+    "The with-skill terrain run and the Studio sandbox both show stairs as the kit's weak spot (Humanoid step-up lag). Iteration-2 changes: smoothFloor + maxRaise cap + carryLimit in the template; stairs moving 53%/22% -> 16%/14% (sink/float), max joint step 149 -> 76 deg."
+  ]
+}

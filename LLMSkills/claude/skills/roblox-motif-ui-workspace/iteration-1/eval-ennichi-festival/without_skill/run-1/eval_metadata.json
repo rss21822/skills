@@ -1,0 +1,6 @@
+{
+  "eval_id": 1,
+  "eval_name": "ennichi-festival",
+  "prompt": "obby-rush（Robloxのobbyゲーム、Rojo構成）のメインメニューUIが紺色でいかにもAIが作ったUIって感じなので作り直してほしい。モチーフは「夏祭りの縁日」— 提灯、金魚すくい、りんご飴、ラムネ。他のスクリプトがUIの名前で探してるから tests/test_main_menu.luau は通るままにしてね。",
+  "assertions": []
+}

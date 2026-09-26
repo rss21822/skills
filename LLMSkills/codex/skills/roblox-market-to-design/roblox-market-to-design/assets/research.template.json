@@ -1,0 +1,46 @@
+{
+  "schema_version": "1.0.0",
+  "meta": {
+    "project_title": "未設定",
+    "project_slug": "untitled",
+    "started_at": null,
+    "timezone": null,
+    "mode": "full",
+    "depth": "standard",
+    "status": "draft",
+    "research_scope": "未設定",
+    "capabilities": {
+      "web": "not_checked",
+      "roblox_client": "not_checked",
+      "analytics": "not_checked"
+    },
+    "limitations": [],
+    "unresolved": []
+  },
+  "brief": {
+    "concept": null,
+    "target_players": [],
+    "core_verbs": [],
+    "desired_emotions": [],
+    "success_definition": "未設定",
+    "fixed_constraints": [],
+    "preferences": [],
+    "hypotheses": [],
+    "undecided": [],
+    "input_materials": [],
+    "production_constraints": [],
+    "excluded": []
+  },
+  "sources": [],
+  "claims": [],
+  "games": [],
+  "observations": [],
+  "opportunities": [],
+  "decisions": [],
+  "hooks": [],
+  "tests": [],
+  "platform_checks": [],
+  "risks": [],
+  "research_log": [],
+  "changes": []
+}

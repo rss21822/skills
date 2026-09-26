@@ -1,0 +1,70 @@
+{
+  "expectations": [
+    {
+      "text": "All Luau files compile",
+      "passed": true,
+      "evidence": "compiled 11 bad 0"
+    },
+    {
+      "text": "The run's own offline tests run under Lune and pass",
+      "passed": true,
+      "evidence": "run_tests.luau: PASS (42 passed, 0 failed)"
+    },
+    {
+      "text": "Finds AnimationConstraint joints too (Server Authority avatars have no Motor6D)",
+      "passed": false,
+      "evidence": "grep AnimationConstraint in shipped sources"
+    },
+    {
+      "text": "SPEC covers anticipation / strike / follow-through for the strikes",
+      "passed": true,
+      "evidence": "phase mentions=24"
+    },
+    {
+      "text": "SPEC states the joint sign conventions",
+      "passed": true,
+      "evidence": "grep +X/-X and Shoulder"
+    },
+    {
+      "text": "Coexists with Animate: Action+ priority track or Transform written after the Animator (PreSimulation)",
+      "passed": true,
+      "evidence": "actionPriority=True; writers=['SwordComboLayer.luau'] renderstep_writers=[] presim_driver=True"
+    },
+    {
+      "text": "Transform writes (if any) are not in RenderStepped/PreRender",
+      "passed": true,
+      "evidence": "writers=['SwordComboLayer.luau'] renderstep_writers=[] presim_driver=True"
+    },
+    {
+      "text": "Hit-stop implemented",
+      "passed": true,
+      "evidence": "grep hitstop"
+    },
+    {
+      "text": "Hit-stop / combo never writes physics (root CFrame/velocity, Anchored, WalkSpeed)",
+      "passed": true,
+      "evidence": "none"
+    },
+    {
+      "text": "If KeyframeSequences are registered at runtime, the report says it is Studio-only",
+      "passed": true,
+      "evidence": "registers=False"
+    },
+    {
+      "text": "Joint sign conventions are verified against the rig, not assumed",
+      "passed": true,
+      "evidence": "[judgment] angles baked by offline IK from grip targets with rig FK"
+    },
+    {
+      "text": "Other players / NPCs see the combo (replication path implemented)",
+      "passed": false,
+      "evidence": "[judgment] REPORT: 他のプレイヤーには見えない (local only; RemoteEvent suggested, not implemented)"
+    }
+  ],
+  "summary": {
+    "passed": 10,
+    "failed": 2,
+    "total": 12,
+    "pass_rate": 0.833
+  }
+}

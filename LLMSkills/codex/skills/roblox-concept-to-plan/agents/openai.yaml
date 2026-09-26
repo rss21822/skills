@@ -1,0 +1,4 @@
+interface:
+  display_name: "Robloxイメージ企画設計"
+  short_description: "感覚的なゲームイメージを、具体的な遊び・数値・試作条件へ変える"
+  default_prompt: "$roblox-concept-to-plan を使い、次の新規Robloxゲームのイメージを、核を保った具体的な遊び・数値・試作の合格条件が分かる企画にして。"

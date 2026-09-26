@@ -1,0 +1,110 @@
+{
+  "expectations": [
+    {
+      "text": "Contract test (names, callbacks, pages, 48px targets) passes with the test files unmodified",
+      "passed": true,
+      "evidence": "exit 0, tests unchanged=True; PASS main menu contract: 29 checks, 0 failed"
+    },
+    {
+      "text": "Every Luau file under src compiles",
+      "passed": true,
+      "evidence": "8 files; exit 0; all OK"
+    },
+    {
+      "text": "No generic navy/slate fills: navy share of visible filled area < 5%",
+      "passed": true,
+      "evidence": "navy share 0.0%; navy colours []"
+    },
+    {
+      "text": "Restrained palette for an elegant motif: at most 3 saturated hue families (30 deg bins)",
+      "passed": true,
+      "evidence": "hue bins [30]"
+    },
+    {
+      "text": "Every FontFace family used is a real Roblox font family",
+      "passed": true,
+      "evidence": "families ['AccanthisADFStd', 'Merriweather', 'RomanAntique']; missing []"
+    },
+    {
+      "text": "Japanese text requests a bold (SemiBold+) weight so the CJK fallback does not render thin",
+      "passed": true,
+      "evidence": "23 Japanese texts; thin: []"
+    },
+    {
+      "text": "No Latin-only decorative display font is applied to Japanese text",
+      "passed": true,
+      "evidence": "none"
+    },
+    {
+      "text": "Every visible text reaches 3:1 against its fill (glyph or its outline)",
+      "passed": true,
+      "evidence": "41 texts checked; low: []"
+    },
+    {
+      "text": "Emoji-only labels get a box at least 1.4x their TextSize tall",
+      "passed": true,
+      "evidence": "ok"
+    },
+    {
+      "text": "No emoji newer than Unicode 12 (Roblox draws them as tofu boxes) in visible text",
+      "passed": true,
+      "evidence": "none"
+    },
+    {
+      "text": "Reduced motion: no infinite tween loops are created when GuiService.ReducedMotionEnabled is true",
+      "passed": true,
+      "evidence": "loops normal=1 reduced=0 (tweens 11/0)"
+    },
+    {
+      "text": "Nothing readable or pressable sits under Roblox's top-left buttons (x<200, y<58) on the IgnoreGuiInset screen",
+      "passed": true,
+      "evidence": "clear"
+    },
+    {
+      "text": "Material honesty: no sticker gloss bands or pressable lips on a motif that is not plastic or candy",
+      "passed": true,
+      "evidence": "none"
+    },
+    {
+      "text": "No colour emoji (the prompt asks for a restrained, non-cute look)",
+      "passed": true,
+      "evidence": "none"
+    },
+    {
+      "text": "A visual preview (PNG/HTML) of the new look was produced for review",
+      "passed": true,
+      "evidence": "['before-lobby.png', 'before-shop.png', 'compare-before-after.png', 'preview-lobby-hover.html']"
+    },
+    {
+      "text": "Blind judge (screenshots only, 14 candidate motifs) names the posted motif as top-1",
+      "passed": true,
+      "evidence": "R04: top1=高級ホテル（黒大理石と金） conf=0.95; guess: Grand hotel lobby with black marble, a gold chandelier and art-deco frames"
+    },
+    {
+      "text": "Blind judge rates theme strength >= 4/5 (unmistakably one specific world, not a recoloured generic menu)",
+      "passed": true,
+      "evidence": "R04: strength 5; generic parts: Shop rows are a dotted price list with outline buttons, which is fairly standard"
+    },
+    {
+      "text": "Informed judge rates motif fidelity >= 4/5",
+      "passed": true,
+      "evidence": "R04: fidelity 5; CTA=Brass plaque under an elevator floor-indicator dial (L-5)"
+    },
+    {
+      "text": "Informed judge: every explicit constraint in the request is honored on screen",
+      "passed": true,
+      "evidence": "R04: 5/5 honored; missed: none"
+    },
+    {
+      "text": "Informed judge rates craft >= 4/5 (clear hero, readable text, no layout defects)",
+      "passed": true,
+      "evidence": "R04: craft 4; Strong hierarchy: glowing gold plaque under an elevator floor dial. Radial glow shows banding; marble veins read like cracks; nav text tiny; coin partly under the Roblox card; title clears the top-left buttons."
+    }
+  ],
+  "summary": {
+    "passed": 20,
+    "failed": 0,
+    "total": 20,
+    "pass_rate": 1.0
+  }
+}

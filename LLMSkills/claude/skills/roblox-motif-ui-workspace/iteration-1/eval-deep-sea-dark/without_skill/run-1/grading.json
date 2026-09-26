@@ -1,0 +1,70 @@
+{
+  "expectations": [
+    {
+      "text": "Contract test (names, callbacks, pages, 48px targets) passes with the test files unmodified",
+      "passed": true,
+      "evidence": "exit 0, tests unchanged=True; PASS main menu contract: 29 checks, 0 failed"
+    },
+    {
+      "text": "Every Luau file under src compiles",
+      "passed": true,
+      "evidence": "4 files; exit 0; all OK"
+    },
+    {
+      "text": "No generic navy/slate fills: navy share of visible filled area < 5%",
+      "passed": true,
+      "evidence": "navy share 0.0%; navy colours []"
+    },
+    {
+      "text": "Palette variety: at least 4 distinct saturated hue families (30 deg bins) in visible fills",
+      "passed": true,
+      "evidence": "hue bins [30, 150, 240, 300]"
+    },
+    {
+      "text": "Every FontFace family used is a real Roblox font family",
+      "passed": true,
+      "evidence": "families ['FredokaOne', 'Nunito']; missing []"
+    },
+    {
+      "text": "Japanese text requests a bold (SemiBold+) weight so the CJK fallback does not render thin",
+      "passed": false,
+      "evidence": "25 Japanese texts; thin: ['Background.PlayButton=プレイ', 'InventoryPage.Title=持ち物', 'QuestsPage.Title=クエスト', 'SettingsPage.Title=設定', 'ShopPage.Title=ショップ']"
+    },
+    {
+      "text": "No Latin-only decorative display font is applied to Japanese text",
+      "passed": true,
+      "evidence": "none"
+    },
+    {
+      "text": "Every visible text reaches 3:1 against its fill (glyph or its outline)",
+      "passed": false,
+      "evidence": "30 texts checked; low: ['Background.NavBar.Nav_Inventory.Body.Caption 1.1:1']"
+    },
+    {
+      "text": "Emoji-only labels get a box at least 1.4x their TextSize tall",
+      "passed": true,
+      "evidence": "ok"
+    },
+    {
+      "text": "No emoji newer than Unicode 12 (Roblox draws them as tofu boxes) in visible text",
+      "passed": false,
+      "evidence": "['Background.TopBar.CoinLabel=🪙 1,250', 'ShopPage.ProductList.Product_double_jump.Price=🪙 800', 'ShopPage.ProductList.Product_rainbow_trail.Price=🪙 450', 'ShopPage.ProductList.Product_speed_coil.Price=🪙 300']"
+    },
+    {
+      "text": "Reduced motion: no infinite tween loops are created when GuiService.ReducedMotionEnabled is true",
+      "passed": true,
+      "evidence": "loops normal=0 reduced=0 (tweens 4/0)"
+    },
+    {
+      "text": "A visual preview (PNG/HTML) of the new look was produced for review",
+      "passed": true,
+      "evidence": "['preview_before_after.png', 'preview_before_home.html', 'preview_before_home.png', 'preview_before_shop.html']"
+    }
+  ],
+  "summary": {
+    "passed": 9,
+    "failed": 3,
+    "total": 12,
+    "pass_rate": 0.75
+  }
+}

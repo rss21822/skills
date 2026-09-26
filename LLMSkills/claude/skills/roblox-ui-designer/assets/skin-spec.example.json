@@ -1,0 +1,239 @@
+{
+  "name": "Pop Rink",
+  "motif": "candy-coloured ice rink with penguins (SpinOut lobby, 2026-09)",
+  "concept": "sticker-book arcade: cream paper, plum licorice outlines, candy fills, a penguin mascot",
+  "palette": {
+    "ink": "#30163A",
+    "paper": "#FFFAF2",
+    "panel": "#FFFFFF",
+    "quiet": "#F5EDFF",
+    "primary": "#FFD033",
+    "danger": "#F04058",
+    "success": "#26D696",
+    "muted": "#7A648A",
+    "disabled": "#E4DCEA",
+    "dim": "#401E68",
+    "honey": "#C47400",
+    "candies": [
+      [
+        "bubblegum",
+        "#FF5EA0"
+      ],
+      [
+        "mint",
+        "#26D696"
+      ],
+      [
+        "sky",
+        "#40C4FF"
+      ],
+      [
+        "grape",
+        "#8054FF"
+      ],
+      [
+        "tangerine",
+        "#FF8A3D"
+      ]
+    ]
+  },
+  "pastels": [
+    "#FFF4C4",
+    "#D0F8E8",
+    "#D6F1FF",
+    "#FFE1EF",
+    "#FFE5D2"
+  ],
+  "fonts": {
+    "display": [
+      "LuckiestGuy",
+      "Regular"
+    ],
+    "title": [
+      "FredokaOne",
+      "Bold"
+    ],
+    "button": [
+      "FredokaOne",
+      "Bold"
+    ],
+    "body": [
+      "Nunito",
+      "Bold"
+    ],
+    "strong": [
+      "Nunito",
+      "Heavy"
+    ]
+  },
+  "latinOnly": [
+    "display"
+  ],
+  "shape": {
+    "corner": 16,
+    "panelCorner": 20,
+    "stroke": 3,
+    "lip": 6,
+    "tilt": -2,
+    "cta": "pill"
+  },
+  "icons": {
+    "play": "▶️",
+    "inventory": "🎒",
+    "weapons": "⚔️",
+    "quests": "📜",
+    "shop": "🛍️",
+    "pass": "🎟️",
+    "settings": "⚙️",
+    "party": "🎉"
+  },
+  "mascot": {
+    "name": "Penguin",
+    "aspect": 1.12,
+    "blink": [
+      "EyeL",
+      "EyeR"
+    ],
+    "parts": [
+      [
+        "FootL",
+        0.34,
+        0.95,
+        0.3,
+        0.12,
+        "tangerine",
+        {
+          "stroke": true
+        }
+      ],
+      [
+        "FootR",
+        0.66,
+        0.95,
+        0.3,
+        0.12,
+        "tangerine",
+        {
+          "stroke": true
+        }
+      ],
+      [
+        "FlipperL",
+        0.13,
+        0.6,
+        0.22,
+        0.42,
+        "#2C2442",
+        {
+          "stroke": true,
+          "rotation": 24
+        }
+      ],
+      [
+        "FlipperR",
+        0.87,
+        0.6,
+        0.22,
+        0.42,
+        "#2C2442",
+        {
+          "stroke": true,
+          "rotation": -24
+        }
+      ],
+      [
+        "Body",
+        0.5,
+        0.52,
+        0.84,
+        0.86,
+        "#2C2442",
+        {
+          "stroke": true
+        }
+      ],
+      [
+        "Belly",
+        0.5,
+        0.64,
+        0.6,
+        0.6,
+        "paper"
+      ],
+      [
+        "EyeL",
+        0.37,
+        0.36,
+        0.2,
+        0.2,
+        "white"
+      ],
+      [
+        "EyeR",
+        0.63,
+        0.36,
+        0.2,
+        0.2,
+        "white"
+      ],
+      [
+        "PupilL",
+        0.58,
+        0.55,
+        0.55,
+        0.55,
+        "ink",
+        {
+          "parent": "EyeL"
+        }
+      ],
+      [
+        "PupilR",
+        0.58,
+        0.55,
+        0.55,
+        0.55,
+        "ink",
+        {
+          "parent": "EyeR"
+        }
+      ],
+      [
+        "CheekL",
+        0.28,
+        0.5,
+        0.14,
+        0.09,
+        "bubblegum",
+        {
+          "transparency": 0.25
+        }
+      ],
+      [
+        "CheekR",
+        0.72,
+        0.5,
+        0.14,
+        0.09,
+        "bubblegum",
+        {
+          "transparency": 0.25
+        }
+      ],
+      [
+        "Beak",
+        0.5,
+        0.48,
+        0.16,
+        0.16,
+        "tangerine",
+        {
+          "rotation": 45,
+          "corner": 0.3,
+          "stroke": true
+        }
+      ]
+    ]
+  },
+  "tone": "cute, bouncy, sticker-book"
+}

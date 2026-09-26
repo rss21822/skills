@@ -1,0 +1,12 @@
+{
+  "eval_id": 6,
+  "eval_name": "famicom-rpg",
+  "prompt": "obby-rush のUIをファミコン時代のRPGっぽくしたい。黒い画面に白い枠のウィンドウ、▶のカーソル、ドット文字みたいな感じ。名前で参照してるスクリプトがあるからテストは通るままで。",
+  "profile": {
+    "square": true,
+    "noGloss": true,
+    "font": "PressStart2P",
+    "palette": "any"
+  },
+  "assertions": []
+}

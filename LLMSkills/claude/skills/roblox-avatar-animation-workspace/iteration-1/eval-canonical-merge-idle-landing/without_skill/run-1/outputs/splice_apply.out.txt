@@ -1,0 +1,14 @@
+place: C:\Users\ryufu\.claude\skills\roblox-avatar-animation-workspace\iteration-1\eval-canonical-merge-idle-landing\without_skill\outputs\mini-game\places\Game.rbxlx  (4408 bytes, sha256 48be66bccd08af87, EOL CRLF)
+protected ReplicatedStorage/Shared/AnimConfig: Place==HEAD True, working tree has uncommitted WIP True -> not spliced
+insert ModuleScript StarterPlayer/StarterPlayerScripts/Anim/AnimLayers (referent RBX2AA7A76E2593FBA1694F7891E51B301E)
+replace Source StarterPlayer/StarterPlayerScripts/Anim/AnimController (1529 -> 4790 chars)
+fingerprint (spliced regions masked): before b05b3c56a3af6360  after b05b3c56a3af6360
+instances: 11 -> 12 (added ['StarterPlayer/StarterPlayerScripts/Anim/AnimLayers'])
+non-Source properties of all pre-existing instances: identical
+targets equal src; protected scripts unchanged
+written C:\Users\ryufu\.claude\skills\roblox-avatar-animation-workspace\iteration-1\eval-canonical-merge-idle-landing\without_skill\outputs\mini-game\places\Game.rbxlx (21377 bytes, sha256 51b0f2cc0dd1d68f)
+place: C:\Users\ryufu\.claude\skills\roblox-avatar-animation-workspace\iteration-1\eval-canonical-merge-idle-landing\without_skill\outputs\mini-game\places\Game.rbxlx  (21377 bytes, sha256 51b0f2cc0dd1d68f, EOL CRLF)
+protected ReplicatedStorage/Shared/AnimConfig: Place==HEAD True, working tree has uncommitted WIP True -> not spliced
+up to date StarterPlayer/StarterPlayerScripts/Anim/AnimController
+up to date StarterPlayer/StarterPlayerScripts/Anim/AnimLayers
+nothing to do: Place already matches src

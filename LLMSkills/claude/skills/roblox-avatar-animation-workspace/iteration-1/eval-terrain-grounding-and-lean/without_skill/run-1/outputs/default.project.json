@@ -1,0 +1,14 @@
+{
+  "name": "ProceduralGrounding",
+  "tree": {
+    "$className": "DataModel",
+    "ReplicatedStorage": {
+      "ProceduralGrounding": { "$path": "src/ReplicatedStorage/ProceduralGrounding" }
+    },
+    "StarterPlayer": {
+      "StarterPlayerScripts": {
+        "ProceduralGrounding": { "$path": "src/StarterPlayer/StarterPlayerScripts/ProceduralGrounding.client.luau" }
+      }
+    }
+  }
+}

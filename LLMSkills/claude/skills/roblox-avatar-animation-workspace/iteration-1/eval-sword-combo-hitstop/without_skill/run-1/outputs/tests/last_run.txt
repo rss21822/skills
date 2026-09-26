@@ -1,0 +1,45 @@
+PASS  syntax: all src files compile                  6 files
+PASS  FK: rest foot bottom == ground                 footBottom=-3.2248 ground=-3.2248
+PASS  keys: adjacent rotation delta < 170 deg        max=162.7 deg at Kabuto LeftWrist t=0.490
+PASS  combo: 3 strikes chained + 3 hits              hits=3 (#1@t=0.263, #2@t=0.238, #3@t=0.458)
+PASS  hit 1 near authored hitTime                    measured t=0.263 authored=0.270
+PASS  hit 2 near authored hitTime                    measured t=0.238 authored=0.250
+PASS  hit 3 near authored hitTime                    measured t=0.458 authored=0.490
+PASS  strike1 kesa: windup grip upper-right          grip@0.20=(1.00, 1.58, 0.08)
+PASS  strike1 kesa: blade moves down-left diagonally blade60% disp 0.24→0.34 = (-3.95, -4.95, -0.42)  |dy/dx|=1.25
+PASS  strike1 kesa: follow-through ends low-left     grip@0.34=(-0.51, -1.02, -0.99)
+PASS  strike2 yokonagi: blade moves left→right     blade60% disp 0.19→0.36 = (5.82, 0.05, -0.30)
+PASS  strike2 yokonagi: path inclination < 12 deg    blade60% Y range in 0.21–0.30 = [-0.09, 0.87] over dx=5.82 → 9.4 deg
+PASS  strike3 slam: windup tip above head            tip@0.40=(0.06, 2.69, 4.24) grip=(0.05, 1.90, 0.32) (head top≈1.93)
+PASS  strike3 slam: tip reaches ground in front      tip@0.49=(0.44, -3.19, -4.79) ground=-3.22
+PASS  strike3 slam: tip not buried (>0.25 below ground) tipY=-3.194
+PASS  strike1 weight: swing peak >= 2.5x windup peak tip speed peak windup=99.9 hold=7.1 swing=325.7 stud/s (x3.3)
+PASS  strike1 weight: hold (溜め) slow             hold/swing=0.02
+PASS  strike2 weight: swing peak >= 2.5x windup peak tip speed peak windup=78.9 hold=27.1 swing=331.8 stud/s (x4.2)
+PASS  strike2 weight: hold (溜め) slow             hold/swing=0.08
+PASS  strike3 weight: swing peak >= 2.5x windup peak tip speed peak windup=121.0 hold=7.6 swing=375.5 stud/s (x3.1)
+PASS  strike3 weight: hold (溜め) slow             hold/swing=0.02
+PASS  hitstop 1: frozen pose                         max joint delta during stop=0.00000 deg over 17 frames
+PASS  hitstop 1: duration                            measured=0.0708 s authored=0.070 s
+PASS  hitstop 2: frozen pose                         max joint delta during stop=0.00000 deg over 20 frames
+PASS  hitstop 2: duration                            measured=0.0833 s authored=0.080 s
+PASS  hitstop 3: frozen pose                         max joint delta during stop=0.00000 deg over 34 frames
+PASS  hitstop 3: duration                            measured=0.1417 s authored=0.140 s
+PASS  hitstop: combo wall time extended exactly      with hits=2.433 s, whiff=2.146 s, diff=0.287 (sum hitStop=0.290)
+PASS  hitstop shake bounded                          max shake=1.12 deg
+PASS  continuity: runtime IK output (left arm, legs) no pops spikes=0 ; max change=21.43 deg/sample
+PASS  continuity: no single-sample spikes (pops)     spikes=0 ; max change=22.14 deg/sample @240Hz (= 88.6 deg per 60fps frame) at RightWrist wall=0.708 idx 2→2
+      peak angular velocity deg/s: Root=279 Waist=1179 Neck=1007 RightShoulder=4255 RightElbow=3531 RightWrist=5315 LeftShoulder=3001 LeftElbow=1359 LeftWrist=4568
+PASS  chain 1→2 seamless                           max joint delta at switch=0.011 deg
+PASS  chain 2→3 seamless                           max joint delta at switch=0.003 deg
+PASS  blade never passes through head/torso          penetrating samples=0 ; min blade-head dist=0.97
+PASS  strike3 left hand on hilt at keys              max key error=0.034 stud
+PASS  strike3 left hand on hilt every frame (runtime IK) max drift over all two-handed frames=0.000 stud
+PASS  legs: ankles stay planted (IK error)           max ankle error=0.0000 stud
+PASS  legs: sole never below ground                  lowest sole corner=-3.225 ground=-3.225
+PASS  legs: knee flex plausible                      max knee flex=92.2 deg
+PASS  right elbow within 0..150 (no hyperextension)  elbow range [-0.0, 126.2]
+PASS  right wrist: interpolation never exceeds keys  max total wrist rotation frames=122.6 deg, keys=122.7 deg
+PASS  single press plays strike 1 only then fades    frames=202 (0.842 s incl. 0.20 s fade)
+
+42 passed, 0 failed
