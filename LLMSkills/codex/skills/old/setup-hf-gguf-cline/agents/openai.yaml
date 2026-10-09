@@ -1,0 +1,4 @@
+interface:
+  display_name: "Hugging Face GGUF to Cline"
+  short_description: "Download GGUF models and configure Cline locally"
+  default_prompt: "Use $setup-hf-gguf-cline to download a Hugging Face GGUF model and configure it for Cline on this Windows PC."

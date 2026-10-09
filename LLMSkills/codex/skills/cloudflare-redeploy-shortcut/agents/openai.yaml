@@ -1,0 +1,4 @@
+interface:
+  display_name: "Cloudflare Redeploy"
+  short_description: "\"再デプロイ\" 指示で Cloudflare 再デプロイを実行"
+  default_prompt: "Use $cloudflare-redeploy-shortcut to redeploy the current project to Cloudflare."

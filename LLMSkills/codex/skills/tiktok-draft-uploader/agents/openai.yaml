@@ -1,0 +1,4 @@
+interface:
+  display_name: "TikTok Draft Uploader"
+  short_description: "Upload a video and caption as an unpublished TikTok draft"
+  default_prompt: "Use $tiktok-draft-uploader to upload this video with the supplied caption and leave it unpublished."

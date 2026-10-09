@@ -1,0 +1,4 @@
+interface:
+  display_name: "Roblox Group Auto Localization"
+  short_description: "グループ所有ゲームの自動翻訳を原文登録から実機確認まで設定"
+  default_prompt: "$roblox-group-auto-localization を使い、指定グループの対象ゲームを全対応言語へ自動翻訳設定し、プレイヤー別表示を確認して。"

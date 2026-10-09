@@ -1,0 +1,4 @@
+interface:
+  display_name: "Roblox非公開本番リリース準備"
+  short_description: "本番Experienceの設定・課金導線・実機検証を非公開で完了"
+  default_prompt: "Use $prepare-roblox-private-production to prepare this Roblox production Experience for release while keeping it private."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Roblox非公開Experience作成"
+  short_description: "ローカル正本から指定先の非公開ゲームを構築・実機確認"
+  default_prompt: "Use $create-roblox-private-experience to create a private production or verification Experience from my local Roblox project."

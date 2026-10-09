@@ -1,0 +1,4 @@
+interface:
+  display_name: "Roblox課金収益チェック"
+  short_description: "ゲーム内購入の売上計上先と承認待ち・利用可能額を確認"
+  default_prompt: "Use $roblox-purchase-revenue-check to verify whether this Roblox in-game purchase became revenue for the intended Experience."

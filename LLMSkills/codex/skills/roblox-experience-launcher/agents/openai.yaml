@@ -1,0 +1,4 @@
+interface:
+  display_name: "Roblox-Experience-Launcher"
+  short_description: "Roblox Playerで指定Experienceを起動し公開環境を実機検証"
+  default_prompt: "$roblox-experience-launcher を使い、指定ExperienceをRoblox Playerで起動し、依頼された範囲の公開環境検証を行って。"
