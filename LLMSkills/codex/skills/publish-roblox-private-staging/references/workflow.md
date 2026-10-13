@@ -103,16 +103,19 @@ After publication:
 - confirm the Experience remains Private;
 - confirm Studio API Access has the approved state;
 - confirm Match direct access and maximum-player settings;
-- open the Experience page with the authorized owner/test account and confirm the Play action;
 - record UTC timestamps and published version numbers.
 
 Delete the temporary API key automatically after cloud verification or an aborted attempt, then confirm it is absent. Key deletion does not replace publication verification.
 
-## 8. Run an external-client smoke
+Once all in-scope uploads, independent published-version checks, evidence recording, and temporary-key cleanup are complete, stop and report upload completion. Do not open or operate Roblox Player, or require a Play action, unless the user explicitly requests real-client verification. Ordinary publication requests and skill-only invocations do not imply that request.
+
+## 8. Optional external-client smoke — explicit user request only
+
+Skip this section by default. Run it only when the user explicitly asks for Roblox Player / real-client verification, and limit it to their requested scenario. Without that request, record `EXTERNAL SMOKE NOT REQUESTED`; it is not remaining upload work.
 
 Use the Roblox Player, not Studio, because TeleportService, reserved servers, MemoryStore, and live persistence need a published environment.
 
-For a multi-Place combat game, minimally verify:
+For a requested full multi-Place combat smoke, verify:
 
 1. owner enters the Lobby start Place;
 2. authoritative profile/loadout/meta state becomes ready;
@@ -133,8 +136,8 @@ Use separate decisions:
 
 - `LOCAL PASS/FAIL`;
 - `PUBLISHED PASS/FAIL/AMBIGUOUS`;
-- `EXTERNAL SMOKE PASS/FAIL/BLOCKED`.
+- `EXTERNAL SMOKE NOT REQUESTED`, or `PASS/FAIL/BLOCKED` when explicitly requested.
 
-Never call the release fully verified unless all required classes pass. If a release-blocking failure is directly attributable to the new build and the exact known-good private-staging target is recorded, stop new staging joins where supported and restore the recorded versions or republish the exact known-good artifacts in Match-then-Lobby-safe order without another confirmation. Verify the rollback independently. If attribution or rollback identity is ambiguous, do not mutate further; preserve evidence and report `AMBIGUOUS`.
+Upload completion requires local validation and independently confirmed publication, not Player testing. Do not claim runtime verification unless the requested real-client checks passed. If an observed release-blocking failure is directly attributable to the new build and the exact known-good private-staging target is recorded, stop new staging joins where supported and restore the recorded versions or republish the exact known-good artifacts in Match-then-Lobby-safe order without another confirmation. Verify the rollback independently. If attribution or rollback identity is ambiguous, do not mutate further; preserve evidence and report `AMBIGUOUS`.
 
 Production publication is a different workflow and requires a separate explicit request plus production-specific identifiers and compliance/commerce/persistence gates. This skill never expands a private-staging request into Production or Public access.

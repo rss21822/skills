@@ -1,0 +1,4 @@
+interface:
+  display_name: "Roblox First Release"
+  short_description: "独立した実行契約で本番の設定・課金・翻訳・全Place公開を完了"
+  default_prompt: "$roblox-first-release で、このゲームの初回本番リリース準備を非公開のまま設定・アップロード完了まで実行してください。"

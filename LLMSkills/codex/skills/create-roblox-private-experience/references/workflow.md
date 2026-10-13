@@ -24,10 +24,10 @@ Roblox StudioまたはCreator Hubの現在利用可能な正式手段で、指�
 
 公開前のリリース記録に所有者・Universe/Place ID・入口Place・ハッシュ・公開順・非公開状態・検証結果・失敗時の戻し方を固定する。公開直前にもファイルハッシュと宛先を再確認。マッチ等のサブPlaceを先に、入口Lobbyを最後に公開する。各API/Studio応答を確認してから次へ進む。曖昧な応答はCreator Hub履歴で照合し、盲目的に再試行しない。
 
-## 5. 独立確認と実機
+## 5. 独立確認とprofileに応じた実機
 
 Creator Hubで全Placeの「公開済み」履歴、入口Place、所有者、アクセス／オーディエンス非公開を確認する。API成功だけでは完了にしない。一時資格情報を使った場合は失効・削除して不存在を確認する。
 
-正式なゲームページから、権限を持つアカウントでRoblox Playerに入場。詳細ページの表示、Play押下、実際のロビー描画は別の証拠。複数Placeなら通常のUI操作でTeleportを確認する。Playerの起動不能やPrivateアクセス制限は具体的に記録し、Studio Playで代替したと報告しない。課金テスト・データ削除・一般公開は実施しない。
+`configuration-upload` を今回の契約で明示した場合は、独立Cloud確認と終了処理後に終了し、Playerを起動しない。既定の `full-validation` または実機依頼時は、正式なゲームページから権限を持つアカウントでRoblox Playerに入場。詳細ページの表示、Play押下、実際のロビー描画は別の証拠。複数Placeなら通常のUI操作でTeleportを確認する。Playerの起動不能やPrivateアクセス制限は具体的に記録し、Studio Playで代替したと報告しない。課金テスト・データ削除・一般公開は実施しない。
 
 最終報告には、指定種類、所有者、Experience/Place IDとURL、各公開バージョン、非公開確認、ローカル・クラウド・Playerそれぞれの判定、残課題を記す。

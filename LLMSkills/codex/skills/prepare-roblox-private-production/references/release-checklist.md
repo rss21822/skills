@@ -25,6 +25,7 @@
 
 ## 実機受入と判定
 
+- 今回のexecution_profileを記録。`configuration-upload` は設定・公開版・終了処理で終了、Playerは未依頼／未検証。未指定の `full-validation` は従来の実機工程を含む。両者の終了条件を混同せず、必須質問票等の根拠不足は残す。
 - Creator Hub保存/履歴、Roblox.comページ、Studio Edit/Play、Roblox Player、スマホ/タブレットを異なる証拠として記録。
 - 通常の入口経路、全モード、NPC補充/Teleport、3D描画、HUD、試合継続、Result表示・滞在・操作、帰還/再試合。
 - 権限付きアカウントだけの非公開入場は、一般ユーザー到達の証拠ではない。

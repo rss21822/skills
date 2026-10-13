@@ -1,6 +1,6 @@
 ---
 name: create-roblox-private-experience
-description: ローカルRobloxプロジェクトから、本番用または検証用の非公開Experienceを新規作成し、必要なPlaceを配置・公開してRoblox Playerで起動確認する。どちらを作るかはユーザー指定必須。既存Experienceの単純更新や一般公開は対象外。
+description: ローカルRobloxプロジェクトから、本番用または検証用の非公開Experienceを新規作成し、必要なPlaceを配置・公開する。既定はRoblox Player起動確認まで、明示された設定・アップロードのみの実行にも対応。種類はユーザー指定必須。既存Experienceの単純更新や一般公開は対象外。
 ---
 
 # Create Roblox Private Experience
@@ -27,10 +27,16 @@ description: ローカルRobloxプロジェクトから、本番用または検�
 
 ## 完了判定
 
+今回限りの `execution_profile` を確定する。未指定は従来どおり `full-validation`。ユーザーまたは許可範囲を明示した親Skillが `configuration-upload`（設定・アップロードのみ）を指定した場合は、LOCAL+CLOUDと終了処理で完了、PLAYERは未依頼／未検証と記録し起動しない。実機依頼がある場合はその範囲を優先する。profileを既定値や他実行へ保存しない。
+
+呼出し元の準備を前提にせず、毎回対象・現在設定・正本を再確認する。所有者／環境／全Place、担当操作、今回専用記録先、許可・除外、必要な出力を明示する。未知のprofileや契約矛盾は停止し、必須手順を推定で省略しない。
+
 次を別々に検証して報告する。
 
 1. `LOCAL`: ローカル正本からの全Placeビルドと利用可能な自動・Studio検証。
 2. `CLOUD`: 指定側の新しいUniverseに全Placeを依存順で公開し、公開済みバージョン、所有者、入口Place、非公開設定をCreator Hubで独立確認。
-3. `PLAYER`: 指定アカウントでRoblox Playerを使い、入口Placeの3D描画・主要UIを確認。複数Placeゲームでは通常UIから少なくとも1回サブPlaceへ移動。ゲーム固有の試合・結果は実際に到達した範囲だけ報告。
+3. `PLAYER`: `full-validation` または実機依頼時のみ、指定アカウントでRoblox Playerを使い、入口Placeの3D描画・主要UIを確認。複数Placeゲームでは通常UIから少なくとも1回サブPlaceへ移動。ゲーム固有の試合・結果は実際に到達した範囲だけ報告。
 
 Playerが開けない、認証やアセット権限で止まる等の場合も、アップロード完了と実機未検証を混同しない。作成したID、URL、バージョン、ローカルハッシュ、未確認事項を残す。
+
+一時資格情報・変数の終了処理を成功／中断時とも行い、変更したcwdは戻す。実行用に別Skill本文・グローバル設定を書き換えず、永続変更は明示した成果として返す。

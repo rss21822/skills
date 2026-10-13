@@ -42,9 +42,9 @@ Evidence file: `docs/evidence/MVP-013_staging_release_v13.md`
 
 This record is historical, not permission to republish or a guarantee that the versions remain current. Read Dashboard state before a new release.
 
-## Cavalry Rivals smoke flow
+## Optional Cavalry Rivals smoke flow
 
-Run from the staging Lobby game page with an authorized account:
+Only when the user explicitly requests real-client verification, run from the staging Lobby game page with an authorized account. Otherwise stop after verified upload completion and skip this flow:
 
 1. wait until Lobby state finishes loading;
 2. start `Training Joust`;

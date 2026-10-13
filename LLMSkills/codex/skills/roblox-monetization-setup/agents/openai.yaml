@@ -1,0 +1,4 @@
+interface:
+  display_name: "Roblox Monetization Setup"
+  short_description: "Roblox商品の設定からID・購入・付与連携まで範囲を固定して実行"
+  default_prompt: "$roblox-monetization-setup で、指定Experienceの承認済みDeveloper ProductとPassを設定し、ゲーム内の購入・付与経路へ連携してください。"
